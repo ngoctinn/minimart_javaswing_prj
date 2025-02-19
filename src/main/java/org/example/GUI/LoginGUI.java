@@ -20,27 +20,38 @@ public class LoginGUI extends JFrame {
     }
 
     private void initComponents() {
+        // Frame đăng nhập
         setTitle("Đăng nhập");
         setSize(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(4, 2));
+        setLayout(new GridLayout(5, 1));
 
+        // Panel chứa label và textfield username
+        JPanel panelUsername = new JPanel(new FlowLayout());
         lblUsername = new JLabel("Tên đăng nhập");
-        lblPassword = new JLabel("Mật khẩu");
-        txtUsername = new JTextField();
-        txtPassword = new JPasswordField();
-        btnLogin = new CustomButton("Đăng nhập");
-        btnRegister = new JButton("Đăng ký");
-        btnExit = new JButton("Thoát");
+        txtUsername = new JTextField(20);
+        panelUsername.add(lblUsername);
+        panelUsername.add(txtUsername);
+        add(panelUsername);
 
-        add(lblUsername);
-        add(txtUsername);
-        add(lblPassword);
-        add(txtPassword);
-        add(btnLogin);
-        add(btnRegister);
-        add(btnExit);
+        // Panel chứa label và textfield password
+        JPanel panelPassword = new JPanel(new FlowLayout());
+        lblPassword = new JLabel("Mật khẩu");
+        txtPassword = new JPasswordField(20);
+        panelPassword.add(lblPassword);
+        panelPassword.add(txtPassword);
+        add(panelPassword);
+
+        // Panel chứa button đăng nhập
+        JPanel panelLogin = new JPanel(new FlowLayout());
+        btnLogin = new CustomButton("Đăng nhập ajdsfjdsalfjlkdj aldskjfdsalfk");
+        btnLogin.setSize(200, 50);
+        panelLogin.add(btnLogin);
+        add(panelLogin);
+
+
+
     }
 
 }
