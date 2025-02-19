@@ -43,7 +43,4 @@ public class LoginGUI extends JFrame {
         add(btnExit);
     }
 
-    public static void main(String[] args) {
-        new LoginGUI();
-    }
 }
