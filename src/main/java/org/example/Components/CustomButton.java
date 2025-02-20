@@ -6,64 +6,75 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-// ================CÁCH SỬ DỤNG===========================
-/*// Tạo button với text
-CustomButton btn1 = new CustomButton("Click me!");
-
-        // Tạo button với icon + text
-        ImageIcon icon = new ImageIcon("path/to/icon.png");
-        CustomButton btn2 = new CustomButton("Download", icon);
-
-// Thay đổi màu sắc
-btn1.setButtonColor(
-    new Color(46, 204, 113), // Normal
-    new Color(88, 214, 141), // Hover
-    new Color(40, 180, 99)    // Pressed
-);
-
-// Thay đổi icon
-        btn2.setIcon(new ImageIcon("new_icon.png"));*/
-
 public class CustomButton extends JButton {
-    private Color normalColor = new Color(0, 120, 215);
-    private Color hoverColor = new Color(0, 150, 255);
-    private Color pressColor = new Color(0, 90, 175);
 
-    // =============== BỘ MÀU XANH DƯƠNG (Mặc định) ===============
-    Color blueNormal = new Color(0, 120, 215);
-    Color blueHover = new Color(0, 150, 255);
-    Color bluePress = new Color(0, 90, 175);
-
-    // =============== BỘ MÀU XANH LÁ CÂY ========================
-    Color greenNormal = new Color(46, 204, 113);
-    Color greenHover = new Color(88, 214, 141);
-    Color greenPress = new Color(40, 180, 99);
-
-    // =============== BỘ MÀU ĐỎ ==================================
-    Color redNormal = new Color(231, 76, 60);
-    Color redHover = new Color(236, 112, 99);
-    Color redPress = new Color(192, 57, 43);
-
-    // =============== BỘ MÀU XÁM ================================
-    Color grayNormal = new Color(120, 120, 120);
-    Color grayHover = new Color(160, 160, 160);
-    Color grayPress = new Color(80, 80, 80);
+    // =============== THUỘC TÍNH CHÍNH ===============
+    private Color normalColor;
+    private Color hoverColor;
+    private Color pressColor;
     private ImageIcon originalIcon;
 
+    // =============== ĐỊNH NGHĨA CÁC BỘ MÀU ===============
+    public static final class ButtonColors {
+        // Xanh dương (mặc định)
+        public static final Color[] BLUE = {
+                new Color(0, 120, 215),  // normal
+                new Color(0, 150, 255),  // hover
+                new Color(0, 90, 175)    // press
+        };
+
+        // Xanh lá
+        public static final Color[] GREEN = {
+                new Color(46, 204, 113),  // normal
+                new Color(88, 214, 141),  // hover
+                new Color(40, 180, 99)    // press
+        };
+
+        // Đỏ
+        public static final Color[] RED = {
+                new Color(231, 76, 60),   // normal
+                new Color(236, 112, 99),  // hover
+                new Color(192, 57, 43)    // press
+        };
+
+        // Vàng
+        public static final Color[] YELLOW = {
+                new Color(241, 196, 15),  // normal
+                new Color(245, 215, 110), // hover
+                new Color(230, 163, 10)   // press
+        };
+
+        // Cam
+        public static final Color[] ORANGE = {
+                new Color(243, 156, 18),  // normal
+                new Color(247, 202, 24),  // hover
+                new Color(230, 126, 34)   // press
+        };
+
+        // Xám
+        public static final Color[] GRAY = {
+                new Color(120, 120, 120), // normal
+                new Color(160, 160, 160), // hover
+                new Color(80, 80, 80)     // press
+        };
+    }
+
+    // =============== CONSTRUCTORS ===============
     public CustomButton(String text) {
         super(text);
+        setButtonColors(ButtonColors.BLUE);
         setupButton();
-        setupListeners();
     }
 
     public CustomButton(String text, ImageIcon icon) {
         super(text);
         this.originalIcon = icon;
         setIcon(scaleIcon(icon));
+        setButtonColors(ButtonColors.BLUE);
         setupButton();
-        setupListeners();
     }
 
+    // =============== SETUP METHODS ===============
     private void setupButton() {
         setOpaque(false);
         setContentAreaFilled(false);
@@ -71,9 +82,9 @@ public class CustomButton extends JButton {
         setFocusPainted(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         setForeground(Color.WHITE);
-        setBackground(normalColor);
         setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
         setFont(new Font("Segoe UI", Font.BOLD, 12));
+        setupListeners();
     }
 
     private void setupListeners() {
@@ -104,29 +115,15 @@ public class CustomButton extends JButton {
         });
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(getBackground());
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
-        super.paintComponent(g);
-        g2.dispose();
-    }
-
-    // Phương thức thay đổi màu sắc
-    public void setButtonColor(Color normal, Color hover, Color press) {
-        this.normalColor = normal;
-        this.hoverColor = hover;
-        this.pressColor = press;
-        setBackground(normal);
-    }
-
-
-    // Phương thức thay đổi icon
-    public void setIcon(ImageIcon icon) {
-        this.originalIcon = icon;
-        super.setIcon(scaleIcon(icon));
+    // =============== CUSTOM METHODS ===============
+    public void setButtonColors(Color[] colors) {
+        if (colors.length != 3) {
+            throw new IllegalArgumentException("Colors array must contain exactly 3 colors");
+        }
+        this.normalColor = colors[0];
+        this.hoverColor = colors[1];
+        this.pressColor = colors[2];
+        setBackground(normalColor);
     }
 
     private ImageIcon scaleIcon(ImageIcon icon) {
@@ -139,17 +136,82 @@ public class CustomButton extends JButton {
         return new ImageIcon(resized);
     }
 
-    // Các phương thức getter/setter cho màu sắc
-    public void setNormalColor(Color normalColor) {
-        this.normalColor = normalColor;
-        setBackground(normalColor);
+    // =============== PAINT METHOD ===============
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(getBackground());
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+        super.paintComponent(g);
+        g2.dispose();
     }
 
-    public void setHoverColor(Color hoverColor) {
-        this.hoverColor = hoverColor;
-    }
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Custom Button Demo");
+        frame.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    public void setPressColor(Color pressColor) {
-        this.pressColor = pressColor;
+        // 1. Tạo button cơ bản chỉ có text
+        CustomButton basicButton = new CustomButton("Click Me");
+
+        // 2. Tạo button với icon
+        ImageIcon icon = new ImageIcon("src/main/resources/delete (1).png");
+        CustomButton iconButton = new CustomButton("Download", icon);
+
+        // 3. Sử dụng các bộ màu có sẵn
+        // Button màu xanh (mặc định)
+        CustomButton blueButton = new CustomButton("Blue Button");
+
+        // Button màu xanh lá
+        CustomButton greenButton = new CustomButton("Green Button");
+        greenButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+
+        // Button màu vàng
+        CustomButton yellowButton = new CustomButton("Yellow Button");
+        yellowButton.setButtonColors(CustomButton.ButtonColors.YELLOW);
+
+        // Button màu cam
+        CustomButton orangeButton = new CustomButton("Orange Button");
+        orangeButton.setButtonColors(CustomButton.ButtonColors.ORANGE);
+
+        // Button màu đỏ
+        CustomButton redButton = new CustomButton("Red Button");
+        redButton.setButtonColors(CustomButton.ButtonColors.RED);
+
+        // Button màu xám
+        CustomButton grayButton = new CustomButton("Gray Button");
+        grayButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+
+        // 4. Tạo bộ màu tùy chỉnh
+        Color[] customColors = {
+                new Color(155, 89, 182),  // normal
+                new Color(165, 105, 189), // hover
+                new Color(142, 68, 173)   // press
+        };
+        CustomButton customButton = new CustomButton("Custom Color");
+        customButton.setButtonColors(customColors);
+
+        // 5. Thêm sự kiện click
+        basicButton.addActionListener(e -> {
+            System.out.println("Button clicked!");
+        });
+
+        // 6. tuỳ chỉnh kích thước button
+        basicButton.setPreferredSize(new Dimension(150, 40));
+
+        // Thêm các button vào frame
+        frame.add(basicButton);
+        frame.add(iconButton);
+        frame.add(blueButton);
+        frame.add(greenButton);
+        frame.add(yellowButton);
+        frame.add(orangeButton);
+        frame.add(redButton);
+        frame.add(grayButton);
+        frame.add(customButton);
+
+        frame.setVisible(true);
     }
 }
