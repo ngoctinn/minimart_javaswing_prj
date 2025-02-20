@@ -53,40 +53,20 @@ public class Test_components {
 
             // button màu đỏ
             CustomButton redButton = new CustomButton("Red Button", new ImageIcon("src/main/resources/delete (1).png"));
-            redButton.setButtonColor(
-                    new Color(231, 76, 60), // Normal
-                    new Color(236, 112, 99), // Hover
-                    new Color(192, 57, 43)    // Pressed
-            );
+            redButton.setButtonColors(CustomButton.ButtonColors.RED);
 
             // Button màu xanh lá cây
             CustomButton greenButton = new CustomButton("Green Button", new ImageIcon("src/main/resources/delete (1).png"));
-            greenButton.setButtonColor(
-                    new Color(46, 204, 113), // Normal
-                    new Color(88, 214, 141), // Hover
-                    new Color(40, 180, 99)    // Pressed
-            );
+            greenButton.setButtonColors(CustomButton.ButtonColors.GREEN);
 
             // button màu xám
             CustomButton grayButton = new CustomButton("Gray Button", new ImageIcon("src/main/resources/delete (1).png"));
-            grayButton.setButtonColor(
-                    new Color(120, 120, 120), // Normal
-                    new Color(160, 160, 160), // Hover
-                    new Color(80, 80, 80)    // Pressed
-            );
+            grayButton.setButtonColors(CustomButton.ButtonColors.GRAY);
             // sử lý sự kiện khi click vào button
             grayButton.addActionListener(e -> {
                 JOptionPane.showMessageDialog(frame, "You clicked the Gray Button!");
             });
 
-            // button màu trắng viền đen, chữ đen, hover màu xanh, press màu xám
-            CustomButton whiteButton = new CustomButton("White Button", new ImageIcon("src/main/resources/delete (1).png"));
-            whiteButton.setButtonColor(
-                    new Color(255, 255, 255), // Normal
-                    new Color(0, 150, 255), // Hover
-                    new Color(160, 160, 160)    // Pressed
-            );
-            whiteButton.setForeground(Color.BLACK);
 
             Object[] columnNames = {"ID", "Tên", "Tuổi", "Email", "Địa chỉ", "SĐT", "Bộ phận", "Chức vụ", "Lương", "Ngày gia nhập"};
 
@@ -141,7 +121,6 @@ public class Test_components {
             frame.add(redButton);
             frame.add(greenButton);
             frame.add(grayButton);
-            frame.add(whiteButton);
             frame.add(scrollPane);
             frame.add(checkBox);
             frame.add(radioButton);

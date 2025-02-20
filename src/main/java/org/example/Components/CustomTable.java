@@ -108,5 +108,57 @@ public class CustomTable extends JTable {
         JTableHeader header = getTableHeader();
         header.setForeground(headerForeground);
     }
+
+    public static void main(String[] args) {
+        // Tạo frame để demo
+        JFrame frame = new JFrame("Custom Table Demo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 400);
+
+        // 1. Cách 1: Tạo bảng với dữ liệu và tiêu đề có sẵn
+        Object[] columnNames = {"ID", "Họ Tên", "Tuổi", "Email", "Địa chỉ"};
+        Object[][] data = {
+                {"1", "Nguyễn Văn A", 25, "nguyenvana@email.com", "Hà Nội"},
+                {"2", "Trần Thị B", 30, "tranthib@email.com", "TP.HCM"},
+                {"3", "Lê Văn C", 28, "levanc@email.com", "Đà Nẵng"},
+                {"4", "Phạm Thị D", 22, "phamthid@email.com", "Cần Thơ"},
+                {"5", "Hoàng Văn E", 35, "hoangvane@email.com", "Hải Phòng"}
+        };
+
+        CustomTable table1 = new CustomTable(data, columnNames);
+
+        // 2. Cách 2: Tạo bảng với TableModel
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Mã SP");
+        model.addColumn("Tên Sản Phẩm");
+        model.addColumn("Giá");
+        model.addColumn("Số lượng");
+
+        model.addRow(new Object[]{"SP001", "Laptop", 15000000, 10});
+        model.addRow(new Object[]{"SP002", "Điện thoại", 8000000, 20});
+        model.addRow(new Object[]{"SP003", "Máy tính bảng", 12000000, 15});
+
+        CustomTable table2 = new CustomTable(model);
+
+//        // 3. Tùy chỉnh giao diện bảng
+//        table2.setEvenRowColor(new Color(240, 255, 240));  // Màu xanh nhạt cho dòng chẵn
+//        table2.setOddRowColor(new Color(255, 255, 255));   // Màu trắng cho dòng lẻ
+//        table2.setSelectionColor(new Color(152, 251, 152)); // Màu khi chọn dòng
+//        table2.setGridColor(new Color(180, 180, 180));     // Màu đường kẻ
+
+//        // Tùy chỉnh header
+//        table2.setHeaderBackground(new Color(0, 100, 0));  // Màu nền header
+//        table2.setHeaderForeground(Color.WHITE);           // Màu chữ header
+//        table2.setHeaderFont(new Font("Arial", Font.BOLD, 14)); // Font cho header
+
+        // 4. Đặt bảng vào JScrollPane
+        JScrollPane scrollPane = new JScrollPane(table2);
+
+        // 5. Thêm vào frame và hiển thị
+        frame.add(scrollPane);
+        frame.setVisible(true);
+
+
+    }
 }
 
