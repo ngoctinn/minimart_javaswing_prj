@@ -14,7 +14,9 @@ public class loginGUI extends JFrame {
         // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        getContentPane().setBackground(Color.LIGHT_GRAY);
+        // màu nền blue nhaạt gần trắng
+        getContentPane().setBackground(new Color(240, 240, 240));
+
         setLayout(new GridBagLayout());
 
         // Tạo JPanel chứa form đăng nhập
@@ -57,11 +59,14 @@ public class loginGUI extends JFrame {
         // hover color dùng để thay đổi màu khi rê chuột vào
         forgotPassword.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                forgotPassword.setForeground(new Color(0, 51, 102));
+                forgotPassword.setForeground(new Color(0, 150, 255));
+                // cursor sẽ thay đổi khi rê chuột vào
+                setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 forgotPassword.setForeground(new Color(0, 102, 204));
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         });
 
