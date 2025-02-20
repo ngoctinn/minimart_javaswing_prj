@@ -48,7 +48,6 @@ public class loginGUI extends JFrame {
         CustomPasswordField passwordField = new CustomPasswordField("Mật khẩu");
         passwordField.setPreferredSize(new Dimension(200, 35));
         passwordField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
-        setPlaceholder(passwordField, "Mật khẩu");
         gbc.gridy = 2;
         panel.add(passwordField, gbc);
 
@@ -95,28 +94,6 @@ public class loginGUI extends JFrame {
         setVisible(true);
     }
 
-    // Phương thức tạo placeholder cho JTextField và JPasswordField
-    private void setPlaceholder(JTextField field, String placeholder) {
-        field.setText(placeholder);
-        field.setForeground(Color.GRAY);
-        field.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (field.getText().equals(placeholder)) {
-                    field.setText("");
-                    field.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (field.getText().isEmpty()) {
-                    field.setText(placeholder);
-                    field.setForeground(Color.GRAY);
-                }
-            }
-        });
-    }
 
     public static void main(String[] args) {
         new loginGUI();
