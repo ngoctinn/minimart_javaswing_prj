@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.GUI;
 
 import org.example.Components.CustomButton;
 import org.example.Components.CustomPasswordField;
@@ -30,7 +30,7 @@ public class loginGUI extends JFrame {
         gbc.gridwidth = 2; // Các thành phần chiếm 2 cột
 
         // Logo
-        JLabel logo = new JLabel("KiotViet", SwingConstants.CENTER);
+        JLabel logo = new JLabel("Đăng nhập", SwingConstants.CENTER);
         logo.setFont(new Font("Arial", Font.BOLD, 20));
         logo.setForeground(new Color(0, 102, 204)); // Xanh dương
         gbc.gridx = 0;
@@ -73,10 +73,10 @@ public class loginGUI extends JFrame {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
 
-        ImageIcon manageIcon = new ImageIcon("src/main/resources/Images/manage.png");
+        ImageIcon manageIcon = new ImageIcon("src/main/resources/Images/statistics.png");
         CustomButton manageButton = new CustomButton("Quản lý", manageIcon);
 
-        ImageIcon sellIcon = new ImageIcon("src/main/resources/Images/sell.png");
+        ImageIcon sellIcon = new ImageIcon("src/main/resources/Images/shopping-bag.png");
         CustomButton sellButton = new CustomButton("Bán hàng", sellIcon);
         sellButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         buttonPanel.add(manageButton);
