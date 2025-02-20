@@ -71,7 +71,13 @@ public class CustomPasswordField extends JPasswordField {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
+                boolean prevMouseOverIcon = mouseOverIcon;
                 mouseOverIcon = iconBounds != null && iconBounds.contains(e.getPoint());
+                // Đổi con trỏ nếu di chuột vào icon
+                if (mouseOverIcon != prevMouseOverIcon) {
+                    setCursor(mouseOverIcon ? new Cursor(Cursor.HAND_CURSOR) : new Cursor(Cursor.TEXT_CURSOR));
+                }
+
                 repaint();
             }
         });
@@ -123,6 +129,7 @@ public class CustomPasswordField extends JPasswordField {
         
         // Vẽ con ngươi
         g2.fillOval(x + (size/2) - 3, y + (size/2) - 2, 6, 6);
+
     }
 
     private void drawEyeClosed(Graphics2D g2, int x, int y, int size) {
@@ -131,8 +138,13 @@ public class CustomPasswordField extends JPasswordField {
         // Vẽ đường cong cho mắt đóng
         g2.drawArc(x + 2, y + 4, size - 4, size - 8, 0, -180);
         
-        // Vẽ đường gạch ngang
-        g2.drawLine(x + 2, y + (size/2), x + size - 2, y + (size/2));
+        // vẽ lông mi xung quanh dưới đường cong
+        g2.drawLine(x + 4, y + (size/2), x + size - 4, y + (size/2));
+
+        // Vẽ con ngươi nhỏ hơn
+        g2.fillOval(x + (size/2) - 3, y + (size/2) - 2, 6, 6);
+
+
     }
 
     // Setter methods
@@ -175,6 +187,10 @@ public class CustomPasswordField extends JPasswordField {
         CustomPasswordField passwordField = new CustomPasswordField("Enter password");
         passwordField.setPreferredSize(new Dimension(200, 35));
 
+        // Tạo CustomPasswordField với placeholder mặc định
+        CustomPasswordField passwordField2 = new CustomPasswordField("Enter password");
+        passwordField2.setPreferredSize(new Dimension(200, 35));
+
         // Tùy chỉnh thêm nếu muốn
         // passwordField.setPlaceholderColor(new Color(180, 180, 180));
         // passwordField.setBorderColor(new Color(0, 150, 136));
@@ -182,6 +198,7 @@ public class CustomPasswordField extends JPasswordField {
         //passwordField.setIconColor(new Color(100, 100, 100));
 
         frame.add(passwordField);
+        frame.add(passwordField2);
         frame.setVisible(true);
     }
 }
