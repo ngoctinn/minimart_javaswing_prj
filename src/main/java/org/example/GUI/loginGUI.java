@@ -3,6 +3,7 @@ package org.example.GUI;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomPasswordField;
 import org.example.Components.CustomTexField;
+import org.example.Components.RoundedPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,16 +21,19 @@ public class loginGUI extends JFrame {
         setLayout(new GridBagLayout());
 
         // Tạo JPanel chứa form đăng nhập
-        JPanel panel = new JPanel();
+        RoundedPanel panel = new RoundedPanel(30);
         panel.setLayout(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         panel.setPreferredSize(new Dimension(400, 300));
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridwidth = 2; // Các thành phần chiếm 2 cột
+        // mở rộng theo chiều ngang
+
 
         // Logo
         JLabel logo = new JLabel("Đăng nhập", SwingConstants.CENTER);
@@ -42,14 +46,13 @@ public class loginGUI extends JFrame {
         // Ô nhập tên đăng nhập (Placeholder)
         CustomTexField usernameField = new CustomTexField("Tên đăng nhập");
         usernameField.setPreferredSize(new Dimension(200, 35));
-        usernameField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
         gbc.gridy = 1;
+        gbc.ipadx = 50;
         panel.add(usernameField, gbc);
 
         // Ô nhập mật khẩu (Placeholder)
         CustomPasswordField passwordField = new CustomPasswordField("Mật khẩu");
         passwordField.setPreferredSize(new Dimension(200, 35));
-        passwordField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
         gbc.gridy = 2;
         panel.add(passwordField, gbc);
 
@@ -80,7 +83,8 @@ public class loginGUI extends JFrame {
         ImageIcon manageIcon = new ImageIcon("src/main/resources/Images/statistics.png");
         CustomButton manageButton = new CustomButton("Quản lý", manageIcon);
 
-        ImageIcon sellIcon = new ImageIcon("src/main/resources/Images/shopping-bag.png");
+
+        ImageIcon sellIcon = new ImageIcon("src/main/resources/Images/shopping-basket.png");
         CustomButton sellButton = new CustomButton("Bán hàng", sellIcon);
         sellButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         buttonPanel.add(manageButton);
@@ -100,7 +104,19 @@ public class loginGUI extends JFrame {
     }
 
 
-    public static void main(String[] args) {
-        new loginGUI();
+    public static void main(String[] args)
+    {
+        // dùng flatlaf để thiết kế giao diện
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            // khởi tạo giao diện mượt mà
+            SwingUtilities.invokeLater(() -> {
+                new loginGUI();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

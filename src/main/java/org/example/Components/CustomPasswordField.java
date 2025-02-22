@@ -137,12 +137,7 @@ public class CustomPasswordField extends JPasswordField {
         
         // Vẽ đường cong cho mắt đóng
         g2.drawArc(x + 2, y + 4, size - 4, size - 8, 0, -180);
-        
-        // vẽ lông mi xung quanh dưới đường cong
-        g2.drawLine(x + 4, y + (size/2), x + size - 4, y + (size/2));
 
-        // Vẽ con ngươi nhỏ hơn
-        g2.fillOval(x + (size/2) - 3, y + (size/2) - 2, 6, 6);
 
 
     }
