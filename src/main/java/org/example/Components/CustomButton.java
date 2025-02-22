@@ -69,7 +69,9 @@ public class CustomButton extends JButton {
     public CustomButton(String text, ImageIcon icon) {
         super(text);
         this.originalIcon = icon;
-        setIcon(scaleIcon(icon));
+        setIcon(icon);
+        // Scale icon to 20x20
+        setIcon(scaleIcon(icon, 20, 20));
         setButtonColors(ButtonColors.BLUE);
         setupButton();
     }
@@ -82,7 +84,7 @@ public class CustomButton extends JButton {
         setFocusPainted(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         setForeground(Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         setFont(new Font("Segoe UI", Font.BOLD, 12));
         setupListeners();
     }
@@ -126,15 +128,22 @@ public class CustomButton extends JButton {
         setBackground(normalColor);
     }
 
-    private ImageIcon scaleIcon(ImageIcon icon) {
-        if (icon == null) return null;
-        BufferedImage resized = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = resized.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        g2d.drawImage(icon.getImage(), 0, 0, 20, 20, null);
+    // =============== SCALE ICON ===============
+    private ImageIcon scaleIcon(ImageIcon icon, int width, int height) {
+        Image img = icon.getImage();
+        BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = resizedImg.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.drawImage(img, 0, 0, width, height, null);
         g2d.dispose();
-        return new ImageIcon(resized);
+
+        return new ImageIcon(resizedImg);
     }
+
+
 
     // =============== PAINT METHOD ===============
     @Override
@@ -157,7 +166,7 @@ public class CustomButton extends JButton {
         CustomButton basicButton = new CustomButton("Click Me");
 
         // 2. Tạo button với icon
-        ImageIcon icon = new ImageIcon("src/main/resources/delete (1).png");
+        ImageIcon icon = new ImageIcon("src/main/resources/Images/shop.png");
         CustomButton iconButton = new CustomButton("Download", icon);
 
         // 3. Sử dụng các bộ màu có sẵn
