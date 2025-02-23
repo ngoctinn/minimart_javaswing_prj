@@ -1,5 +1,6 @@
 package org.example.GUI;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomPasswordField;
 import org.example.Components.CustomTexField;
@@ -15,7 +16,6 @@ public class loginGUI extends JFrame {
         // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        // màu nền blue nhaạt gần trắng
         getContentPane().setBackground(new Color(240, 240, 240));
 
         setLayout(new GridBagLayout());
@@ -37,26 +37,26 @@ public class loginGUI extends JFrame {
 
         // Logo
         JLabel logo = new JLabel("Đăng nhập", SwingConstants.CENTER);
-        logo.setFont(new Font("Arial", Font.BOLD, 20));
+        logo.setFont(new Font("Roboto", Font.BOLD, 20));
         logo.setForeground(new Color(0, 102, 204)); // Xanh dương
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(logo, gbc);
 
-        // Ô nhập tên đăng nhập (Placeholder)
+        // ===============Ô nhập tên đăng nhập (Placeholder)=============
         CustomTexField usernameField = new CustomTexField("Tên đăng nhập");
         usernameField.setPreferredSize(new Dimension(200, 35));
         gbc.gridy = 1;
         gbc.ipadx = 50;
         panel.add(usernameField, gbc);
 
-        // Ô nhập mật khẩu (Placeholder)
+        // ===============Ô nhập mật khẩu (Placeholder)===================
         CustomPasswordField passwordField = new CustomPasswordField("Mật khẩu");
         passwordField.setPreferredSize(new Dimension(200, 35));
         gbc.gridy = 2;
         panel.add(passwordField, gbc);
 
-        // link "Quên mật khẩu"
+        // ===============Quên mật khẩu?===================
         JLabel forgotPassword = new JLabel("Quên mật khẩu?");
         forgotPassword.setForeground(new Color(0, 102, 204));
         // hover color dùng để thay đổi màu khi rê chuột vào
@@ -76,17 +76,18 @@ public class loginGUI extends JFrame {
         gbc.gridy = 3;
         panel.add(forgotPassword, gbc);
 
-        // Nút "Quản lý" (Xanh dương) và "Bán hàng" (Xanh lá)
+        // ===============Nút Đăng nhập và Quản lý===================
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
 
-        ImageIcon manageIcon = new ImageIcon("src/main/resources/Images/statistics.png");
+        FlatSVGIcon manageIcon = new FlatSVGIcon("Images/chart-column-grow-svgrepo-com.svg", 16, 16);
         CustomButton manageButton = new CustomButton("Quản lý", manageIcon);
 
-
-        ImageIcon sellIcon = new ImageIcon("src/main/resources/Images/shopping-basket.png");
+        FlatSVGIcon sellIcon = new FlatSVGIcon("Images/shop-2-svgrepo-com.svg", 16, 16);
         CustomButton sellButton = new CustomButton("Bán hàng", sellIcon);
+
         sellButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+
         buttonPanel.add(manageButton);
         buttonPanel.add(sellButton);
         gbc.gridy = 4;
@@ -108,7 +109,7 @@ public class loginGUI extends JFrame {
     {
         // dùng flatlaf để thiết kế giao diện
         try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
             // khởi tạo giao diện mượt mà
             SwingUtilities.invokeLater(() -> {
                 new loginGUI();
