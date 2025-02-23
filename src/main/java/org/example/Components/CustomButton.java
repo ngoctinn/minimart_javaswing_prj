@@ -1,5 +1,8 @@
 package org.example.Components;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.test.SVGIconExample;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -70,8 +73,7 @@ public class CustomButton extends JButton {
         super(text);
         this.originalIcon = icon;
         setIcon(icon);
-        // Scale icon to 20x20
-        setIcon(scaleIcon(icon, 20, 20));
+        setIconTextGap(10);
         setButtonColors(ButtonColors.BLUE);
         setupButton();
     }
@@ -128,23 +130,6 @@ public class CustomButton extends JButton {
         setBackground(normalColor);
     }
 
-    // =============== SCALE ICON ===============
-    private ImageIcon scaleIcon(ImageIcon icon, int width, int height) {
-        Image img = icon.getImage();
-        BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = resizedImg.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.drawImage(img, 0, 0, width, height, null);
-        g2d.dispose();
-
-        return new ImageIcon(resizedImg);
-    }
-
-
-
     // =============== PAINT METHOD ===============
     @Override
     protected void paintComponent(Graphics g) {
@@ -178,7 +163,8 @@ public class CustomButton extends JButton {
         greenButton.setButtonColors(CustomButton.ButtonColors.GREEN);
 
         // Button màu vàng
-        CustomButton yellowButton = new CustomButton("Yellow Button");
+        FlatSVGIcon svgIcon = new FlatSVGIcon("Images/chart-column-grow-svgrepo-com.svg", 16, 16);
+        CustomButton yellowButton = new CustomButton("Yellow Button", svgIcon);
         yellowButton.setButtonColors(CustomButton.ButtonColors.YELLOW);
 
         // Button màu cam
