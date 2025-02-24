@@ -1,5 +1,7 @@
 package org.example.Components;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -10,25 +12,39 @@ public class CustomPasswordField extends JPasswordField {
     private String placeholder;
     private Color placeholderColor = new Color(150, 150, 150);
     private Color borderColor = new Color(66, 133, 244);  // Google Blue
-    private Color iconColor = new Color(150, 150, 150);
     private boolean showPlaceholder;
     private boolean showPassword;
     private int borderThickness = 2;
     private Rectangle2D iconBounds;
     private boolean mouseOverIcon;
-    
+
+    // Thêm các ImageIcon
+    private ImageIcon eyeOpenIcon;
+    private ImageIcon eyeClosedIcon;
+    private static final int ICON_SIZE = 20;
+
     public CustomPasswordField(String placeholder) {
         this.placeholder = placeholder;
         this.showPlaceholder = true;
         this.showPassword = false;
-        
+
+        // Tải hình ảnh từ resources
+        try {
+            eyeOpenIcon = new FlatSVGIcon("Images/eye-svgrepo-com.svg", ICON_SIZE, ICON_SIZE);
+            eyeClosedIcon = new FlatSVGIcon("Images/eye-closed-svgrepo-com.svg", ICON_SIZE, ICON_SIZE);
+
+
+        } catch (Exception e) {
+            System.err.println("Error loading eye icons: " + e.getMessage());
+        }
+
         // Thiết lập giao diện cơ bản
         setOpaque(false);
         setBorder(new EmptyBorder(5, 5, 5, 35)); // Thêm padding bên phải cho icon
         setFont(new Font("Segoe UI", Font.PLAIN, 14));
         setForeground(Color.BLACK);
         setEchoChar('•');
-        
+
         // Thêm sự kiện focus
         addFocusListener(new FocusListener() {
             @Override
@@ -60,7 +76,7 @@ public class CustomPasswordField extends JPasswordField {
                     repaint();
                 }
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
                 mouseOverIcon = false;
@@ -73,11 +89,10 @@ public class CustomPasswordField extends JPasswordField {
             public void mouseMoved(MouseEvent e) {
                 boolean prevMouseOverIcon = mouseOverIcon;
                 mouseOverIcon = iconBounds != null && iconBounds.contains(e.getPoint());
-                // Đổi con trỏ nếu di chuột vào icon
+
                 if (mouseOverIcon != prevMouseOverIcon) {
                     setCursor(mouseOverIcon ? new Cursor(Cursor.HAND_CURSOR) : new Cursor(Cursor.TEXT_CURSOR));
                 }
-
                 repaint();
             }
         });
@@ -108,38 +123,20 @@ public class CustomPasswordField extends JPasswordField {
         super.paintComponent(g);
 
         // Vẽ icon eye
-        int iconSize = 18;
-        int iconX = getWidth() - iconSize - 5;
-        int iconY = (getHeight() - iconSize) / 2;
-        iconBounds = new Rectangle2D.Double(iconX, iconY, iconSize, iconSize);
+        int iconX = getWidth() - ICON_SIZE - 5;
+        int iconY = (getHeight() - ICON_SIZE) / 2;
+        iconBounds = new Rectangle2D.Double(iconX, iconY, ICON_SIZE, ICON_SIZE);
 
-        g2.setColor(mouseOverIcon ? borderColor : iconColor);
-        if (showPassword) {
-            drawEyeOpen(g2, iconX, iconY, iconSize);
-        } else {
-            drawEyeClosed(g2, iconX, iconY, iconSize);
+        // Vẽ hình ảnh phù hợp
+        if (eyeOpenIcon != null && eyeClosedIcon != null) {
+            ImageIcon iconToDraw = showPassword ? eyeOpenIcon : eyeClosedIcon;
+            if (mouseOverIcon) {
+                // Tạo hiệu ứng hover nếu cần
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+            }
+            iconToDraw.paintIcon(this, g2, iconX, iconY);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
-    }
-
-    private void drawEyeOpen(Graphics2D g2, int x, int y, int size) {
-        g2.setStroke(new BasicStroke(1.5f));
-        
-        // Vẽ hình oval cho mắt
-        g2.drawOval(x + 2, y + 4, size - 4, size - 8);
-        
-        // Vẽ con ngươi
-        g2.fillOval(x + (size/2) - 3, y + (size/2) - 2, 6, 6);
-
-    }
-
-    private void drawEyeClosed(Graphics2D g2, int x, int y, int size) {
-        g2.setStroke(new BasicStroke(1.5f));
-        
-        // Vẽ đường cong cho mắt đóng
-        g2.drawArc(x + 2, y + 4, size - 4, size - 8, 0, -180);
-
-
-
     }
 
     // Setter methods
@@ -167,30 +164,17 @@ public class CustomPasswordField extends JPasswordField {
         repaint();
     }
 
-    public void setIconColor(Color color) {
-        this.iconColor = color;
-        repaint();
-    }
-
     public static void main(String[] args) {
         JFrame frame = new JFrame("Modern Password Field Demo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
-        // Tạo ModernPasswordField
         CustomPasswordField passwordField = new CustomPasswordField("Enter password");
         passwordField.setPreferredSize(new Dimension(200, 35));
 
-        // Tạo CustomPasswordField với placeholder mặc định
         CustomPasswordField passwordField2 = new CustomPasswordField("Enter password");
         passwordField2.setPreferredSize(new Dimension(200, 35));
-
-        // Tùy chỉnh thêm nếu muốn
-        // passwordField.setPlaceholderColor(new Color(180, 180, 180));
-        // passwordField.setBorderColor(new Color(0, 150, 136));
-        // passwordField.setBorderThickness(3);
-        //passwordField.setIconColor(new Color(100, 100, 100));
 
         frame.add(passwordField);
         frame.add(passwordField2);

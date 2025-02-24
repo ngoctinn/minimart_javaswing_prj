@@ -36,9 +36,11 @@ public class loginGUI extends JFrame {
 
 
         // Logo
-        JLabel logo = new JLabel("Đăng nhập", SwingConstants.CENTER);
-        logo.setFont(new Font("Roboto", Font.BOLD, 20));
-        logo.setForeground(new Color(0, 102, 204)); // Xanh dương
+        JLabel logo = new JLabel("Hệ thống quản lý siêu thị", SwingConstants.CENTER);
+        logo.setFont(new Font("Roboto", Font.PLAIN, 22));
+        logo.setForeground(new Color(0, 0, 0));
+        //cách dưới 10px
+        logo.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(logo, gbc);
@@ -46,6 +48,7 @@ public class loginGUI extends JFrame {
         // ===============Ô nhập tên đăng nhập (Placeholder)=============
         CustomTexField usernameField = new CustomTexField("Tên đăng nhập");
         usernameField.setPreferredSize(new Dimension(200, 35));
+        usernameField.setFont(new Font("Roboto", Font.PLAIN, 16));
         gbc.gridy = 1;
         gbc.ipadx = 50;
         panel.add(usernameField, gbc);
@@ -53,12 +56,14 @@ public class loginGUI extends JFrame {
         // ===============Ô nhập mật khẩu (Placeholder)===================
         CustomPasswordField passwordField = new CustomPasswordField("Mật khẩu");
         passwordField.setPreferredSize(new Dimension(200, 35));
+        passwordField.setFont(new Font("Roboto", Font.PLAIN, 16));
         gbc.gridy = 2;
         panel.add(passwordField, gbc);
 
         // ===============Quên mật khẩu?===================
         JLabel forgotPassword = new JLabel("Quên mật khẩu?");
         forgotPassword.setForeground(new Color(0, 102, 204));
+        forgotPassword.setFont(new Font("Roboto", Font.PLAIN, 16));
         // hover color dùng để thay đổi màu khi rê chuột vào
         forgotPassword.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -80,11 +85,13 @@ public class loginGUI extends JFrame {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
 
-        FlatSVGIcon manageIcon = new FlatSVGIcon("Images/chart-column-grow-svgrepo-com.svg", 16, 16);
+        FlatSVGIcon manageIcon = new FlatSVGIcon("Images/chart-column-grow-svgrepo-com.svg", 20, 20);
         CustomButton manageButton = new CustomButton("Quản lý", manageIcon);
+        manageButton.setFont(new Font("Roboto", Font.BOLD, 18));
 
-        FlatSVGIcon sellIcon = new FlatSVGIcon("Images/shop-2-svgrepo-com.svg", 16, 16);
+        FlatSVGIcon sellIcon = new FlatSVGIcon("Images/shop-2-svgrepo-com.svg", 20, 20);
         CustomButton sellButton = new CustomButton("Bán hàng", sellIcon);
+        sellButton.setFont(new Font("Roboto", Font.BOLD, 18));
 
         sellButton.setButtonColors(CustomButton.ButtonColors.GREEN);
 
