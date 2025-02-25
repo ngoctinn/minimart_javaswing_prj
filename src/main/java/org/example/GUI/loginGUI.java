@@ -36,9 +36,9 @@ public class loginGUI extends JFrame {
 
 
         // Logo
-        JLabel logo = new JLabel("Hệ thống quản lý siêu thị", SwingConstants.CENTER);
-        logo.setFont(new Font("Roboto", Font.PLAIN, 22));
-        logo.setForeground(new Color(0, 0, 0));
+        JLabel logo = new JLabel("Đăng nhập", SwingConstants.CENTER);
+        logo.setFont(new Font("Roboto", Font.BOLD, 28));
+        logo.setForeground(new Color(0, 102, 204));
         //cách dưới 10px
         logo.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         gbc.gridx = 0;
@@ -50,7 +50,7 @@ public class loginGUI extends JFrame {
         usernameField.setPreferredSize(new Dimension(200, 35));
         usernameField.setFont(new Font("Roboto", Font.PLAIN, 16));
         gbc.gridy = 1;
-        gbc.ipadx = 50;
+        gbc.ipadx = 30;
         panel.add(usernameField, gbc);
 
         // ===============Ô nhập mật khẩu (Placeholder)===================
