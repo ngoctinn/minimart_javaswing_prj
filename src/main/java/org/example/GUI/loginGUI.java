@@ -11,7 +11,8 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class loginGUI extends JFrame {
+public class
+loginGUI extends JFrame {
     public loginGUI() {
         // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
