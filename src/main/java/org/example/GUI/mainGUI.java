@@ -4,6 +4,8 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.Components.GoodsPanel;
 import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
+import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
+import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
 // import các panel khác
 
 import javax.swing.*;
@@ -210,9 +212,14 @@ public class mainGUI extends JFrame implements ActionListener {
 
         // Khởi tạo các panel và lưu vào Map
         panelMap = new HashMap<>();
-        panelMap.put("hangHoa", new danhMucPanel());
+        panelMap.put("danhMuc", new danhMucPanel());
+        panelMap.put("kiemKho", new kiemKhoPanel());
+        panelMap.put("thietLapGia", new thietLapGiaPanel());
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
+        for (Map.Entry<String, JPanel> entry : panelMap.entrySet()) {
+            contentPanel.add(entry.getKey(), entry.getValue());
+        }
 
 
         // Khởi tạo và thêm các panel vào contentPanel với tên định danh (card name)
@@ -238,10 +245,12 @@ public class mainGUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         // Sử dụng CardLayout để hiển thị panel tương ứng
-        if (e.getSource() == datHangItem) {
-            cardLayout.show(contentPanel, "DatHang");
-        } else if (e.getSource() == hoaDonItem) {
-            cardLayout.show(contentPanel, "HoaDon");
+        if (e.getSource() == danhMucItem) {
+            cardLayout.show(contentPanel, "danhMuc");
+        } else if (e.getSource() == thietLapGiaItem) {
+            cardLayout.show(contentPanel, "thietLapGia");
+        } else if (e.getSource() == kiemKhoItem) {
+            cardLayout.show(contentPanel, "kiemKho");
         }
         // Xử lý các menu khác theo cách tương tự
     }
