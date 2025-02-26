@@ -1,10 +1,9 @@
 package org.example.GUI;
 
-import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.Components.GoodsPanel;
-import org.example.GUI.Panels.hangHoaPanel;
+import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
 // import các panel khác
 
 import javax.swing.*;
@@ -20,11 +19,9 @@ public class mainGUI extends JFrame implements ActionListener {
     // Các JMenuItem cho JMenu giaoDich
     JMenuItem datHangItem;
     JMenuItem hoaDonItem;
-    JMenuItem vanDonItem;
     JMenuItem traHangItem;
     JMenuItem nhapHangItem;
     JMenuItem traHangNhapItem;
-    JMenuItem xuatHuyItem;
 
     // Các JMenuItem cho JMenu hangHoa
     JMenuItem danhMucItem;
@@ -38,7 +35,6 @@ public class mainGUI extends JFrame implements ActionListener {
     //Các JMenuItem cho JMenu nhanVien
     JMenuItem nhanVienItem;
     JMenuItem chucVuItem;
-    JMenuItem lichLamViecItem;
     JMenuItem chamCongItem;
     JMenuItem bangTinhLuongItem;
 
@@ -93,23 +89,38 @@ public class mainGUI extends JFrame implements ActionListener {
         nhanVienMenu.setIcon(nhanVienIcon);
         baoCaoMenu.setIcon(baoCaoIcon);
 
+        //===================GIAODICH===========================
+
         // Tạo các JMenuItem cho JMenu giaoDich
         datHangItem = new JMenuItem("Đặt hàng");
         hoaDonItem = new JMenuItem("Hoá đơn");
-        vanDonItem = new JMenuItem("Vận đơn");
         traHangItem = new JMenuItem("Trả hàng");
         nhapHangItem = new JMenuItem("Nhập hàng");
         traHangNhapItem = new JMenuItem("Trả hàng nhập");
-        xuatHuyItem = new JMenuItem("Xuất huỷ");
+
+        // Tạo các Icon cho các JMenuItem
+        FlatSVGIcon datHangIcon = new FlatSVGIcon("Icons/dathang.svg", 16, 16);
+        FlatSVGIcon hoaDonIcon = new FlatSVGIcon("Icons/hoadon.svg", 16, 16);
+        FlatSVGIcon traHangIcon = new FlatSVGIcon("Icons/trahang.svg", 16, 16);
+        FlatSVGIcon nhapHangIcon = new FlatSVGIcon("Icons/nhaphang.svg", 16, 16);
+        FlatSVGIcon traHangNhapIcon = new FlatSVGIcon("Icons/trahangnhap.svg", 16, 16);
+
+
+        // Thêm Icon cho các JMenuItem
+        datHangItem.setIcon(datHangIcon);
+        hoaDonItem.setIcon(hoaDonIcon);
+        traHangItem.setIcon(traHangIcon);
+        nhapHangItem.setIcon(nhapHangIcon);
+        traHangNhapItem.setIcon(traHangNhapIcon);
+
 
         // Thêm các JMenuItem vào JMenu giaoDich
         giaoDichMenu.add(datHangItem);
         giaoDichMenu.add(hoaDonItem);
-        giaoDichMenu.add(vanDonItem);
-        giaoDichMenu.add(traHangItem);
         giaoDichMenu.add(nhapHangItem);
         giaoDichMenu.add(traHangNhapItem);
-        giaoDichMenu.add(xuatHuyItem);
+
+        //===================HANGHOA===========================
 
         // Tạo các JMenuItem cho các JMenu hangHoa
         danhMucItem = new JMenuItem("Danh mục");
@@ -131,39 +142,56 @@ public class mainGUI extends JFrame implements ActionListener {
         hangHoaMenu.add(thietLapGiaItem);
         hangHoaMenu.add(kiemKhoItem);
 
+        //===================DOITAC===========================
+
         //Tạo các JMenuItem cho JMenu doiTac
         khachHang = new JMenuItem("Khách hàng");
         nhaCungCap = new JMenuItem("Nhà cung cấp");
+
+        // Tạo các Icon cho các JMenuItem
+        FlatSVGIcon khachHangIcon = new FlatSVGIcon("Icons/khachhang.svg", 16, 16);
+        FlatSVGIcon nhaCungCapIcon = new FlatSVGIcon("Icons/nhacungcap.svg", 16, 16);
+
+        // Thêm Icon cho các JMenuItem
+        khachHang.setIcon(khachHangIcon);
+        nhaCungCap.setIcon(nhaCungCapIcon);
 
         // Thêm các JMenuItem vào JMenu doiTac
         doiTacMenu.add(khachHang);
         doiTacMenu.add(nhaCungCap);
 
+        //===================NHANVIEN===========================
+
         // Tạo các JMenuItem cho các JMenu nhanVien
         nhanVienItem = new JMenuItem("Nhân viên");
         chucVuItem = new JMenuItem("Chức vụ");
-        lichLamViecItem = new JMenuItem("Lịch làm việc");
         chamCongItem = new JMenuItem("Chấm công");
         bangTinhLuongItem = new JMenuItem("Bảng tính lương");
+
+        // Tạo các Icon cho các JMenuItem
+        FlatSVGIcon nhanVienIIcon = new FlatSVGIcon("Icons/nhanvien.svg", 16, 16);
+        FlatSVGIcon chucVuIcon = new FlatSVGIcon("Icons/chucvu.svg", 16, 16);
+        FlatSVGIcon chamCongIcon = new FlatSVGIcon("Icons/chamcong.svg", 16, 16);
+        FlatSVGIcon bangTinhLuongIcon = new FlatSVGIcon("Icons/luong.svg", 16, 16);
+
+        // Thêm Icon cho các JMenuItem
+        nhanVienItem.setIcon(nhanVienIIcon);
+        chucVuItem.setIcon(chucVuIcon);
+        chamCongItem.setIcon(chamCongIcon);
+        bangTinhLuongItem.setIcon(bangTinhLuongIcon);
 
         // Thêm các JMenuItem cho các JMenu nhanVien
         nhanVienMenu.add(nhanVienItem);
         nhanVienMenu.add(chucVuItem);
-        nhanVienMenu.add(lichLamViecItem);
         nhanVienMenu.add(chamCongItem);
         nhanVienMenu.add(bangTinhLuongItem);
-
-
 
 
         // Thêm ActionListener cho các JMenuItem
         datHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
-        vanDonItem.addActionListener(this);
         traHangItem.addActionListener(this);
-        nhapHangItem.addActionListener(this);
         traHangNhapItem.addActionListener(this);
-        xuatHuyItem.addActionListener(this);
 
         // Thêm ActionListener cho các JMenuItem
         danhMucItem.addActionListener(this);
@@ -182,7 +210,7 @@ public class mainGUI extends JFrame implements ActionListener {
 
         // Khởi tạo các panel và lưu vào Map
         panelMap = new HashMap<>();
-        panelMap.put("hangHoa", new hangHoaPanel());
+        panelMap.put("hangHoa", new danhMucPanel());
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
 
@@ -214,8 +242,6 @@ public class mainGUI extends JFrame implements ActionListener {
             cardLayout.show(contentPanel, "DatHang");
         } else if (e.getSource() == hoaDonItem) {
             cardLayout.show(contentPanel, "HoaDon");
-        } else if (e.getSource() == vanDonItem) {
-            cardLayout.show(contentPanel, "VanDon");
         }
         // Xử lý các menu khác theo cách tương tự
     }

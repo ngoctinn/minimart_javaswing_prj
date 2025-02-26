@@ -1,10 +1,10 @@
-package org.example.GUI.Panels;
+package org.example.GUI.Panels.nhanVienPanel;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class hangHoaPanel extends JPanel {
-    public hangHoaPanel() {
+public class chucVuPanel extends JPanel {
+    public chucVuPanel() {
         initGUI();
     }
 
@@ -13,4 +13,5 @@ public class hangHoaPanel extends JPanel {
         setBackground(Color.BLUE);
         this.setVisible(true);
     }
+
 }
