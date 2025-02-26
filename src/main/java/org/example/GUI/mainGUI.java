@@ -4,16 +4,20 @@ import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.Components.GoodsPanel;
+import org.example.GUI.Panels.hangHoaPanel;
 // import các panel khác
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 public class mainGUI extends JFrame implements ActionListener {
+    Map<String, JPanel> panelMap;
 
-    // Các JMenuItem cho JMenu hangHoa
+    // Các JMenuItem cho JMenu giaoDich
     JMenuItem datHangItem;
     JMenuItem hoaDonItem;
     JMenuItem vanDonItem;
@@ -21,6 +25,22 @@ public class mainGUI extends JFrame implements ActionListener {
     JMenuItem nhapHangItem;
     JMenuItem traHangNhapItem;
     JMenuItem xuatHuyItem;
+
+    // Các JMenuItem cho JMenu hangHoa
+    JMenuItem danhMucItem;
+    JMenuItem thietLapGiaItem;
+    JMenuItem kiemKhoItem;
+
+    // Các JMenuItem cho JMenu doiTac
+    JMenuItem khachHang;
+    JMenuItem nhaCungCap;
+
+    //Các JMenuItem cho JMenu nhanVien
+    JMenuItem nhanVienItem;
+    JMenuItem chucVuItem;
+    JMenuItem lichLamViecItem;
+    JMenuItem chamCongItem;
+    JMenuItem bangTinhLuongItem;
 
     // Các JMenuItem cho JMenu giaoDich gồm (đặt hàng, hoá đơn, vận đơn, trả hàng, nhập hàng, trả hàng nhập, xuất huỷ)
 
@@ -73,7 +93,7 @@ public class mainGUI extends JFrame implements ActionListener {
         nhanVienMenu.setIcon(nhanVienIcon);
         baoCaoMenu.setIcon(baoCaoIcon);
 
-        // Tạo các JMenuItem cho JMenu hangHoa
+        // Tạo các JMenuItem cho JMenu giaoDich
         datHangItem = new JMenuItem("Đặt hàng");
         hoaDonItem = new JMenuItem("Hoá đơn");
         vanDonItem = new JMenuItem("Vận đơn");
@@ -82,14 +102,59 @@ public class mainGUI extends JFrame implements ActionListener {
         traHangNhapItem = new JMenuItem("Trả hàng nhập");
         xuatHuyItem = new JMenuItem("Xuất huỷ");
 
+        // Thêm các JMenuItem vào JMenu giaoDich
+        giaoDichMenu.add(datHangItem);
+        giaoDichMenu.add(hoaDonItem);
+        giaoDichMenu.add(vanDonItem);
+        giaoDichMenu.add(traHangItem);
+        giaoDichMenu.add(nhapHangItem);
+        giaoDichMenu.add(traHangNhapItem);
+        giaoDichMenu.add(xuatHuyItem);
+
+        // Tạo các JMenuItem cho các JMenu hangHoa
+        danhMucItem = new JMenuItem("Danh mục");
+        thietLapGiaItem = new JMenuItem("Thiết lập giá");
+        kiemKhoItem = new JMenuItem("Kiểm kho");
+
+        // Tạo các Icon cho các JMenuItem
+        FlatSVGIcon danhMucIcon = new FlatSVGIcon("Icons/danhmuc.svg", 16, 16);
+        FlatSVGIcon thietLapGiaIcon = new FlatSVGIcon("Icons/thietlapgia.svg", 16, 16);
+        FlatSVGIcon kiemKhoIcon = new FlatSVGIcon("Icons/kiemkho.svg", 16, 16);
+
+        // Thêm Icon cho các JMenuItem
+        danhMucItem.setIcon(danhMucIcon);
+        thietLapGiaItem.setIcon(thietLapGiaIcon);
+        kiemKhoItem.setIcon(kiemKhoIcon);
+
         // Thêm các JMenuItem vào JMenu hangHoa
-        hangHoaMenu.add(datHangItem);
-        hangHoaMenu.add(hoaDonItem);
-        hangHoaMenu.add(vanDonItem);
-        hangHoaMenu.add(traHangItem);
-        hangHoaMenu.add(nhapHangItem);
-        hangHoaMenu.add(traHangNhapItem);
-        hangHoaMenu.add(xuatHuyItem);
+        hangHoaMenu.add(danhMucItem);
+        hangHoaMenu.add(thietLapGiaItem);
+        hangHoaMenu.add(kiemKhoItem);
+
+        //Tạo các JMenuItem cho JMenu doiTac
+        khachHang = new JMenuItem("Khách hàng");
+        nhaCungCap = new JMenuItem("Nhà cung cấp");
+
+        // Thêm các JMenuItem vào JMenu doiTac
+        doiTacMenu.add(khachHang);
+        doiTacMenu.add(nhaCungCap);
+
+        // Tạo các JMenuItem cho các JMenu nhanVien
+        nhanVienItem = new JMenuItem("Nhân viên");
+        chucVuItem = new JMenuItem("Chức vụ");
+        lichLamViecItem = new JMenuItem("Lịch làm việc");
+        chamCongItem = new JMenuItem("Chấm công");
+        bangTinhLuongItem = new JMenuItem("Bảng tính lương");
+
+        // Thêm các JMenuItem cho các JMenu nhanVien
+        nhanVienMenu.add(nhanVienItem);
+        nhanVienMenu.add(chucVuItem);
+        nhanVienMenu.add(lichLamViecItem);
+        nhanVienMenu.add(chamCongItem);
+        nhanVienMenu.add(bangTinhLuongItem);
+
+
+
 
         // Thêm ActionListener cho các JMenuItem
         datHangItem.addActionListener(this);
@@ -100,11 +165,27 @@ public class mainGUI extends JFrame implements ActionListener {
         traHangNhapItem.addActionListener(this);
         xuatHuyItem.addActionListener(this);
 
+        // Thêm ActionListener cho các JMenuItem
+        danhMucItem.addActionListener(this);
+        thietLapGiaItem.addActionListener(this);
+        kiemKhoItem.addActionListener(this);
+
+        // Thêm ActionListener cho các JMenuItem
+        khachHang.addActionListener(this);
+        nhaCungCap.addActionListener(this);
+
         setJMenuBar(menuBar);
 
         // Tạo vùng chứa chính sử dụng CardLayout
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
+
+        // Khởi tạo các panel và lưu vào Map
+        panelMap = new HashMap<>();
+        panelMap.put("hangHoa", new hangHoaPanel());
+
+        // Thêm các panel vào contentPanel với tên định danh (card name)
+
 
         // Khởi tạo và thêm các panel vào contentPanel với tên định danh (card name)
         GoodsPanel datHangPanel = new GoodsPanel();
