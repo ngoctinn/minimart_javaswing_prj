@@ -13,4 +13,5 @@ public class hangHoaPanel extends JPanel {
         setBackground(Color.BLUE);
         this.setVisible(true);
     }
+
 }
