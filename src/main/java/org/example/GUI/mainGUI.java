@@ -1,10 +1,9 @@
 package org.example.GUI;
 
-import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.Components.GoodsPanel;
-import org.example.GUI.Panels.hangHoaPanel;
+import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
 // import các panel khác
 
 import javax.swing.*;
@@ -211,7 +210,7 @@ public class mainGUI extends JFrame implements ActionListener {
 
         // Khởi tạo các panel và lưu vào Map
         panelMap = new HashMap<>();
-        panelMap.put("hangHoa", new hangHoaPanel());
+        panelMap.put("hangHoa", new danhMucPanel());
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
 
