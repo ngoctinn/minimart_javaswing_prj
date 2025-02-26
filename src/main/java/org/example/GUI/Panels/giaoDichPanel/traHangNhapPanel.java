@@ -3,8 +3,8 @@ package org.example.GUI.Panels.giaoDichPanel;
 import javax.swing.*;
 import java.awt.*;
 
-public class tranHangNhapPanel extends JPanel {
-    public tranHangNhapPanel() {
+public class traHangNhapPanel extends JPanel {
+    public traHangNhapPanel() {
         initGUI();
     }
 

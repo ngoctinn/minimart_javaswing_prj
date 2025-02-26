@@ -3,6 +3,13 @@ package org.example.GUI;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.Components.GoodsPanel;
+import org.example.GUI.Panels.baoCaoPanel;
+import org.example.GUI.Panels.doiTacPanel.khachHangPanel;
+import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
+import org.example.GUI.Panels.giaoDichPanel.datHangPanel;
+import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
+import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
+import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
 import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
@@ -215,6 +222,13 @@ public class mainGUI extends JFrame implements ActionListener {
         panelMap.put("danhMuc", new danhMucPanel());
         panelMap.put("kiemKho", new kiemKhoPanel());
         panelMap.put("thietLapGia", new thietLapGiaPanel());
+        panelMap.put("datHang", new datHangPanel());
+        panelMap.put("hoaDon", new hoaDonPanel());
+        panelMap.put("nhapHang", new nhapHangPanel());
+        panelMap.put("tranHang", new traHangNhapPanel());
+        panelMap.put("khachHang", new khachHangPanel());
+        panelMap.put("nhaCungCap", new nhaCungCapPanel());
+        panelMap.put("baoCao", new baoCaoPanel());
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
         for (Map.Entry<String, JPanel> entry : panelMap.entrySet()) {
@@ -251,6 +265,18 @@ public class mainGUI extends JFrame implements ActionListener {
             cardLayout.show(contentPanel, "thietLapGia");
         } else if (e.getSource() == kiemKhoItem) {
             cardLayout.show(contentPanel, "kiemKho");
+        } else if (e.getSource() == datHangItem) {
+            cardLayout.show(contentPanel, "datHang");
+        } else if (e.getSource() == hoaDonItem) {
+            cardLayout.show(contentPanel, "hoaDon");
+        } else if (e.getSource() == nhapHangItem) {
+            cardLayout.show(contentPanel, "nhapHang");
+        } else if (e.getSource() == traHangNhapItem) {
+            cardLayout.show(contentPanel, "tranHang");
+        } else if (e.getSource() == khachHang) {
+            cardLayout.show(contentPanel, "khachHang");
+        } else if (e.getSource() == nhaCungCap) {
+            cardLayout.show(contentPanel, "nhaCungCap");
         }
         // Xử lý các menu khác theo cách tương tự
     }
