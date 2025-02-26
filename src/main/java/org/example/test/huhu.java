@@ -3,6 +3,7 @@ package org.example.test;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
+import org.example.Components.CustomTexField;
 import org.example.Components.RoundedPanel;
 
 import javax.swing.*;
@@ -32,49 +33,86 @@ public class huhu extends JPanel {
         // Tiêu đề danh mục
         JLabel titleLabel = new JLabel("Hàng hóa");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        leftPanel.add(titleLabel);
 
         // Panel nhóm hàng
         RoundedPanel groupPanel = new RoundedPanel(30);
-        groupPanel.setLayout(new BorderLayout());
-        groupPanel.setBorder(BorderFactory.createTitledBorder("Nhóm hàng"));
+        groupPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-        // Ô tìm kiếm nhóm hàng
-        searchField = new JTextField("Tìm kiếm nhóm hàng");
-        searchField.setForeground(Color.GRAY);
-        searchField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (searchField.getText().equals("Tìm kiếm nhóm hàng")) {
-                    searchField.setText("");
-                    searchField.setForeground(Color.BLACK);
-                }
-            }
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (searchField.getText().isEmpty()) {
-                    searchField.setText("Tìm kiếm nhóm hàng");
-                    searchField.setForeground(Color.GRAY);
-                }
-            }
-        });
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                filterList(searchField.getText());
-            }
-        });
-        groupPanel.add(searchField, BorderLayout.NORTH);
 
-        // Danh sách nhóm hàng
+
+
+
+
+// Tiêu đề và nút "Thêm" và "Ẩn/Hiện"
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        JLabel titleGroupLabel = new JLabel("Nhóm hàng");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+// Panel chứa các nút
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Thêm");
+        JButton hideShowButton = new JButton("Ẩn/Hiện");
+
+// Thêm các nút vào buttonPanel
+        buttonPanel.add(addButton);
+        buttonPanel.add(hideShowButton);
+
+// Thêm titleLabel và buttonPanel vào titlePanel
+        titlePanel.add(titleGroupLabel, BorderLayout.WEST);
+        titlePanel.add(buttonPanel, BorderLayout.EAST);
+
+// Thêm titlePanel vào groupPanel
+        groupPanel.add(titlePanel, BorderLayout.NORTH);
+
+// Ô tìm kiếm nhóm hàng
+        CustomTexField searchField = new CustomTexField("Tìm kiếm nhóm hàng");
+        searchField.setPreferredSize(new Dimension(200, 35));
+
+
+// Thêm searchField vào groupPanel
+        groupPanel.add(searchField, BorderLayout.CENTER);
+
+// Danh sách nhóm hàng
         listModel = new DefaultListModel<>();
         categories.forEach(listModel::addElement);
         categoryList = new JList<>(listModel);
         categoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         categoryList.setFont(new Font("Arial", Font.PLAIN, 14));
-        groupPanel.add(new JScrollPane(categoryList), BorderLayout.CENTER);
+        groupPanel.add(new JScrollPane(categoryList), BorderLayout.SOUTH);
+
+
+        //Panel thời gian tạo
+        JPanel timePanel = new JPanel();
+        JLabel label = new JLabel("Thời gian tạo");
+        label.setBounds(10, 10, 160, 25);
+        timePanel.add(label);
+
+        JRadioButton allTimeButton = new JRadioButton("Toàn thời gian");
+        allTimeButton.setBounds(20, 40, 200, 25);
+        allTimeButton.setSelected(true);
+        timePanel.add(allTimeButton);
+
+        JRadioButton otherOptionsButton = new JRadioButton("Lựa chọn khác");
+        otherOptionsButton.setBounds(20, 70, 200, 25);
+        timePanel.add(otherOptionsButton);
+
+        ButtonGroup group = new ButtonGroup();
+        group.add(allTimeButton);
+        group.add(otherOptionsButton);
+
+        JButton upButton = new JButton("↑");
+        upButton.setBounds(230, 40, 50, 25);
+        timePanel.add(upButton);
+
+        JButton downButton = new JButton("↓");
+        downButton.setBounds(290, 40, 50, 25);
+        timePanel.add(downButton);
+// Thêm groupPanel vào leftPanel
+        leftPanel.add(titleLabel);
         leftPanel.add(groupPanel);
+        leftPanel.add(timePanel);
+
 
         // Panel bên phải
         JPanel rightPanel = new JPanel(new BorderLayout());
