@@ -13,6 +13,8 @@ import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
 import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
+import org.example.GUI.Panels.nhanVienPanel.chucVuPanel;
+import org.example.GUI.Panels.nhanVienPanel.nhanVienPanel;
 // import các panel khác
 
 import javax.swing.*;
@@ -59,7 +61,7 @@ public class mainGUI extends JFrame implements ActionListener {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(800, 600);
         setLocationRelativeTo(null);
-        // Sử dụng BorderLayout cho JFrame
+        setResizable(false);
         setLayout(new BorderLayout());
 
         // Tạo JMenuBar
@@ -195,6 +197,11 @@ public class mainGUI extends JFrame implements ActionListener {
         nhanVienMenu.add(chamCongItem);
         nhanVienMenu.add(bangTinhLuongItem);
 
+        //=================THÊM ACTIONLISTENER=========================
+
+        // tHEM AcionListener cho JMenu
+        tongQuanMenu.addActionListener(this);
+        baoCaoMenu.addActionListener(this);
 
         // Thêm ActionListener cho các JMenuItem
         datHangItem.addActionListener(this);
@@ -228,6 +235,11 @@ public class mainGUI extends JFrame implements ActionListener {
         panelMap.put("tranHang", new traHangNhapPanel());
         panelMap.put("khachHang", new khachHangPanel());
         panelMap.put("nhaCungCap", new nhaCungCapPanel());
+        panelMap.put("nhanVien", new nhanVienPanel());
+        panelMap.put("chucVu", new chucVuPanel());
+        panelMap.put("chamCong", new nhanVienPanel());
+        panelMap.put("bangTinhLuong", new nhaCungCapPanel());
+
         panelMap.put("baoCao", new baoCaoPanel());
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
@@ -277,6 +289,14 @@ public class mainGUI extends JFrame implements ActionListener {
             cardLayout.show(contentPanel, "khachHang");
         } else if (e.getSource() == nhaCungCap) {
             cardLayout.show(contentPanel, "nhaCungCap");
+        } else if (e.getSource() == nhanVienItem) {
+            cardLayout.show(contentPanel, "nhanVien");
+        } else if (e.getSource() == chucVuItem) {
+            cardLayout.show(contentPanel, "chucVu");
+        } else if (e.getSource() == chamCongItem) {
+            cardLayout.show(contentPanel, "chamCong");
+        } else if (e.getSource() == bangTinhLuongItem) {
+            cardLayout.show(contentPanel, "bangTinhLuong");
         }
         // Xử lý các menu khác theo cách tương tự
     }
@@ -296,11 +316,13 @@ public class mainGUI extends JFrame implements ActionListener {
             UIManager.put("MenuBar.foreground", Color.WHITE);
             UIManager.put("MenuBar.selectionForeground", Color.WHITE);
             UIManager.put("MenuBar.hoverBackground", new Color(0, 90, 195));
+            UIManager.put("MenuBar.itemMargins", new Insets(7, 5, 7, 5));
 
             // JMenuItem
             UIManager.put("MenuItem.foreground", Color.WHITE);
             UIManager.put("MenuItem.selectionBackground", new Color(0, 102, 204));
             UIManager.put("MenuItem.font", new Font("Roboto", Font.PLAIN, 14));
+            UIManager.put("MenuItem.margin", new Insets(7, 7, 7, 7));
 
             // Popup Menu
             UIManager.put("PopupMenu.background", new Color(0, 90, 195));
