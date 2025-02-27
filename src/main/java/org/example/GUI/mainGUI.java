@@ -57,12 +57,15 @@ public class mainGUI extends JFrame implements ActionListener {
     private JPanel contentPanel;
 
     public mainGUI(){
+        // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setResizable(false);
+        // không cho phép thu nhỏ
         setLayout(new BorderLayout());
+
 
         // Tạo JMenuBar
         JMenuBar menuBar = new JMenuBar();
@@ -76,6 +79,29 @@ public class mainGUI extends JFrame implements ActionListener {
         JMenu nhanVienMenu = new JMenu("Nhân viên");
         JMenu baoCaoMenu = new JMenu("Báo cáo");
 
+        // tạo JMenu người dùng nằm bên phải menuBar
+        JMenu userMenu = new JMenu("Người dùng");
+
+        // Tạo các Icon cho JMenu người dùng
+        FlatSVGIcon userIcon = new FlatSVGIcon("Icons/user.svg", 20, 20);
+        userMenu.setIcon(userIcon);
+
+        // Tạo các JMenuItem cho JMenu người dùng
+        JMenuItem profileItem = new JMenuItem("Thông tin");
+        JMenuItem logoutItem = new JMenuItem("Đăng xuất");
+
+        // Tạo các Icon cho các JMenuItem
+        FlatSVGIcon profileIcon = new FlatSVGIcon("Icons/profile.svg", 20, 20);
+        FlatSVGIcon logoutIcon = new FlatSVGIcon("Icons/logout.svg", 20, 20);
+
+        // Thêm các JMenuItem vào JMenu người dùng
+        userMenu.add(profileItem);
+        userMenu.add(logoutItem);
+
+        // Thêm Icon cho các JMenuItem
+        profileItem.setIcon(profileIcon);
+        logoutItem.setIcon(logoutIcon);
+
         // Thêm các JMenu vào JMenuBar
         menuBar.add(tongQuanMenu);
         menuBar.add(hangHoaMenu);
@@ -83,6 +109,10 @@ public class mainGUI extends JFrame implements ActionListener {
         menuBar.add(doiTacMenu);
         menuBar.add(nhanVienMenu);
         menuBar.add(baoCaoMenu);
+
+        // Thêm JMenu người dùng vào menuBar
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(userMenu);
 
         // Tạo các Icon cho JMenu
         FlatSVGIcon tongQuanIcon = new FlatSVGIcon("Icons/tongquan.svg", 16, 16);
@@ -108,6 +138,7 @@ public class mainGUI extends JFrame implements ActionListener {
         traHangItem = new JMenuItem("Trả hàng");
         nhapHangItem = new JMenuItem("Nhập hàng");
         traHangNhapItem = new JMenuItem("Trả hàng nhập");
+
 
         // Tạo các Icon cho các JMenuItem
         FlatSVGIcon datHangIcon = new FlatSVGIcon("Icons/dathang.svg", 16, 16);
