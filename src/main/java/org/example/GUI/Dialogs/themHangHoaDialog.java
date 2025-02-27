@@ -24,6 +24,8 @@ public class themHangHoaDialog extends JDialog {
         this.setSize(400, 550);
         this.getContentPane().setBackground(new Color(245, 245, 245));
         this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.setModal(true);
         this.setLayout(null);
 
         RoundedPanel panel = new RoundedPanel(20);
@@ -96,6 +98,8 @@ public class themHangHoaDialog extends JDialog {
         CustomButton huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
         huyButton.setBounds(140, 460, 110, 30);
+
+
 
 
 

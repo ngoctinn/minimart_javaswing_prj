@@ -1,13 +1,11 @@
 package org.example.Components;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.example.test.SVGIconExample;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 public class CustomButton extends JButton {
 
