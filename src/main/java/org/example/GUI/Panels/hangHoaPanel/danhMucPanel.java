@@ -4,6 +4,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.RoundedPanel;
+import org.example.GUI.Dialogs.themHangHoaDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -73,6 +74,12 @@ public class danhMucPanel extends JPanel {
         addButton.setBounds(1080, 12, 50, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         topPanel.add(addButton);
+
+        // sự kiện khi click vào nút thêm
+        addButton.addActionListener(e -> {
+            // code xử lý khi click vào nút thêm
+            new themHangHoaDialog();
+        });
 
         FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg",16,16);
         CustomButton exportButton = new CustomButton("", exportIcon);
