@@ -9,8 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.SpinnerDateModel;
 
-public class themNhanVienDialog extends JDialog {
-    public themNhanVienDialog() {
+public class themKhachHangDialog extends JDialog {
+    public themKhachHangDialog () {
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
@@ -22,34 +22,34 @@ public class themNhanVienDialog extends JDialog {
         }
     }
     public void initGUI() {
-        this.setSize(790, 480);
+        this.setSize(790, 440);
         this.getContentPane().setBackground(new Color(245, 245, 245));
         this.setLocationRelativeTo(null);
         this.setLayout(null);
 
         RoundedPanel panel = new RoundedPanel(20);
         panel.setBackground(Color.WHITE);
-        panel.setBounds(20, 50, 740, 320);
+        panel.setBounds(20, 50, 740, 280);
         panel.setLayout(null);
 
         // Tạo tiêu đề
-        JLabel title = new JLabel("Thêm nhân viên");
+        JLabel title = new JLabel("Thêm khách hàng");
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setBounds(25, 10, 200, 30);
 
-        // Mã nhân viên
-        JLabel maNhanVienLabel = new JLabel("Mã nhân viên");
-        maNhanVienLabel.setBounds(20, 20, 100, 30);
-        maNhanVienLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomTexField maNhanVienField = new CustomTexField("Mã tự động (vd: NV001)");
-        maNhanVienField.setBounds(130, 20, 200, 30);
+        // Mã khách hàng
+        JLabel maKhachHangLabel = new JLabel("Mã KH");
+        maKhachHangLabel.setBounds(20, 20, 100, 30);
+        maKhachHangLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+        CustomTexField maKhachHangField = new CustomTexField("Mã tự động (vd: KH001)");
+        maKhachHangField.setBounds(130, 20, 200, 30);
 
-        //Mật khẩu
-        JLabel matKhauLabel = new JLabel("Mật khẩu");
-        matKhauLabel.setBounds(20, 60, 100, 30);
-        matKhauLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomPasswordField matKhauField = new CustomPasswordField("Nhập mật khẩu");
-        matKhauField.setBounds(130, 60, 200, 30);
+        //Điểm tích lũy
+        JLabel diemLabel = new JLabel("Điểm tích lũy");
+        diemLabel.setBounds(20, 60, 100, 30);
+        diemLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+        CustomTexField diemField = new CustomTexField("0");
+        diemField.setBounds(130, 60, 200, 30);
 
         //Họ tên
         JLabel hoTenLabel = new JLabel("Họ và tên");
@@ -58,24 +58,15 @@ public class themNhanVienDialog extends JDialog {
         CustomTexField hoTenField = new CustomTexField("Nguyễn Văn A");
         hoTenField.setBounds(130, 100, 200, 30);
 
-        // Chức vụ
-        JLabel chucVuLabel = new JLabel("Chức vụ");
-        chucVuLabel.setBounds(20, 140, 100, 30);
-        chucVuLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        JComboBox<String> chucVuComboBox = new JComboBox<>();
-        chucVuComboBox.addItem("Thủ kho");
-        chucVuComboBox.addItem("Bán hàng");
-        chucVuComboBox.addItem("Quản lý");
-        chucVuComboBox.setBounds(130, 140, 200, 30);
-
         //Ngày sinh
         JLabel ngaySinhLabel = new JLabel("Ngày sinh");
         ngaySinhLabel.setBounds(20, 180, 100, 30);
         ngaySinhLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         SpinnerDateModel model = new SpinnerDateModel();
-        JSpinner ngaySinhField = new JSpinner(model);
-        ngaySinhField.setBounds(130, 180, 200, 30);
-        ngaySinhField.setEditor(new JSpinner.DateEditor(ngaySinhField, "dd/MM/yyyy"));
+        JSpinner ngaySinhSpinner = new JSpinner(model);
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(ngaySinhSpinner, "dd/MM/yyyy");
+        ngaySinhSpinner.setEditor(dateEditor);
+        ngaySinhSpinner.setBounds(130, 180, 200, 30);
 
 
         //Giới tính
@@ -240,16 +231,13 @@ public class themNhanVienDialog extends JDialog {
 
         // Trạng thái
         JLabel trangThaiLabel = new JLabel("Trạng thái");
-        trangThaiLabel.setBounds(20, 260, 100, 30);
+        trangThaiLabel.setBounds(20, 140, 100, 30);
         trangThaiLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         JComboBox<String> trangThaiComboBox = new JComboBox<>();
-        trangThaiComboBox.addItem("Đang làm việc");
-        trangThaiComboBox.addItem("Đã nghỉ việc");
-        trangThaiComboBox.addItem("Nghỉ hưu");
-        trangThaiComboBox.addItem("Nghỉ thai sản");
-        trangThaiComboBox.addItem("Nghỉ phép");
-        trangThaiComboBox.addItem("Nghỉ không lương");
-        trangThaiComboBox.setBounds(130, 260, 200, 30);
+        trangThaiComboBox.addItem("Đang hoạt động");
+        trangThaiComboBox.addItem("Ngưng hoạt động");
+        trangThaiComboBox.addItem("Chưa xác minh");
+        trangThaiComboBox.setBounds(130, 140, 200, 30);
 
 
 
@@ -257,28 +245,26 @@ public class themNhanVienDialog extends JDialog {
         //Button lưu
         CustomButton luuButton = new CustomButton("Lưu");
         luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        luuButton.setBounds(650, 380, 110, 30);
+        luuButton.setBounds(650, 340, 110, 30);
 
         //Button hủy
         CustomButton huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
-        huyButton.setBounds(530, 380, 110, 30);
+        huyButton.setBounds(530, 340, 110, 30);
 
 
 
 
         this.add(title);
         this.add(panel);
-        panel.add(maNhanVienLabel);
-        panel.add(maNhanVienField);
-        panel.add(matKhauLabel);
-        panel.add(matKhauField);
+        panel.add(maKhachHangLabel);
+        panel.add(maKhachHangField);
+        panel.add(diemLabel);
+        panel.add(diemField);
         panel.add(hoTenLabel);
         panel.add(hoTenField);
-        panel.add(chucVuLabel);
-        panel.add(chucVuComboBox);
         panel.add(ngaySinhLabel);
-        panel.add(ngaySinhField);
+        panel.add(ngaySinhSpinner);
         panel.add(gioiTinhLabel);
         panel.add(gioiTinhNam);
         panel.add(gioiTinhNu);
@@ -298,6 +284,6 @@ public class themNhanVienDialog extends JDialog {
         this.setVisible(true);
     }
     public static void main(String[] args) {
-        new themNhanVienDialog();
+        new themKhachHangDialog();
     }
 }
