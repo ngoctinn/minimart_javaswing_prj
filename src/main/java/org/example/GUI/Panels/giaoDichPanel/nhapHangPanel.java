@@ -69,10 +69,16 @@ public class nhapHangPanel extends JPanel {
         searchButton.setBounds(580, 12, 70, 30);
         topPanel.add(searchButton);
 
-        //add, export, import button
+        //Refresh, Thêm, sửa , xoá, import, export
+        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
+        CustomButton refreshButton = new CustomButton("", refreshIcon);
+        refreshButton.setBounds(900, 12, 50, 30);
+        refreshButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        topPanel.add(refreshButton);
+
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg",16,16);
         CustomButton addButton = new CustomButton("", addIcon);
-        addButton.setBounds(1080, 12, 50, 30);
+        addButton.setBounds(960, 12, 50, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         topPanel.add(addButton);
 
@@ -82,17 +88,29 @@ public class nhapHangPanel extends JPanel {
             new themHangHoaDialog();
         });
 
-        FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg",16,16);
-        CustomButton exportButton = new CustomButton("", exportIcon);
-        exportButton.setBounds(1140, 12, 50, 30);
-        exportButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        topPanel.add(exportButton);
+        FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
+        CustomButton editButton = new CustomButton("", editIcon);
+        editButton.setBounds(1020, 12, 50, 30);
+        editButton.setButtonColors(CustomButton.ButtonColors.YELLOW);
+        topPanel.add(editButton);
+
+        FlatSVGIcon deleteIcon = new FlatSVGIcon("Icons/delete.svg", 20, 20);
+        CustomButton deleteButton = new CustomButton("", deleteIcon);
+        deleteButton.setBounds(1080, 12, 50, 30);
+        deleteButton.setButtonColors(CustomButton.ButtonColors.RED);
+        topPanel.add(deleteButton);
 
         FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg",16,16);
         CustomButton importButton = new CustomButton("", importIcon);
         importButton.setBounds(1200, 12, 50, 30);
-        importButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        importButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         topPanel.add(importButton);
+
+        FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg",16,16);
+        CustomButton exportButton = new CustomButton("", exportIcon);
+        exportButton.setBounds(1140, 12, 50, 30);
+        exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        topPanel.add(exportButton);
         //============End các thành phần của topPanel================
 
         //============Các thành phần của bottomPanelLeft================
