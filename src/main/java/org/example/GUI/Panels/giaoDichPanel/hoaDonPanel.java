@@ -5,7 +5,7 @@ import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.RoundedPanel;
 import org.example.GUI.Dialogs.themHangHoaDialog;
-import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -110,7 +110,7 @@ public class hoaDonPanel extends JPanel {
                 Color.BLACK  // Màu chữ
         ));
 
-        bottomPanelLeft1.setPreferredSize(new Dimension(230, 200));
+        bottomPanelLeft1.setPreferredSize(new Dimension(230, 100));
         bottomPanelLeft.add(bottomPanelLeft1);
 
         JLabel startLabel = new JLabel("Ngày bắt đầu:");
@@ -143,7 +143,7 @@ public class hoaDonPanel extends JPanel {
 
         bottomPanelLeft2.setLayout(new BoxLayout(bottomPanelLeft2, BoxLayout.Y_AXIS));
 
-        bottomPanelLeft2.setPreferredSize(new Dimension(230, 150));
+        bottomPanelLeft2.setPreferredSize(new Dimension(230 , 100));
         bottomPanelLeft.add(bottomPanelLeft2);
 
         JRadioButton radioButtonshow1 = new JRadioButton("Đang Xử Lý");
@@ -184,23 +184,23 @@ public class hoaDonPanel extends JPanel {
 
         //============Các thành phần của bottomPanelRight================
         // Tạo tiêu đề cột
-        String[] columnNames = {"Mã hóa đơn", "Thời gian", "Mã trả hàng", "Khách hàng", "Tổng tiền hàng", "Giảm giá", "Khách đã trả"};
+        String[] columnNames = {"Mã hóa đơn", "Thời gian", "Khách hàng", "Tổng tiền hàng", "Giảm giá", "Khách đã trả"};
 
         // Dữ liệu hóa đơn
         Object[][] data = {
-                {"HD000046", "17/02/2025 23:36", "", "Tuấn - Hà Nội", 2580000, 0, 2580000},
-                {"HD000045", "16/02/2025 23:35", "", "Phạm Thu Hương", 55000, 0, 55000},
-                {"HD000044", "15/02/2025 23:35", "", "Tuấn - Hà Nội", 190000, 0, 190000},
-                {"HD000043", "14/02/2025 23:33", "", "Anh Hoàng - Sài Gòn", 195000, 0, 195000},
-                {"HD000042", "13/02/2025 23:32", "", "Anh Hoàng - Sài Gòn", 145000, 0, 145000},
-                {"HD000041", "12/02/2025 23:31", "", "Tuấn - Hà Nội", 150000, 0, 150000},
-                {"HD000040", "11/02/2025 23:30", "", "Anh Hoàng - Sài Gòn", 135000, 0, 135000},
-                {"HD000039", "10/02/2025 23:30", "", "Phạm Thu Hương", 190000, 0, 190000},
-                {"HD000038", "09/02/2025 23:29", "", "Anh Hoàng - Sài Gòn", 55000, 0, 55000},
-                {"HD000037", "08/02/2025 23:29", "", "Anh Hoàng - Sài Gòn", 55000, 0, 55000},
-                {"HD000036", "07/02/2025 23:26", "", "Tuấn - Hà Nội", 275000, 0, 275000},
-                {"HD000035", "06/02/2025 23:25", "", "Phạm Thu Hương", 95000, 0, 95000},
-                {"HD000034", "05/02/2025 23:24", "", "Phạm Thu Hương", 110000, 0, 110000},
+                {"HD000046", "17/02/2025 23:36", "Tuấn - Hà Nội", 2580000, 0, 2580000},
+                {"HD000045", "16/02/2025 23:35", "Phạm Thu Hương", 55000, 0, 55000},
+                {"HD000044", "15/02/2025 23:35", "Tuấn - Hà Nội", 190000, 0, 190000},
+                {"HD000043", "14/02/2025 23:33", "Anh Hoàng - Sài Gòn", 195000, 0, 195000},
+                {"HD000042", "13/02/2025 23:32", "Anh Hoàng - Sài Gòn", 145000, 0, 145000},
+                {"HD000041", "12/02/2025 23:31", "Tuấn - Hà Nội", 150000, 0, 150000},
+                {"HD000040", "11/02/2025 23:30", "Anh Hoàng - Sài Gòn", 135000, 0, 135000},
+                {"HD000039", "10/02/2025 23:30", "Phạm Thu Hương", 190000, 0, 190000},
+                {"HD000038", "09/02/2025 23:29", "Anh Hoàng - Sài Gòn", 55000, 0, 55000},
+                {"HD000037", "08/02/2025 23:29", "Anh Hoàng - Sài Gòn", 55000, 0, 55000},
+                {"HD000036", "07/02/2025 23:26", "Tuấn - Hà Nội", 275000, 0, 275000},
+                {"HD000035", "06/02/2025 23:25", "Phạm Thu Hương", 95000, 0, 95000},
+                {"HD000034", "05/02/2025 23:24", "Phạm Thu Hương", 110000, 0, 110000},
         };
         CustomTable table = new CustomTable(data, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(table);
