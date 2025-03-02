@@ -63,7 +63,7 @@ public class mainGUI extends JFrame implements ActionListener {
         setSize(800, 600);
         setLocationRelativeTo(null);
         setResizable(false);
-        // không cho phép thu nhỏ
+
         setLayout(new BorderLayout());
 
 
@@ -238,6 +238,7 @@ public class mainGUI extends JFrame implements ActionListener {
         datHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
         traHangItem.addActionListener(this);
+        nhapHangItem.addActionListener(this);
         traHangNhapItem.addActionListener(this);
 
         // Thêm ActionListener cho các JMenuItem
@@ -254,6 +255,9 @@ public class mainGUI extends JFrame implements ActionListener {
         // Tạo vùng chứa chính sử dụng CardLayout
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
+        //set panel hiển thị hàng hóa đầu tiên
+        contentPanel.add("danhMuc", new danhMucPanel());
+
 
         // Khởi tạo các panel và lưu vào Map
         panelMap = new HashMap<>();
@@ -270,8 +274,9 @@ public class mainGUI extends JFrame implements ActionListener {
         panelMap.put("chucVu", new chucVuPanel());
         panelMap.put("chamCong", new nhanVienPanel());
         panelMap.put("bangTinhLuong", new nhaCungCapPanel());
-
         panelMap.put("baoCao", new baoCaoPanel());
+
+
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
         for (Map.Entry<String, JPanel> entry : panelMap.entrySet()) {
@@ -279,19 +284,6 @@ public class mainGUI extends JFrame implements ActionListener {
         }
 
 
-        // Khởi tạo và thêm các panel vào contentPanel với tên định danh (card name)
-        GoodsPanel datHangPanel = new GoodsPanel();
-        contentPanel.add(datHangPanel, "DatHang");
-
-        // Ví dụ: tạo thêm các panel khác (HoaDonPanel, VanDonPanel, ...)
-        JPanel hoaDonPanel = new JPanel(new BorderLayout());
-        hoaDonPanel.add(new JLabel("Đây là panel Hoá đơn", SwingConstants.CENTER), BorderLayout.CENTER);
-        contentPanel.add(hoaDonPanel, "HoaDon");
-
-        // Các panel khác tương tự
-        JPanel vanDonPanel = new JPanel(new BorderLayout());
-        vanDonPanel.add(new JLabel("Đây là panel Vận đơn", SwingConstants.CENTER), BorderLayout.CENTER);
-        contentPanel.add(vanDonPanel, "VanDon");
 
         // Thêm contentPanel vào JFrame, ví dụ ở CENTER của BorderLayout
         add(contentPanel, BorderLayout.CENTER);
