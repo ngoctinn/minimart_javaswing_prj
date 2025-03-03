@@ -170,7 +170,7 @@ public class danhMucPanel extends JPanel {
         ));
         bottomPanelLeft3.setLayout(new BoxLayout(bottomPanelLeft3, BoxLayout.Y_AXIS));
 
-        bottomPanelLeft3.setPreferredSize(new Dimension(230, 150));
+        bottomPanelLeft3.setPreferredSize(new Dimension(230, 100));
         bottomPanelLeft.add(bottomPanelLeft3);
 
         JRadioButton radioButton1 = new JRadioButton("Tất cả");
