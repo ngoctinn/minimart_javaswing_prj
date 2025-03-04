@@ -73,11 +73,14 @@ public class hoaDonPanel extends JPanel {
         topPanel.add(searchButton);
 
         //Refresh, Thêm, sửa , xoá, import, export
+
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
         CustomButton refreshButton = new CustomButton("", refreshIcon);
         refreshButton.setBounds(900, 12, 50, 30);
         refreshButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         topPanel.add(refreshButton);
+        
+
 
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg",16,16);
         CustomButton addButton = new CustomButton("", addIcon);

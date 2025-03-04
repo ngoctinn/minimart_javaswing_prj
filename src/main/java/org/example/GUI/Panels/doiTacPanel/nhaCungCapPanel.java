@@ -4,7 +4,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.themHangHoaDialog;
+import org.example.GUI.Dialogs.themNCCDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -88,7 +88,7 @@ public class nhaCungCapPanel extends JPanel {
         // sự kiện khi click vào nút thêm
         addButton.addActionListener(e -> {
             // code xử lý khi click vào nút thêm
-            new themHangHoaDialog();
+            new themNCCDialog();
         });
 
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
