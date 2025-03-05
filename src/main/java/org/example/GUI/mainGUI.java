@@ -27,6 +27,14 @@ import java.util.Map;
 public class mainGUI extends JFrame implements ActionListener {
     Map<String, JPanel> panelMap;
 
+    // Các JMenu
+    JMenu tongQuanMenu;
+    JMenu hangHoaMenu;
+    JMenu giaoDichMenu;
+    JMenu doiTacMenu;
+    JMenu nhanVienMenu;
+    JMenu baoCaoMenu;
+
     // Các JMenuItem cho JMenu giaoDich
     JMenuItem datHangItem;
     JMenuItem hoaDonItem;
@@ -63,9 +71,8 @@ public class mainGUI extends JFrame implements ActionListener {
         setSize(800, 600);
         setLocationRelativeTo(null);
         setResizable(false);
-        // không cho phép thu nhỏ
-        setLayout(new BorderLayout());
 
+        setLayout(new BorderLayout());
 
         // Tạo JMenuBar
         JMenuBar menuBar = new JMenuBar();
@@ -77,7 +84,7 @@ public class mainGUI extends JFrame implements ActionListener {
         JMenu giaoDichMenu = new JMenu("Giao dịch");
         JMenu doiTacMenu = new JMenu("Đối tác");
         JMenu nhanVienMenu = new JMenu("Nhân viên");
-        JMenu baoCaoMenu = new JMenu("Báo cáo");
+        baoCaoMenu = new JMenu("Báo cáo");
 
         // tạo JMenu người dùng nằm bên phải menuBar
         JMenu userMenu = new JMenu("Người dùng");
@@ -238,6 +245,7 @@ public class mainGUI extends JFrame implements ActionListener {
         datHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
         traHangItem.addActionListener(this);
+        nhapHangItem.addActionListener(this);
         traHangNhapItem.addActionListener(this);
 
         // Thêm ActionListener cho các JMenuItem
@@ -249,11 +257,23 @@ public class mainGUI extends JFrame implements ActionListener {
         khachHang.addActionListener(this);
         nhaCungCap.addActionListener(this);
 
+        // Thêm ActionListener cho các JMenuItem
+        nhanVienItem.addActionListener(this);
+        chucVuItem.addActionListener(this);
+        chamCongItem.addActionListener(this);
+        bangTinhLuongItem.addActionListener(this);
+
+        // Thêm ActionListener cho các JMenuItem
+
+
         setJMenuBar(menuBar);
 
         // Tạo vùng chứa chính sử dụng CardLayout
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
+        //set panel hiển thị hàng hóa đầu tiên
+        contentPanel.add("danhMuc", new danhMucPanel());
+
 
         // Khởi tạo các panel và lưu vào Map
         panelMap = new HashMap<>();
@@ -270,8 +290,9 @@ public class mainGUI extends JFrame implements ActionListener {
         panelMap.put("chucVu", new chucVuPanel());
         panelMap.put("chamCong", new nhanVienPanel());
         panelMap.put("bangTinhLuong", new nhaCungCapPanel());
-
         panelMap.put("baoCao", new baoCaoPanel());
+
+
 
         // Thêm các panel vào contentPanel với tên định danh (card name)
         for (Map.Entry<String, JPanel> entry : panelMap.entrySet()) {
@@ -279,19 +300,6 @@ public class mainGUI extends JFrame implements ActionListener {
         }
 
 
-        // Khởi tạo và thêm các panel vào contentPanel với tên định danh (card name)
-        GoodsPanel datHangPanel = new GoodsPanel();
-        contentPanel.add(datHangPanel, "DatHang");
-
-        // Ví dụ: tạo thêm các panel khác (HoaDonPanel, VanDonPanel, ...)
-        JPanel hoaDonPanel = new JPanel(new BorderLayout());
-        hoaDonPanel.add(new JLabel("Đây là panel Hoá đơn", SwingConstants.CENTER), BorderLayout.CENTER);
-        contentPanel.add(hoaDonPanel, "HoaDon");
-
-        // Các panel khác tương tự
-        JPanel vanDonPanel = new JPanel(new BorderLayout());
-        vanDonPanel.add(new JLabel("Đây là panel Vận đơn", SwingConstants.CENTER), BorderLayout.CENTER);
-        contentPanel.add(vanDonPanel, "VanDon");
 
         // Thêm contentPanel vào JFrame, ví dụ ở CENTER của BorderLayout
         add(contentPanel, BorderLayout.CENTER);
@@ -328,6 +336,8 @@ public class mainGUI extends JFrame implements ActionListener {
             cardLayout.show(contentPanel, "chamCong");
         } else if (e.getSource() == bangTinhLuongItem) {
             cardLayout.show(contentPanel, "bangTinhLuong");
+        } else if (e.getSource() == baoCaoMenu) {
+            cardLayout.show(contentPanel, "baoCao");
         }
         // Xử lý các menu khác theo cách tương tự
     }
