@@ -27,6 +27,14 @@ import java.util.Map;
 public class mainGUI extends JFrame implements ActionListener {
     Map<String, JPanel> panelMap;
 
+    // Các JMenu
+    JMenu tongQuanMenu;
+    JMenu hangHoaMenu;
+    JMenu giaoDichMenu;
+    JMenu doiTacMenu;
+    JMenu nhanVienMenu;
+    JMenu baoCaoMenu;
+
     // Các JMenuItem cho JMenu giaoDich
     JMenuItem datHangItem;
     JMenuItem hoaDonItem;
@@ -66,7 +74,6 @@ public class mainGUI extends JFrame implements ActionListener {
 
         setLayout(new BorderLayout());
 
-
         // Tạo JMenuBar
         JMenuBar menuBar = new JMenuBar();
         menuBar.setFont(new Font("Roboto", Font.PLAIN, 14));
@@ -77,7 +84,7 @@ public class mainGUI extends JFrame implements ActionListener {
         JMenu giaoDichMenu = new JMenu("Giao dịch");
         JMenu doiTacMenu = new JMenu("Đối tác");
         JMenu nhanVienMenu = new JMenu("Nhân viên");
-        JMenu baoCaoMenu = new JMenu("Báo cáo");
+        baoCaoMenu = new JMenu("Báo cáo");
 
         // tạo JMenu người dùng nằm bên phải menuBar
         JMenu userMenu = new JMenu("Người dùng");
@@ -250,6 +257,15 @@ public class mainGUI extends JFrame implements ActionListener {
         khachHang.addActionListener(this);
         nhaCungCap.addActionListener(this);
 
+        // Thêm ActionListener cho các JMenuItem
+        nhanVienItem.addActionListener(this);
+        chucVuItem.addActionListener(this);
+        chamCongItem.addActionListener(this);
+        bangTinhLuongItem.addActionListener(this);
+
+        // Thêm ActionListener cho các JMenuItem
+
+
         setJMenuBar(menuBar);
 
         // Tạo vùng chứa chính sử dụng CardLayout
@@ -320,6 +336,8 @@ public class mainGUI extends JFrame implements ActionListener {
             cardLayout.show(contentPanel, "chamCong");
         } else if (e.getSource() == bangTinhLuongItem) {
             cardLayout.show(contentPanel, "bangTinhLuong");
+        } else if (e.getSource() == baoCaoMenu) {
+            cardLayout.show(contentPanel, "baoCao");
         }
         // Xử lý các menu khác theo cách tương tự
     }
