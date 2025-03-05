@@ -25,6 +25,7 @@ public class themKhachHangDialog extends JDialog {
         this.setSize(790, 440);
         this.getContentPane().setBackground(new Color(245, 245, 245));
         this.setLocationRelativeTo(null);
+        this.setModal(true);
         this.setLayout(null);
 
         RoundedPanel panel = new RoundedPanel(20);
