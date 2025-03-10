@@ -13,6 +13,8 @@ import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
 import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
+import org.example.GUI.Panels.nhanVienPanel.bangChamLuongPanel;
+import org.example.GUI.Panels.nhanVienPanel.chamCongPanel;
 import org.example.GUI.Panels.nhanVienPanel.chucVuPanel;
 import org.example.GUI.Panels.nhanVienPanel.nhanVienPanel;
 // import các panel khác
@@ -288,8 +290,8 @@ public class mainGUI extends JFrame implements ActionListener {
         panelMap.put("nhaCungCap", new nhaCungCapPanel());
         panelMap.put("nhanVien", new nhanVienPanel());
         panelMap.put("chucVu", new chucVuPanel());
-        panelMap.put("chamCong", new nhanVienPanel());
-        panelMap.put("bangTinhLuong", new nhaCungCapPanel());
+        panelMap.put("chamCong", new chamCongPanel());
+        panelMap.put("bangTinhLuong", new bangChamLuongPanel());
         panelMap.put("baoCao", new baoCaoPanel());
 
 
