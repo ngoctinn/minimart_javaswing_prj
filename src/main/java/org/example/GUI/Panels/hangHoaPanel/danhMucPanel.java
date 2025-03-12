@@ -1,18 +1,17 @@
-package org.example.GUI.Panels.nhanVienPanel;
+package org.example.GUI.Panels.hangHoaPanel;
+
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.themNCCDialog;
+import org.example.GUI.Dialogs.themHangHoaDialog;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.util.Calendar;
-import java.util.Date;
 
-
-public class bangChamLuongPanel extends JPanel {
-    public bangChamLuongPanel() {
+public class danhMucPanel extends JPanel {
+    public danhMucPanel() {
         initGUI();
     }
 
@@ -51,7 +50,7 @@ public class bangChamLuongPanel extends JPanel {
 
         //============Các thành phần của topPanel================
         //label và textfield
-        JLabel title = new JLabel("Bảng Chấm Lương");
+        JLabel title = new JLabel("Danh mục hàng hoá");
         title.setFont(new Font("Roboto", Font.BOLD, 23));
         title.setForeground(new Color(0, 0, 0));
         title.setBounds(10, 10, 220, 30);
@@ -65,7 +64,6 @@ public class bangChamLuongPanel extends JPanel {
         topPanel.add(searchField);
 
         //search button
-
         CustomButton searchButton = new CustomButton("Tìm");
         searchButton.setBounds(580, 12, 70, 30);
         topPanel.add(searchButton);
@@ -86,7 +84,7 @@ public class bangChamLuongPanel extends JPanel {
         // sự kiện khi click vào nút thêm
         addButton.addActionListener(e -> {
             // code xử lý khi click vào nút thêm
-            new themNCCDialog();
+            new themHangHoaDialog();
         });
 
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
@@ -120,82 +118,84 @@ public class bangChamLuongPanel extends JPanel {
         bottomPanelLeft1.setBackground(Color.WHITE);
         bottomPanelLeft1.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
-                "Thời Gian",  // Tiêu đề
+                "Nhóm hàng",  // Tiêu đề
                 TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
                 TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
                 new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
                 Color.BLACK  // Màu chữ
         ));
 
-        bottomPanelLeft1.setPreferredSize(new Dimension(230, 100));
+        bottomPanelLeft1.setPreferredSize(new Dimension(230, 200));
         bottomPanelLeft.add(bottomPanelLeft1);
 
-        JLabel startLabel = new JLabel("Ngày bắt đầu:");
-        SpinnerDateModel startModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        JSpinner startSpinner = new JSpinner(startModel);
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "dd/MM/yyyy"));
-
-        // Spinner Ngày kết thúc
-        JLabel endLabel = new JLabel("Ngày kết thúc:");
-        SpinnerDateModel endModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        JSpinner endSpinner = new JSpinner(endModel);
-        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "dd/MM/yyyy"));
-
-        // Thêm vào panel
-        bottomPanelLeft1.add(startLabel);
-        bottomPanelLeft1.add(startSpinner);
-        bottomPanelLeft1.add(endLabel);
-        bottomPanelLeft1.add(endSpinner);
+        JList<String> list = new JList<>(new String[]{"Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4", "Nhóm 5", "Nhóm 6", "Nhóm 7", "Nhóm 8", "Nhóm 9", "Nhóm 10", "Nhóm 11", "Nhóm 12", "Nhóm 13", "Nhóm 14", "Nhóm 15", "Nhóm 16", "Nhóm 17", "Nhóm 18", "Nhóm 19", "Nhóm 20"});
+        list.setLayoutOrientation(JList.VERTICAL);
+        list.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JScrollPane listScroller = new JScrollPane(list);
+        listScroller.setBorder(BorderFactory.createEmptyBorder());
+        listScroller.setPreferredSize(new Dimension(200, 150));
+        bottomPanelLeft1.add(listScroller);
 
         JPanel bottomPanelLeft2 = new JPanel();
         bottomPanelLeft2.setBackground(Color.WHITE);
         bottomPanelLeft2.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
-                "Trạng Thái",  // Tiêu đề
+                "Nhà cung cấp",  // Tiêu đề
                 TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
                 TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
                 new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
                 Color.BLACK  // Màu chữ
         ));
 
-        bottomPanelLeft2.setLayout(new BoxLayout(bottomPanelLeft2, BoxLayout.Y_AXIS));
-
-        bottomPanelLeft2.setPreferredSize(new Dimension(230 , 100));
+        bottomPanelLeft2.setPreferredSize(new Dimension(230, 200));
         bottomPanelLeft.add(bottomPanelLeft2);
 
-        JRadioButton radioButtonshow1 = new JRadioButton("Đang Tạo");
-        radioButtonshow1.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        JRadioButton radioButtonshow2 = new JRadioButton("Tạm Tính");
-        radioButtonshow2.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        JRadioButton radioButtonshow3 = new JRadioButton("Đã Chốt Lương");
-        radioButtonshow3.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        JRadioButton radioButtonshow4 = new JRadioButton("Đã Hủy");
-        radioButtonshow4.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JList<String> list2 = new JList<>(new String[]{"Nhà cung cấp 1", "Nhà cung cấp 2", "Nhà cung cấp 3", "Nhà cung cấp 4", "Nhà cung cấp 5", "Nhà cung cấp 6", "Nhà cung cấp 7", "Nhà cung cấp 8", "Nhà cung cấp 9", "Nhà cung cấp 10", "Nhà cung cấp 11", "Nhà cung cấp 12", "Nhà cung cấp 13", "Nhà cung cấp 14", "Nhà cung cấp 15", "Nhà cung cấp 16", "Nhà cung cấp 17", "Nhà cung cấp 18", "Nhà cung cấp 19", "Nhà cung cấp 20"});
+        list2.setLayoutOrientation(JList.VERTICAL);
+        list2.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JScrollPane listScroller2 = new JScrollPane(list2);
+        listScroller2.setBorder(BorderFactory.createEmptyBorder());
+        listScroller2.setPreferredSize(new Dimension(200, 150));
+        bottomPanelLeft2.add(listScroller2);
 
-        ButtonGroup buttonGroupshow = new ButtonGroup();
-        buttonGroupshow.add(radioButtonshow1);
-        buttonGroupshow.add(radioButtonshow2);
-        buttonGroupshow.add(radioButtonshow3);
-        buttonGroupshow.add(radioButtonshow4);
+        JPanel bottomPanelLeft3 = new JPanel();
+        bottomPanelLeft3.setBackground(Color.WHITE);
+        bottomPanelLeft3.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
+                "Lựa chọn hiển thị",  // Tiêu đề
+                TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
+                TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
+                new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
+                Color.BLACK  // Màu chữ
+        ));
+        bottomPanelLeft3.setLayout(new BoxLayout(bottomPanelLeft3, BoxLayout.Y_AXIS));
 
-        bottomPanelLeft2.add(radioButtonshow1);
-        bottomPanelLeft2.add(radioButtonshow2);
-        bottomPanelLeft2.add(radioButtonshow3);
-        bottomPanelLeft2.add(radioButtonshow4);
+        bottomPanelLeft3.setPreferredSize(new Dimension(230, 100));
+        bottomPanelLeft.add(bottomPanelLeft3);
 
+        JRadioButton radioButton1 = new JRadioButton("Tất cả");
+        radioButton1.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JRadioButton radioButton2 = new JRadioButton("Hàng đang kinh doanh");
+        radioButton2.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JRadioButton radioButton3 = new JRadioButton("Hàng ngừng kinh doanh");
+        radioButton3.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioButton1);
+        buttonGroup.add(radioButton2);
+        buttonGroup.add(radioButton3);
+
+        bottomPanelLeft3.add(radioButton1);
+        bottomPanelLeft3.add(radioButton2);
+        bottomPanelLeft3.add(radioButton3);
         //============End các thành phần của bottomPanelLeft================
 
         //============Các thành phần của bottomPanelRight================
-        String[] columnNames = {"Mã nhà cung cấp", "Tên nhà cung cấp", "Điện thoại", "Email", "Tổng mua"};
-
-        // Dữ liệu nhà cung cấp
+        String[] columnNames = {"Mã hàng", "Tên hàng", "Nhóm hàng", "Nhà cung cấp", "Giá bán", "Giá vốn", "Tồn kho", "Khách đặt"};
         Object[][] data = {
-                {"NCC001", "Đức Tây ICool", "092392383", "0934564574ductay@gmail.com", 0},
-                {"NCC005", "Cửa hàng Đại Việt", "", "", 0},
-                {"NCC003", "Công ty Pharmedic", "", "", 0},
-                {"NCC004", "Đại lý Hồng Phúc", "", "", 0},
-                {"NCC001", "Công ty TNHH Citigo", "", "", 0},
-                {"NCC002", "Công ty Hoàng Gia", "", "", 0},
+                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 10000, 8000, 192, 0},
+                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 15000, 14000, 0, 0},
+                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 45000, 44000, 0, 0},
         };
         CustomTable table = new CustomTable(data, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(table);
@@ -220,7 +220,7 @@ public class bangChamLuongPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.danhMucPanel());
+            frame.add(new danhMucPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
