@@ -11,8 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class bangChamLuongPanel extends JPanel {
-    public bangChamLuongPanel() {
+public class BangChamLuongPanel extends JPanel {
+    public BangChamLuongPanel() {
         initGUI();
     }
 
