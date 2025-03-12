@@ -5,7 +5,7 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.GUI.Panels.baoCaoPanel;
 import org.example.GUI.Panels.doiTacPanel.khachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
-import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
+import org.example.GUI.Panels.giaoDichPanel.HoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.DanhMucPanel;
@@ -271,7 +271,7 @@ public class MainGUI extends JFrame implements ActionListener {
         panelMap.put("thietLapGia", new ThietLapGiaPanel());
 
         // Giao dịch panels
-        panelMap.put("hoaDon", new hoaDonPanel());
+        panelMap.put("hoaDon", new HoaDonPanel());
         panelMap.put("nhapHang", new nhapHangPanel());
         panelMap.put("traHang", new traHangNhapPanel());
 
