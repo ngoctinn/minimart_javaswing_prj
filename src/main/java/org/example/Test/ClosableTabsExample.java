@@ -11,6 +11,7 @@ public class ClosableTabsExample {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
             e.printStackTrace();
+            //test
         }
 
         SwingUtilities.invokeLater(() -> {
