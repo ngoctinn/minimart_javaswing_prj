@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 
-public class hoaDonPanel extends JPanel {
+public class HoaDonPanel extends JPanel {
     // UI Components
     private PlaceholderTextField searchField;
     private CustomButton searchButton, refreshButton, addButton, editButton, deleteButton, importButton, exportButton;
@@ -23,7 +23,7 @@ public class hoaDonPanel extends JPanel {
     private CustomTable hoaDonTable;
     private CustomButton filterDateButton;
 
-    public hoaDonPanel() {
+    public HoaDonPanel() {
         initGUI();
     }
 
@@ -309,7 +309,7 @@ public class hoaDonPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new hoaDonPanel());
+            frame.add(new HoaDonPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
