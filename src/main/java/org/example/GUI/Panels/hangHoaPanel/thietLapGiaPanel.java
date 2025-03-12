@@ -3,185 +3,167 @@ package org.example.GUI.Panels.hangHoaPanel;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
-import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.ThemHangHoaDialog;
+import org.example.GUI.Dialogs.themHangHoaDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 
 
 public class thietLapGiaPanel extends JPanel {
-    private RoundedPanel topPanel;
-    private RoundedPanel bottomPanel;
-    private RoundedPanel bottomPanelLeft;
-    private RoundedPanel bottomPanelRight;
-    private PlaceholderTextField searchField;
-    private CustomButton searchButton;
-    private CustomButton refreshButton;
-    private CustomButton addButton;
-    private CustomButton editButton;
-    private CustomButton deleteButton;
-    private CustomButton importButton;
-    private CustomButton exportButton;
-    private JList<String> nhomHangList;
-
     public thietLapGiaPanel() {
         initGUI();
     }
 
     public void initGUI() {
-        setupMainPanel();
-        createPanels();
-        setupTopPanel();
-        setupBottomPanelLeft();
-        setupBottomPanelRight();
 
-        // Add panels to main panel
-        this.add(topPanel);
-        this.add(bottomPanel);
-        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
-        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
-    }
-
-    private void setupMainPanel() {
-        // Set up layout and background for main panel
+        // thiết lập layout và background cho panel
         this.setLayout(new FlowLayout());
-        this.setBackground(new Color(225, 225, 225));
+        this.setBackground(new Color(225,225,225));
         this.setVisible(true);
-    }
 
-    private void createPanels() {
-        // Create sub-panels
-        topPanel = new RoundedPanel(20);
-        bottomPanel = new RoundedPanel(20);
-        bottomPanelLeft = new RoundedPanel(20);
-        bottomPanelRight = new RoundedPanel(20);
+        // tạo các panel con
+        RoundedPanel topPanel = new RoundedPanel(20);
+        RoundedPanel bottomPanel = new RoundedPanel(20);
+        RoundedPanel bottomPanelLeft = new RoundedPanel(20);
+        RoundedPanel bottomPanelRight = new RoundedPanel(20);
 
-        // Set background colors
+        // thiết lập background cho các panel
         topPanel.setBackground(Color.WHITE);
-        bottomPanel.setBackground(new Color(225, 225, 225));
+        bottomPanel.setBackground(new Color(225,225,225));
         bottomPanelLeft.setBackground(Color.WHITE);
         bottomPanelRight.setBackground(Color.WHITE);
 
-        // Set panel sizes
+        // thiết lập kích thước cho các panel
         topPanel.setPreferredSize(new Dimension(1270, 50));
         bottomPanel.setPreferredSize(new Dimension(1270, 900));
-        bottomPanelLeft.setPreferredSize(new Dimension(1270 * 20 / 100, 900));
-        bottomPanelRight.setPreferredSize(new Dimension(1270 * 80 / 100, 900));
 
-        // Set layouts
+        // thiết lập layout cho các panel
         topPanel.setLayout(null);
         bottomPanel.setLayout(new BorderLayout(5, 0));
         bottomPanelLeft.setLayout(new FlowLayout());
         bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
-    }
 
-    private void setupTopPanel() {
-        // Title label
+        // thiết lập kích thước cho bottomPanelLeft và bottomPanelRight
+        bottomPanelLeft.setPreferredSize(new Dimension(1270 * 20 / 100, 900));
+        bottomPanelRight.setPreferredSize(new Dimension(1270 * 80 / 100, 900));
+
+        //============Các thành phần của topPanel================
+        //label và textfield
         JLabel title = new JLabel("Thiếp Lập Giá");
         title.setFont(new Font("Roboto", Font.BOLD, 23));
         title.setForeground(new Color(0, 0, 0));
         title.setBounds(10, 10, 220, 30);
         topPanel.add(title);
 
-        // Search field
-        searchField = new PlaceholderTextField("Nhập tên sản phẩm cần tìm");
+        //search field
+        JTextField searchField = new JTextField();
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         searchField.setBounds(270, 12, 300, 30);
         topPanel.add(searchField);
 
-        // Search button
-        searchButton = new CustomButton("Tìm");
+        //search button
+
+        CustomButton searchButton = new CustomButton("Tìm");
         searchButton.setBounds(580, 12, 70, 30);
         topPanel.add(searchButton);
 
-        // Action buttons
-        setupActionButtons();
-    }
-
-    private void setupActionButtons() {
-        // Refresh button
+        //Refresh, Thêm, sửa , xoá, import, export
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
-        refreshButton = new CustomButton("", refreshIcon);
+        CustomButton refreshButton = new CustomButton("", refreshIcon);
         refreshButton.setBounds(900, 12, 50, 30);
         refreshButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         topPanel.add(refreshButton);
 
-        // Add button
-        FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
-        addButton = new CustomButton("", addIcon);
+        FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg",16,16);
+        CustomButton addButton = new CustomButton("", addIcon);
         addButton.setBounds(960, 12, 50, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        addButton.addActionListener(e -> new ThemHangHoaDialog());
         topPanel.add(addButton);
 
-        // Edit button
+        // sự kiện khi click vào nút thêm
+        addButton.addActionListener(e -> {
+            // code xử lý khi click vào nút thêm
+            new themHangHoaDialog();
+        });
+
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
-        editButton = new CustomButton("", editIcon);
+        CustomButton editButton = new CustomButton("", editIcon);
         editButton.setBounds(1020, 12, 50, 30);
         editButton.setButtonColors(CustomButton.ButtonColors.YELLOW);
         topPanel.add(editButton);
 
-        // Delete button
         FlatSVGIcon deleteIcon = new FlatSVGIcon("Icons/delete.svg", 20, 20);
-        deleteButton = new CustomButton("", deleteIcon);
+        CustomButton deleteButton = new CustomButton("", deleteIcon);
         deleteButton.setBounds(1080, 12, 50, 30);
         deleteButton.setButtonColors(CustomButton.ButtonColors.RED);
         topPanel.add(deleteButton);
 
-        // Export button
-        FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg", 16, 16);
-        exportButton = new CustomButton("", exportIcon);
-        exportButton.setBounds(1140, 12, 50, 30);
-        exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        topPanel.add(exportButton);
-
-        // Import button
-        FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg", 16, 16);
-        importButton = new CustomButton("", importIcon);
+        FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg",16,16);
+        CustomButton importButton = new CustomButton("", importIcon);
         importButton.setBounds(1200, 12, 50, 30);
         importButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         topPanel.add(importButton);
-    }
 
-    private void setupBottomPanelLeft() {
-        setupThoiGianPanel();
-        setupTonKhoPanel();
-        setupNhomHangPanel();
-        setupGiaBanPanel();
-    }
+        FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg",16,16);
+        CustomButton exportButton = new CustomButton("", exportIcon);
+        exportButton.setBounds(1140, 12, 50, 30);
+        exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        topPanel.add(exportButton);
+        //============End các thành phần của topPanel================
 
-    private void setupThoiGianPanel() {
-        JPanel thoiGianPanel = createTitledPanel("Thời Gian", 230, 100);
-        bottomPanelLeft.add(thoiGianPanel);
+        //============Các thành phần của bottomPanelLeft================
+        //Tạo 3 panel con trong bottomPanelLeft
+        JPanel bottomPanelLeft1 = new JPanel();
+        bottomPanelLeft1.setBackground(Color.WHITE);
+        bottomPanelLeft1.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
+                "Thời Gian",  // Tiêu đề
+                TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
+                TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
+                new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
+                Color.BLACK  // Màu chữ
+        ));
+
+        bottomPanelLeft1.setPreferredSize(new Dimension(230, 100));
+        bottomPanelLeft.add(bottomPanelLeft1);
 
         JLabel startLabel = new JLabel("Ngày bắt đầu:");
         SpinnerDateModel startModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
         JSpinner startSpinner = new JSpinner(startModel);
         startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "dd/MM/yyyy"));
 
+        // Spinner Ngày kết thúc
         JLabel endLabel = new JLabel("Ngày kết thúc:");
         SpinnerDateModel endModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
         JSpinner endSpinner = new JSpinner(endModel);
         endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "dd/MM/yyyy"));
 
-        thoiGianPanel.add(startLabel);
-        thoiGianPanel.add(startSpinner);
-        thoiGianPanel.add(endLabel);
-        thoiGianPanel.add(endSpinner);
-    }
+        // Thêm vào panel
+        bottomPanelLeft1.add(startLabel);
+        bottomPanelLeft1.add(startSpinner);
+        bottomPanelLeft1.add(endLabel);
+        bottomPanelLeft1.add(endSpinner);
 
-    private void setupTonKhoPanel() {
-        JPanel tonKhoPanel = createTitledPanel("Tồn Kho", 230, 100);
-        tonKhoPanel.setLayout(new BoxLayout(tonKhoPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(tonKhoPanel);
+        JPanel bottomPanelLeft2 = new JPanel();
+        bottomPanelLeft2.setBackground(Color.WHITE);
+        bottomPanelLeft2.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
+                "Tồn Kho",  // Tiêu đề
+                TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
+                TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
+                new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
+                Color.BLACK  // Màu chữ
+        ));
+
+        bottomPanelLeft2.setLayout(new BoxLayout(bottomPanelLeft2, BoxLayout.Y_AXIS));
+
+        bottomPanelLeft2.setPreferredSize(new Dimension(230 , 100));
+        bottomPanelLeft.add(bottomPanelLeft2);
 
         JRadioButton radioButtonshow1 = new JRadioButton("Còn Hàng Trong Kho");
         radioButtonshow1.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -195,31 +177,48 @@ public class thietLapGiaPanel extends JPanel {
         buttonGroupshow.add(radioButtonshow2);
         buttonGroupshow.add(radioButtonshow3);
 
-        tonKhoPanel.add(radioButtonshow1);
-        tonKhoPanel.add(radioButtonshow2);
-        tonKhoPanel.add(radioButtonshow3);
-    }
+        bottomPanelLeft2.add(radioButtonshow1);
+        bottomPanelLeft2.add(radioButtonshow2);
+        bottomPanelLeft2.add(radioButtonshow3);
 
-    private void setupNhomHangPanel() {
-        JPanel nhomHangPanel = createTitledPanel("Nhóm Hàng", 230, 150);
-        nhomHangPanel.setLayout(new BoxLayout(nhomHangPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(nhomHangPanel);
+        JPanel bottomPanelLeft3 = new JPanel();
+        bottomPanelLeft3.setBackground(Color.WHITE);
+        bottomPanelLeft3.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
+                "Nhóm Hàng",  // Tiêu đề
+                TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
+                TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
+                new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
+                Color.BLACK  // Màu chữ
+        ));
+        bottomPanelLeft3.setLayout(new BoxLayout(bottomPanelLeft3, BoxLayout.Y_AXIS));
 
-        String[] nhomHangData = {"Thuốc Lá", "Sữa", "Nước Ngọt", "Kẹo", "Mỹ Phẩm", "Tất Cả"};
-        nhomHangList = new JList<>(nhomHangData);
-        nhomHangList.setLayoutOrientation(JList.VERTICAL);
-        nhomHangList.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        bottomPanelLeft3.setPreferredSize(new Dimension(230, 150));
+        bottomPanelLeft.add(bottomPanelLeft3);
 
-        JScrollPane listScroller = new JScrollPane(nhomHangList);
+        JList<String> list = new JList<>(new String[]{"Thuốc Lá", "Sữa", "Nước Ngọt", "Kẹo", "Mỹ Phẩm","Tất Cả"});
+        list.setLayoutOrientation(JList.VERTICAL);
+        list.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        JScrollPane listScroller = new JScrollPane(list);
         listScroller.setBorder(BorderFactory.createEmptyBorder());
         listScroller.setPreferredSize(new Dimension(200, 150));
-        nhomHangPanel.add(listScroller);
-    }
+        bottomPanelLeft3.add(listScroller);
 
-    private void setupGiaBanPanel() {
-        JPanel giaBanPanel = createTitledPanel("Giá Bán", 230, 130);
-        giaBanPanel.setLayout(new BoxLayout(giaBanPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(giaBanPanel);
+        JPanel bottomPanelLeft4 = new JPanel();
+        bottomPanelLeft4.setBackground(Color.WHITE);
+        bottomPanelLeft4.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),  // Viền ngoài
+                "Giá Bán",  // Tiêu đề
+                TitledBorder.DEFAULT_JUSTIFICATION,  // Căn lề mặc định
+                TitledBorder.DEFAULT_POSITION,  // Vị trí mặc định
+                new Font("Segoe UI", Font.BOLD, 15),  // Font chữ
+                Color.BLACK  // Màu chữ
+        ));
+
+        bottomPanelLeft4.setLayout(new BoxLayout(bottomPanelLeft4, BoxLayout.Y_AXIS));
+
+        bottomPanelLeft4.setPreferredSize(new Dimension(230 , 130));
+        bottomPanelLeft.add(bottomPanelLeft4);
 
         JRadioButton radioButtonshow4 = new JRadioButton("Thấp Hơn Hoặc Bằng 10k");
         radioButtonshow4.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -236,52 +235,50 @@ public class thietLapGiaPanel extends JPanel {
         buttonGroupshow1.add(radioButtonshow6);
         buttonGroupshow1.add(radioButtonshow7);
 
-        giaBanPanel.add(radioButtonshow4);
-        giaBanPanel.add(radioButtonshow5);
-        giaBanPanel.add(radioButtonshow6);
-        giaBanPanel.add(radioButtonshow7);
-    }
+        bottomPanelLeft4.add(radioButtonshow4);
+        bottomPanelLeft4.add(radioButtonshow5);
+        bottomPanelLeft4.add(radioButtonshow6);
+        bottomPanelLeft4.add(radioButtonshow7);
 
-    private void setupBottomPanelRight() {
+        //============End các thành phần của bottomPanelLeft================
+
+        //============Các thành phần của bottomPanelRight================
         // Tạo tiêu đề cột
-        String[] columnNames = {"Mã Hàng", "Tên Hàng", "Giá Vốn", "Giá Nhập Cuối", "Bảng Giá Chung"};
+        String[] columnNames = {"Mã Hàng","Tên Hàng","Giá Vốn","Giá Nhập Cuối","Bảng Giá Chung"};
 
         // Dữ liệu hóa đơn
-        Object[][] data = {};
+        Object[][] data = {
+
+        };
         CustomTable table = new CustomTable(data, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(table);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
         bottomPanelRight.add(tableScrollPane);
-    }
 
-    private JPanel createTitledPanel(String title, int width, int height) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                title,
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
-        panel.setPreferredSize(new Dimension(width, height));
-        return panel;
+        //============End các thành phần của bottomPanelRight================
+
+        //add các panel con vào panel chính
+        this.add(topPanel);
+        this.add(bottomPanel);
+        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
+        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
     // Hàm main để test giao diện
     public static void main(String[] args) {
+
         // dùng flatlaf OSMacOSLookAndFeel
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.DanhMucPanel());
+            frame.add(new org.example.GUI.Panels.hangHoaPanel.danhMucPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+
     }
 }
