@@ -8,7 +8,7 @@ import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
-import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
+import org.example.GUI.Panels.hangHoaPanel.DanhMucPanel;
 import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
 import org.example.GUI.Panels.nhanVienPanel.bangChamLuongPanel;
@@ -266,7 +266,7 @@ public class MainGUI extends JFrame implements ActionListener {
         panelMap.put("tongQuan", new tongQuanPanel());
 
         // Hàng hóa panels
-        panelMap.put("danhMuc", new danhMucPanel());
+        panelMap.put("danhMuc", new DanhMucPanel());
         panelMap.put("kiemKho", new kiemKhoPanel());
         panelMap.put("thietLapGia", new thietLapGiaPanel());
 

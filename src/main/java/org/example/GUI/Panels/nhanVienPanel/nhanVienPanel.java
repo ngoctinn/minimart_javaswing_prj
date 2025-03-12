@@ -2,6 +2,7 @@ package org.example.GUI.Panels.nhanVienPanel;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
+import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
 import org.example.GUI.Dialogs.ThemNhanVienDialog;
 import javax.swing.*;
@@ -57,7 +58,7 @@ public class nhanVienPanel extends JPanel {
         topPanel.add(title);
 
         //search field
-        JTextField searchField = new JTextField();
+        PlaceholderTextField searchField = new PlaceholderTextField("Nhập tên nhân viên cần tìm");
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         searchField.setBounds(270, 12, 300, 30);
@@ -222,7 +223,7 @@ public class nhanVienPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.danhMucPanel());
+            frame.add(new org.example.GUI.Panels.hangHoaPanel.DanhMucPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {

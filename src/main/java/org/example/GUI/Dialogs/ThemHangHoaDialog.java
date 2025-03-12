@@ -18,8 +18,6 @@ public class ThemHangHoaDialog extends JDialog {
             UIManager.put("ComboBox.buttonStyle", "icon-only");
             UIManager.put("ComboBox.buttonBackground", Color.WHITE);
             UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
-
-            // Reset the colors you don't want to inherit
             initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
@@ -134,8 +132,19 @@ public class ThemHangHoaDialog extends JDialog {
         // Code xử lý chọn hình ảnh
     }
 
+    public static void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            // Cấu hình UI trước khi giao diện được tạo
+            UIManager.put("RootPane.background", new Color(245, 245, 245));
+            UIManager.put("TitlePane.foreground", Color.BLACK);
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
-        new ThemHangHoaDialog();
+        setLookAndFeel(); // Đặt LookAndFeel trước
+        SwingUtilities.invokeLater(ThemHangHoaDialog::new);
     }
 }
