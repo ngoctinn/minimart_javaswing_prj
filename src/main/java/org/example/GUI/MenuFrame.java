@@ -9,12 +9,12 @@ import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.DanhMucPanel;
-import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
-import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
-import org.example.GUI.Panels.nhanVienPanel.bangChamLuongPanel;
-import org.example.GUI.Panels.nhanVienPanel.chamCongPanel;
-import org.example.GUI.Panels.nhanVienPanel.chucVuPanel;
-import org.example.GUI.Panels.nhanVienPanel.nhanVienPanel;
+import org.example.GUI.Panels.hangHoaPanel.KiemKhoPanel;
+import org.example.GUI.Panels.hangHoaPanel.ThietLapGiaPanel;
+import org.example.GUI.Panels.nhanVienPanel.BangChamLuongPanel;
+import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
+import org.example.GUI.Panels.nhanVienPanel.ChucVuPanel;
+import org.example.GUI.Panels.nhanVienPanel.NhanVienPanel;
 import org.example.GUI.Panels.tongQuanPanel;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainGUI extends JFrame implements ActionListener {
+public class MenuFrame extends JFrame implements ActionListener {
     private Map<String, JPanel> panelMap;
     private CardLayout cardLayout;
     private JPanel contentPanel;
@@ -49,7 +49,7 @@ public class MainGUI extends JFrame implements ActionListener {
     // Các JMenuItem cho JMenu người dùng
     private JMenuItem profileItem, logoutItem;
 
-    public MainGUI() {
+    public MenuFrame() {
         initializeFrame();
         setupMenuBar();
         setupContentPanel();
@@ -267,8 +267,8 @@ public class MainGUI extends JFrame implements ActionListener {
 
         // Hàng hóa panels
         panelMap.put("danhMuc", new DanhMucPanel());
-        panelMap.put("kiemKho", new kiemKhoPanel());
-        panelMap.put("thietLapGia", new thietLapGiaPanel());
+        panelMap.put("kiemKho", new KiemKhoPanel());
+        panelMap.put("thietLapGia", new ThietLapGiaPanel());
 
         // Giao dịch panels
         panelMap.put("hoaDon", new hoaDonPanel());
@@ -280,10 +280,10 @@ public class MainGUI extends JFrame implements ActionListener {
         panelMap.put("nhaCungCap", new nhaCungCapPanel());
 
         // Nhân viên panels
-        panelMap.put("nhanVien", new nhanVienPanel());
-        panelMap.put("chucVu", new chucVuPanel());
-        panelMap.put("chamCong", new chamCongPanel());
-        panelMap.put("bangTinhLuong", new bangChamLuongPanel());
+        panelMap.put("nhanVien", new NhanVienPanel());
+        panelMap.put("chucVu", new ChucVuPanel());
+        panelMap.put("chamCong", new ChamCongPanel());
+        panelMap.put("bangTinhLuong", new BangChamLuongPanel());
 
         // Báo cáo panel
         panelMap.put("baoCao", new baoCaoPanel());
@@ -360,7 +360,7 @@ public class MainGUI extends JFrame implements ActionListener {
         }
     }
 
-    private static void setupUIManagerProperties() {
+    public static void setupUIManagerProperties() {
         // TitlePane color
         UIManager.put("RootPane.background", new Color(0, 102, 204));
         UIManager.put("TitlePane.background", new Color(0, 102, 204));
@@ -387,7 +387,7 @@ public class MainGUI extends JFrame implements ActionListener {
         try {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
             setupUIManagerProperties();
-            new MainGUI();
+            new MenuFrame();
         } catch (Exception e) {
             e.printStackTrace();
         }

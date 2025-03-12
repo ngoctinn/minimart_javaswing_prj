@@ -8,12 +8,10 @@ import org.example.Components.RoundedPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 public class
-loginGUI extends JFrame {
-    public loginGUI() {
+LoginGUI extends JFrame {
+    public LoginGUI() {
         // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -120,7 +118,7 @@ loginGUI extends JFrame {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
             // khởi tạo giao diện mượt mà
             SwingUtilities.invokeLater(() -> {
-                new loginGUI();
+                new LoginGUI();
             });
         } catch (Exception e) {
             e.printStackTrace();

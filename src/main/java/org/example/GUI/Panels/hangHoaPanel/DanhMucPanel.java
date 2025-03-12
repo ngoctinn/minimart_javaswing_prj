@@ -35,8 +35,6 @@ public class DanhMucPanel extends JPanel {
     private JRadioButton radioHangDangKinhDoanh;
     private JRadioButton radioHangNgungKinhDoanh;
     private CustomTable hangHoaTable;
-    private CustomButton addNhomHangButton;
-    private CustomButton addNhaCungCapButton;
 
     public DanhMucPanel() {
         initGUI();
@@ -166,8 +164,7 @@ public class DanhMucPanel extends JPanel {
 
     private void setupNhomHangPanel() {
         // Nhóm hàng panel
-        JPanel nhomHangPanel = createTitledPanel("Nhóm hàng", 230, 210);
-        nhomHangPanel.setLayout(null);
+        JPanel nhomHangPanel = createTitledPanel("Nhóm hàng", 230, 200);
         bottomPanelLeft.add(nhomHangPanel);
 
         // Nhóm hàng list
@@ -175,21 +172,12 @@ public class DanhMucPanel extends JPanel {
                 "Nhóm 9", "Nhóm 10", "Nhóm 11", "Nhóm 12", "Nhóm 13", "Nhóm 14", "Nhóm 15",
                 "Nhóm 16", "Nhóm 17", "Nhóm 18", "Nhóm 19", "Nhóm 20"};
         nhomHangList = createScrollableList(nhomHangData);
-        JScrollPane scrollPane = createScrollPane(nhomHangList, 200, 130);
-        scrollPane.setBounds(15, 25, 200, 130);
-        nhomHangPanel.add(scrollPane);
-
-        // Add button for Nhóm hàng
-        addNhomHangButton = new CustomButton("Thêm nhóm hàng");
-        addNhomHangButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        addNhomHangButton.setBounds(20, 170, 195, 25);
-        nhomHangPanel.add(addNhomHangButton);
+        nhomHangPanel.add(createScrollPane(nhomHangList, 200, 150));
     }
 
     private void setupNhaCungCapPanel() {
         // Nhà cung cấp panel
-        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 210);
-        nhaCungCapPanel.setLayout(null);
+        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 200);
         bottomPanelLeft.add(nhaCungCapPanel);
 
         // Nhà cung cấp list
@@ -199,15 +187,7 @@ public class DanhMucPanel extends JPanel {
                 "Nhà cung cấp 13", "Nhà cung cấp 14", "Nhà cung cấp 15", "Nhà cung cấp 16",
                 "Nhà cung cấp 17", "Nhà cung cấp 18", "Nhà cung cấp 19", "Nhà cung cấp 20"};
         nhaCungCapList = createScrollableList(nhaCungCapData);
-        JScrollPane scrollPane = createScrollPane(nhaCungCapList, 200, 130);
-        scrollPane.setBounds(15, 25, 200, 130);
-        nhaCungCapPanel.add(scrollPane);
-
-        // Add button for Nhà cung cấp
-        addNhaCungCapButton = new CustomButton("Thêm nhà cung cấp");
-        addNhaCungCapButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        addNhaCungCapButton.setBounds(20, 170, 195, 25);
-        nhaCungCapPanel.add(addNhaCungCapButton);
+        nhaCungCapPanel.add(createScrollPane(nhaCungCapList, 200, 150));
     }
 
     private void setupLuaChonHienThiPanel() {
