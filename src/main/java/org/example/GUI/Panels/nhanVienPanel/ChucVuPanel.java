@@ -3,8 +3,8 @@ package org.example.GUI.Panels.nhanVienPanel;
 import javax.swing.*;
 import java.awt.*;
 
-public class chucVuPanel extends JPanel {
-    public chucVuPanel() {
+public class ChucVuPanel extends JPanel {
+    public ChucVuPanel() {
         initGUI();
     }
 

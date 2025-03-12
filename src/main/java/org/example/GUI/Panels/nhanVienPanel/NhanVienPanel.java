@@ -10,8 +10,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 
-public class nhanVienPanel extends JPanel {
-    public nhanVienPanel() {
+public class NhanVienPanel extends JPanel {
+    public NhanVienPanel() {
 
         initGUI();
     }
