@@ -220,7 +220,7 @@ public class bangChamLuongPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.danhMucPanel());
+            frame.add(new org.example.GUI.Panels.hangHoaPanel.DanhMucPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {

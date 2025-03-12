@@ -10,16 +10,15 @@ import org.example.GUI.Dialogs.ThemHangHoaDialog;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Date;
 
-public class kiemKhoPanel extends JPanel {
+public class DanhMucPanel extends JPanel {
+    // UI Components
     private RoundedPanel topPanel;
     private RoundedPanel bottomPanel;
     private RoundedPanel bottomPanelLeft;
     private RoundedPanel bottomPanelRight;
 
+    // Top panel components
     private PlaceholderTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
@@ -29,9 +28,15 @@ public class kiemKhoPanel extends JPanel {
     private CustomButton importButton;
     private CustomButton exportButton;
 
-    private JList<String> userList;
+    // Bottom panel components
+    private JList<String> nhomHangList;
+    private JList<String> nhaCungCapList;
+    private JRadioButton radioTatCa;
+    private JRadioButton radioHangDangKinhDoanh;
+    private JRadioButton radioHangNgungKinhDoanh;
+    private CustomTable hangHoaTable;
 
-    public kiemKhoPanel() {
+    public DanhMucPanel() {
         initGUI();
     }
 
@@ -84,14 +89,14 @@ public class kiemKhoPanel extends JPanel {
 
     private void setupTopPanel() {
         // Title label
-        JLabel title = new JLabel("Phiếu Kiểm Kho");
+        JLabel title = new JLabel("Danh mục hàng hoá");
         title.setFont(new Font("Roboto", Font.BOLD, 23));
         title.setForeground(new Color(0, 0, 0));
         title.setBounds(10, 10, 220, 30);
         topPanel.add(title);
 
         // Search field
-        searchField = new PlaceholderTextField("Nhập mã phiếu kiểm kho cần tìm");
+        searchField = new PlaceholderTextField("Nhập tên sản phẩm cần tìm");
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         searchField.setBounds(270, 12, 300, 30);
@@ -152,89 +157,79 @@ public class kiemKhoPanel extends JPanel {
     }
 
     private void setupBottomPanelLeft() {
-        setupTimePanel();
-        setupStatusPanel();
-        setupCreatorPanel();
+        setupNhomHangPanel();
+        setupNhaCungCapPanel();
+        setupLuaChonHienThiPanel();
     }
 
-    private void setupTimePanel() {
-        JPanel timePanel = createTitledPanel("Thời Gian", 230, 100);
-        bottomPanelLeft.add(timePanel);
+    private void setupNhomHangPanel() {
+        // Nhóm hàng panel
+        JPanel nhomHangPanel = createTitledPanel("Nhóm hàng", 230, 200);
+        bottomPanelLeft.add(nhomHangPanel);
 
-        JLabel startLabel = new JLabel("Ngày bắt đầu:");
-        SpinnerDateModel startModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        JSpinner startSpinner = new JSpinner(startModel);
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "dd/MM/yyyy"));
-
-        JLabel endLabel = new JLabel("Ngày kết thúc:");
-        SpinnerDateModel endModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        JSpinner endSpinner = new JSpinner(endModel);
-        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "dd/MM/yyyy"));
-
-        timePanel.add(startLabel);
-        timePanel.add(startSpinner);
-        timePanel.add(endLabel);
-        timePanel.add(endSpinner);
+        // Nhóm hàng list
+        String[] nhomHangData = {"Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4", "Nhóm 5", "Nhóm 6", "Nhóm 7", "Nhóm 8",
+                "Nhóm 9", "Nhóm 10", "Nhóm 11", "Nhóm 12", "Nhóm 13", "Nhóm 14", "Nhóm 15",
+                "Nhóm 16", "Nhóm 17", "Nhóm 18", "Nhóm 19", "Nhóm 20"};
+        nhomHangList = createScrollableList(nhomHangData);
+        nhomHangPanel.add(createScrollPane(nhomHangList, 200, 150));
     }
 
-    private void setupStatusPanel() {
-        JPanel statusPanel = createTitledPanel("Trạng Thái", 230, 130);
-        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(statusPanel);
+    private void setupNhaCungCapPanel() {
+        // Nhà cung cấp panel
+        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 200);
+        bottomPanelLeft.add(nhaCungCapPanel);
 
-        JRadioButton radioButtonTemp = new JRadioButton("Phiếu Tạm");
-        radioButtonTemp.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        // Nhà cung cấp list
+        String[] nhaCungCapData = {"Nhà cung cấp 1", "Nhà cung cấp 2", "Nhà cung cấp 3", "Nhà cung cấp 4",
+                "Nhà cung cấp 5", "Nhà cung cấp 6", "Nhà cung cấp 7", "Nhà cung cấp 8",
+                "Nhà cung cấp 9", "Nhà cung cấp 10", "Nhà cung cấp 11", "Nhà cung cấp 12",
+                "Nhà cung cấp 13", "Nhà cung cấp 14", "Nhà cung cấp 15", "Nhà cung cấp 16",
+                "Nhà cung cấp 17", "Nhà cung cấp 18", "Nhà cung cấp 19", "Nhà cung cấp 20"};
+        nhaCungCapList = createScrollableList(nhaCungCapData);
+        nhaCungCapPanel.add(createScrollPane(nhaCungCapList, 200, 150));
+    }
 
-        JRadioButton radioButtonBalanced = new JRadioButton("Đã Cân Bằng Kho");
-        radioButtonBalanced.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+    private void setupLuaChonHienThiPanel() {
+        // Lựa chọn hiển thị panel
+        JPanel luaChonPanel = createTitledPanel("Lựa chọn hiển thị", 230, 110);
+        luaChonPanel.setLayout(new BoxLayout(luaChonPanel, BoxLayout.Y_AXIS));
+        bottomPanelLeft.add(luaChonPanel);
 
-        JRadioButton radioButtonCancelled = new JRadioButton("Đã Hủy");
-        radioButtonCancelled.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        // Radio buttons
+        radioTatCa = createRadioButton("Tất cả");
+        radioHangDangKinhDoanh = createRadioButton("Hàng đang kinh doanh");
+        radioHangNgungKinhDoanh = createRadioButton("Hàng ngừng kinh doanh");
 
-        JRadioButton radioButtonAll = new JRadioButton("Tất Cả");
-        radioButtonAll.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-
+        // Group radio buttons
         ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioButtonTemp);
-        buttonGroup.add(radioButtonBalanced);
-        buttonGroup.add(radioButtonCancelled);
-        buttonGroup.add(radioButtonAll);
+        buttonGroup.add(radioTatCa);
+        buttonGroup.add(radioHangDangKinhDoanh);
+        buttonGroup.add(radioHangNgungKinhDoanh);
 
-        statusPanel.add(radioButtonTemp);
-        statusPanel.add(radioButtonBalanced);
-        statusPanel.add(radioButtonCancelled);
-        statusPanel.add(radioButtonAll);
-    }
-
-    private void setupCreatorPanel() {
-        JPanel creatorPanel = createTitledPanel("Người Tạo", 230, 150);
-        creatorPanel.setLayout(new BoxLayout(creatorPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(creatorPanel);
-
-        String[] userData = {"Tây Bán Bom", "Tín Víp Pro", "Thư Bồ Tín", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"};
-        userList = new JList<>(userData);
-        userList.setLayoutOrientation(JList.VERTICAL);
-        userList.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-
-        JScrollPane listScroller = new JScrollPane(userList);
-        listScroller.setBorder(BorderFactory.createEmptyBorder());
-        listScroller.setPreferredSize(new Dimension(200, 150));
-        creatorPanel.add(listScroller);
+        // Add to panel
+        luaChonPanel.add(radioTatCa);
+        luaChonPanel.add(radioHangDangKinhDoanh);
+        luaChonPanel.add(radioHangNgungKinhDoanh);
     }
 
     private void setupBottomPanelRight() {
-        // Tạo tiêu đề cột
-        String[] columnNames = {"Mã Kiếm Kho", "Thời Gian", "Ngày Cân Bằng", "SL Thực Tế", "Tổng Thực Tế", "Ghi Chú"};
+        // Table data
+        String[] columnNames = {"Mã hàng", "Tên hàng", "Nhóm hàng", "Nhà cung cấp", "Giá bán", "Giá vốn", "Tồn kho", "Khách đặt"};
+        Object[][] data = {
+                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 10000, 8000, 192, 0},
+                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 15000, 14000, 0, 0},
+                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 45000, 44000, 0, 0},
+        };
 
-        // Dữ liệu hóa đơn
-        Object[][] data = {};
-
-        CustomTable table = new CustomTable(data, columnNames);
-        JScrollPane tableScrollPane = new JScrollPane(table);
+        // Create table
+        hangHoaTable = new CustomTable(data, columnNames);
+        JScrollPane tableScrollPane = new JScrollPane(hangHoaTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
         bottomPanelRight.add(tableScrollPane);
     }
 
+    // Helper methods
     private JPanel createTitledPanel(String title, int width, int height) {
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
@@ -250,6 +245,26 @@ public class kiemKhoPanel extends JPanel {
         return panel;
     }
 
+    private JList<String> createScrollableList(String[] data) {
+        JList<String> list = new JList<>(data);
+        list.setLayoutOrientation(JList.VERTICAL);
+        list.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        return list;
+    }
+
+    private JScrollPane createScrollPane(JComponent component, int width, int height) {
+        JScrollPane scrollPane = new JScrollPane(component);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setPreferredSize(new Dimension(width, height));
+        return scrollPane;
+    }
+
+    private JRadioButton createRadioButton(String text) {
+        JRadioButton radioButton = new JRadioButton(text);
+        radioButton.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        return radioButton;
+    }
+
     // Hàm main để test giao diện
     public static void main(String[] args) {
         try {
@@ -257,7 +272,7 @@ public class kiemKhoPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new kiemKhoPanel());
+            frame.add(new DanhMucPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
