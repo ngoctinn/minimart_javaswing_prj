@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainGUI extends JFrame implements ActionListener {
+public class MenuFrame extends JFrame implements ActionListener {
     private Map<String, JPanel> panelMap;
     private CardLayout cardLayout;
     private JPanel contentPanel;
@@ -49,7 +49,7 @@ public class MainGUI extends JFrame implements ActionListener {
     // Các JMenuItem cho JMenu người dùng
     private JMenuItem profileItem, logoutItem;
 
-    public MainGUI() {
+    public MenuFrame() {
         initializeFrame();
         setupMenuBar();
         setupContentPanel();
@@ -360,7 +360,7 @@ public class MainGUI extends JFrame implements ActionListener {
         }
     }
 
-    private static void setupUIManagerProperties() {
+    public static void setupUIManagerProperties() {
         // TitlePane color
         UIManager.put("RootPane.background", new Color(0, 102, 204));
         UIManager.put("TitlePane.background", new Color(0, 102, 204));
@@ -387,7 +387,7 @@ public class MainGUI extends JFrame implements ActionListener {
         try {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
             setupUIManagerProperties();
-            new MainGUI();
+            new MenuFrame();
         } catch (Exception e) {
             e.printStackTrace();
         }
