@@ -18,7 +18,7 @@ public class CustomTable extends JTable {
     
     // Cấu hình cho header
     private Font headerFont = new Font("SansSerif", Font.BOLD, 14);
-    private Color headerBackground = new Color(60, 120, 200);
+    private Color headerBackground = new Color(0, 102, 204);
     private Color headerForeground = Color.WHITE;
 
     // Constructor với dữ liệu và tiêu đề cột

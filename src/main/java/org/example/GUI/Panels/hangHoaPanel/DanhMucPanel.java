@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
+import static org.example.GUI.Dialogs.ThemHangHoaDialog.setLookAndFeel;
+
 public class DanhMucPanel extends JPanel {
     // UI Components
     private RoundedPanel topPanel;
@@ -29,12 +31,14 @@ public class DanhMucPanel extends JPanel {
     private CustomButton exportButton;
 
     // Bottom panel components
-    private JList<String> nhomHangList;
+    private JList<String> loaiSanPhamList;
     private JList<String> nhaCungCapList;
     private JRadioButton radioTatCa;
     private JRadioButton radioHangDangKinhDoanh;
     private JRadioButton radioHangNgungKinhDoanh;
     private CustomTable hangHoaTable;
+    private CustomButton themLoaiSanPhamButton;
+    private CustomButton themNhaCungCapButton;
 
     public DanhMucPanel() {
         initGUI();
@@ -124,7 +128,11 @@ public class DanhMucPanel extends JPanel {
         addButton = new CustomButton("", addIcon);
         addButton.setBounds(960, 12, 50, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        addButton.addActionListener(e -> new ThemHangHoaDialog());
+        addButton.addActionListener(e ->
+        {
+            setLookAndFeel();
+            new ThemHangHoaDialog();
+        });
         topPanel.add(addButton);
 
         // Edit button
@@ -164,20 +172,27 @@ public class DanhMucPanel extends JPanel {
 
     private void setupNhomHangPanel() {
         // Nhóm hàng panel
-        JPanel nhomHangPanel = createTitledPanel("Nhóm hàng", 230, 200);
-        bottomPanelLeft.add(nhomHangPanel);
+        JPanel loaiSanPhamPanel = createTitledPanel("Nhóm hàng", 230, 210);
+        loaiSanPhamPanel.setLayout(null);
+        bottomPanelLeft.add(loaiSanPhamPanel);
 
         // Nhóm hàng list
-        String[] nhomHangData = {"Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4", "Nhóm 5", "Nhóm 6", "Nhóm 7", "Nhóm 8",
-                "Nhóm 9", "Nhóm 10", "Nhóm 11", "Nhóm 12", "Nhóm 13", "Nhóm 14", "Nhóm 15",
-                "Nhóm 16", "Nhóm 17", "Nhóm 18", "Nhóm 19", "Nhóm 20"};
-        nhomHangList = createScrollableList(nhomHangData);
-        nhomHangPanel.add(createScrollPane(nhomHangList, 200, 150));
+        String[] loaiSanPhamData = {"Bánh kẹo", "Thực phẩm khô", "Thực phẩm tươi", "Đồ uống","Bia","Đồ gia dụng", "Hàng hóa khác"};
+        loaiSanPhamList = createScrollableList(loaiSanPhamData);
+        JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 130);
+        scrollPane.setBounds(15, 25, 200, 130);
+        loaiSanPhamPanel.add(scrollPane);
+
+        //Btn thêm loại sản phẩm
+        themLoaiSanPhamButton = new CustomButton("Thêm loại sản phẩm");
+        themLoaiSanPhamButton.setBounds(20, 170, 195, 25);
+        loaiSanPhamPanel.add(themLoaiSanPhamButton);
     }
 
     private void setupNhaCungCapPanel() {
         // Nhà cung cấp panel
-        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 200);
+        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 210);
+        nhaCungCapPanel.setLayout(null);
         bottomPanelLeft.add(nhaCungCapPanel);
 
         // Nhà cung cấp list
@@ -187,7 +202,14 @@ public class DanhMucPanel extends JPanel {
                 "Nhà cung cấp 13", "Nhà cung cấp 14", "Nhà cung cấp 15", "Nhà cung cấp 16",
                 "Nhà cung cấp 17", "Nhà cung cấp 18", "Nhà cung cấp 19", "Nhà cung cấp 20"};
         nhaCungCapList = createScrollableList(nhaCungCapData);
-        nhaCungCapPanel.add(createScrollPane(nhaCungCapList, 200, 150));
+        JScrollPane scrollPane = createScrollPane(nhaCungCapList, 200, 130);
+        scrollPane.setBounds(15, 25, 200, 130);
+        nhaCungCapPanel.add(scrollPane);
+
+        //Btn thêm nhà cung cấp
+        themNhaCungCapButton = new CustomButton("Thêm nhà cung cấp");
+        themNhaCungCapButton.setBounds(20, 170, 195, 25);
+        nhaCungCapPanel.add(themNhaCungCapButton);
     }
 
     private void setupLuaChonHienThiPanel() {

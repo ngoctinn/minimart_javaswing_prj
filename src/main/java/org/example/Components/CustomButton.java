@@ -18,12 +18,11 @@ public class CustomButton extends JButton {
     // =============== ĐỊNH NGHĨA CÁC BỘ MÀU ===============
     public static final class ButtonColors {
         // Xanh dương (mặc định)
-        public static final Color[] BLUE = {
-                new Color(0, 112, 244),  // normal
-                new Color(0, 90, 195),    // press
-                new Color(0, 117, 255),  // hover
-        };
-
+public static final Color[] BLUE = {
+        new Color(0, 102, 204),  // normal
+        new Color(0, 90, 195),   // press
+        new Color(0, 105, 225),  // hover
+};
         // Xanh lá
         public static final Color[] GREEN = {
                 new Color(0, 184, 63),  // normal
