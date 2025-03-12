@@ -7,8 +7,12 @@ import org.example.Components.RoundedPanel;
 import javax.swing.*;
 import java.awt.*;
 
-public class themHangHoaDialog extends JDialog {
-    public themHangHoaDialog() {
+public class ThemHangHoaDialog extends JDialog {
+    private CustomTexField maHangHoaField, tenHangHoaField, donViTinhField;
+    private JComboBox<String> loaiHangHoaComboBox, trangThaiComboBox;
+    private CustomButton chonHinhAnhButton, luuButton, huyButton;
+
+    public ThemHangHoaDialog() {
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
@@ -18,124 +22,129 @@ public class themHangHoaDialog extends JDialog {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+
+
     }
 
-    public void initGUI() {
-        this.setSize(400, 550);
-        this.getContentPane().setBackground(new Color(245, 245, 245));
-        this.setLocationRelativeTo(null);
-        this.setResizable(false);
-        this.setModal(true);
-        this.setLayout(null);
+    private void initGUI() {
+        setSize(400, 550);
+        getContentPane().setBackground(new Color(245, 245, 245));
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setModal(true);
+        setLayout(null);
 
         RoundedPanel panel = new RoundedPanel(20);
         panel.setBackground(Color.WHITE);
         panel.setBounds(20, 50, 350, 400);
         panel.setLayout(null);
 
-        // Tạo tiêu đề
-        JLabel title = new JLabel("Thêm hàng hóa");
+        // Tiêu đề
+        JLabel title = new JLabel("Thêm hàng hóa", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
-        title.setBounds(25, 10, 200, 30);
+        title.setBounds(0, 10, getWidth(), 30);
+        add(title);
 
-        // Mã hàng hóa
-        JLabel maHangHoaLabel = new JLabel("Mã hàng hóa");
-        maHangHoaLabel.setBounds(20, 20, 100, 30);
-        maHangHoaLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomTexField maHangHoaField = new CustomTexField("Mã tự động (vd: HH001)");
+        // Tạo các thành phần
+        createComponents(panel);
+
+        // Thêm sự kiện cho các thành phần
+        addEventListeners();
+
+        add(panel);
+        setVisible(true);
+    }
+
+    private void createComponents(JPanel panel) {
+        panel.add(createLabel("Mã hàng hóa", 20, 20));
+        maHangHoaField = new CustomTexField("Mã tự động (vd: HH001)");
         maHangHoaField.setBounds(130, 20, 200, 30);
+        panel.add(maHangHoaField);
 
-        // Tên hàng hóa
-        JLabel tenHangHoaLabel = new JLabel("Tên hàng hóa");
-        tenHangHoaLabel.setBounds(20, 60, 100, 30);
-        tenHangHoaLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomTexField tenHangHoaField = new CustomTexField("Nhập tên (vd: Coca Cola)");
+        panel.add(createLabel("Tên hàng hóa", 20, 60));
+        tenHangHoaField = new CustomTexField("Nhập tên (vd: Coca Cola)");
         tenHangHoaField.setBounds(130, 60, 200, 30);
+        panel.add(tenHangHoaField);
 
-        // Loại hàng hóa
-        JLabel loaiHangHoaLabel = new JLabel("Loại hàng hóa");
-        loaiHangHoaLabel.setBounds(20, 100, 100, 30);
-        loaiHangHoaLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        JComboBox<String> loaiHangHoaComboBox = new JComboBox<>();
-        loaiHangHoaComboBox.addItem("Thức ăn");
-        loaiHangHoaComboBox.addItem("Đồ uống");
-        loaiHangHoaComboBox.addItem("Hàng hóa khác");
+        panel.add(createLabel("Loại hàng hóa", 20, 100));
+        loaiHangHoaComboBox = new JComboBox<>(new String[]{"Thức ăn", "Đồ uống", "Hàng hóa khác"});
         loaiHangHoaComboBox.setBounds(130, 100, 200, 30);
+        panel.add(loaiHangHoaComboBox);
 
-        //Đơn vị tính
-        JLabel donViTinhLabel = new JLabel("Đơn vị tính");
-        donViTinhLabel.setBounds(20, 140, 100, 30);
-        donViTinhLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomTexField donViTinhField = new CustomTexField("Nhập đơn vị tính (vd: chai)");
+        panel.add(createLabel("Đơn vị tính", 20, 140));
+        donViTinhField = new CustomTexField("Nhập đơn vị tính (vd: chai)");
         donViTinhField.setBounds(130, 140, 200, 30);
+        panel.add(donViTinhField);
 
-        // Trạng thái
-        JLabel trangThaiLabel = new JLabel("Trạng thái");
-        trangThaiLabel.setBounds(20, 180, 100, 30);
-        trangThaiLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        JComboBox<String> trangThaiComboBox = new JComboBox<>();
-        trangThaiComboBox.addItem("Đang kinh doanh");
-        trangThaiComboBox.addItem("Ngừng kinh doanh");
+        panel.add(createLabel("Trạng thái", 20, 180));
+        trangThaiComboBox = new JComboBox<>(new String[]{"Đang kinh doanh", "Ngừng kinh doanh"});
         trangThaiComboBox.setBounds(130, 180, 200, 30);
+        panel.add(trangThaiComboBox);
 
-        // Hình ảnh
-        JLabel hinhAnhLabel = new JLabel("Hình ảnh");
-        hinhAnhLabel.setBounds(20, 220, 100, 30);
-        hinhAnhLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+        panel.add(createLabel("Hình ảnh", 20, 220));
         JPanel hinhAnhPanel = new JPanel();
         hinhAnhPanel.setBackground(new Color(225, 225, 225));
         hinhAnhPanel.setBounds(130, 220, 200, 100);
-        CustomButton chonHinhAnhButton = new CustomButton("Chọn hình ảnh");
+        panel.add(hinhAnhPanel);
+
+        chonHinhAnhButton = new CustomButton("Chọn hình ảnh");
         chonHinhAnhButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         chonHinhAnhButton.setBounds(130, 330, 200, 30);
+        panel.add(chonHinhAnhButton);
 
-        //Button lưu
-        CustomButton luuButton = new CustomButton("Lưu");
+        // Button lưu
+        luuButton = new CustomButton("Lưu");
         luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         luuButton.setBounds(260, 460, 110, 30);
+        add(luuButton);
 
-        //Button hủy
-        CustomButton huyButton = new CustomButton("Hủy");
+        // Button hủy
+        huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
         huyButton.setBounds(140, 460, 110, 30);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        this.add(title);
-        this.add(panel);
-        panel.add(maHangHoaLabel);
-        panel.add(maHangHoaField);
-        panel.add(tenHangHoaLabel);
-        panel.add(tenHangHoaField);
-        panel.add(loaiHangHoaLabel);
-        panel.add(loaiHangHoaComboBox);
-        panel.add(donViTinhLabel);
-        panel.add(donViTinhField);
-        panel.add(trangThaiLabel);
-        panel.add(trangThaiComboBox);
-        panel.add(hinhAnhLabel);
-        panel.add(hinhAnhPanel);
-        panel.add(chonHinhAnhButton);
-        this.add(luuButton);
-        this.add(huyButton);
-        this.setVisible(true);
+        add(huyButton);
     }
 
-    // Main để test giao diện
+    private JLabel createLabel(String text, int x, int y) {
+        JLabel label = new JLabel(text);
+        label.setBounds(x, y, 100, 30);
+        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        return label;
+    }
+
+    // Xử lý sự kiện
+    private void addEventListeners() {
+        luuButton.addActionListener(e -> handleSave());
+        huyButton.addActionListener(e -> handleCancel());
+        chonHinhAnhButton.addActionListener(e -> handleChooseImage());
+    }
+
+    private void handleSave() {
+        // Code xử lý lưu dữ liệu
+    }
+
+    private void handleCancel() {
+        // Code xử lý hủy
+        this.dispose();
+    }
+
+    private void handleChooseImage() {
+        // Code xử lý chọn hình ảnh
+    }
+
+    public static void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            // Cấu hình UI trước khi giao diện được tạo
+            UIManager.put("RootPane.background", new Color(245, 245, 245));
+            UIManager.put("TitlePane.foreground", Color.BLACK);
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
-        new themHangHoaDialog();
+        setLookAndFeel(); // Đặt LookAndFeel trước
+        SwingUtilities.invokeLater(ThemHangHoaDialog::new);
     }
 }

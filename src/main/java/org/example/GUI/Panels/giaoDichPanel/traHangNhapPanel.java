@@ -4,7 +4,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.themHangHoaDialog;
+import org.example.GUI.Dialogs.ThemHangHoaDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -88,7 +88,7 @@ public class traHangNhapPanel extends JPanel {
         // sự kiện khi click vào nút thêm
         addButton.addActionListener(e -> {
             // code xử lý khi click vào nút thêm
-            new themHangHoaDialog();
+            new ThemHangHoaDialog();
         });
 
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
@@ -264,7 +264,7 @@ public class traHangNhapPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.danhMucPanel());
+            frame.add(new org.example.GUI.Panels.hangHoaPanel.DanhMucPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {

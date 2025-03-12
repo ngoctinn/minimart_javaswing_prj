@@ -2,107 +2,86 @@ package org.example.GUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import org.example.Components.GoodsPanel;
 import org.example.GUI.Panels.baoCaoPanel;
 import org.example.GUI.Panels.doiTacPanel.khachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
-import org.example.GUI.Panels.giaoDichPanel.datHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
-import org.example.GUI.Panels.hangHoaPanel.danhMucPanel;
+import org.example.GUI.Panels.hangHoaPanel.DanhMucPanel;
 import org.example.GUI.Panels.hangHoaPanel.kiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.thietLapGiaPanel;
+import org.example.GUI.Panels.nhanVienPanel.bangChamLuongPanel;
+import org.example.GUI.Panels.nhanVienPanel.chamCongPanel;
 import org.example.GUI.Panels.nhanVienPanel.chucVuPanel;
 import org.example.GUI.Panels.nhanVienPanel.nhanVienPanel;
-// import các panel khác
+import org.example.GUI.Panels.tongQuanPanel;
 
 import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class mainGUI extends JFrame implements ActionListener {
-    Map<String, JPanel> panelMap;
-
-    // Các JMenuItem cho JMenu giaoDich
-    JMenuItem datHangItem;
-    JMenuItem hoaDonItem;
-    JMenuItem traHangItem;
-    JMenuItem nhapHangItem;
-    JMenuItem traHangNhapItem;
-
-    // Các JMenuItem cho JMenu hangHoa
-    JMenuItem danhMucItem;
-    JMenuItem thietLapGiaItem;
-    JMenuItem kiemKhoItem;
-
-    // Các JMenuItem cho JMenu doiTac
-    JMenuItem khachHang;
-    JMenuItem nhaCungCap;
-
-    //Các JMenuItem cho JMenu nhanVien
-    JMenuItem nhanVienItem;
-    JMenuItem chucVuItem;
-    JMenuItem chamCongItem;
-    JMenuItem bangTinhLuongItem;
-
-    // Các JMenuItem cho JMenu giaoDich gồm (đặt hàng, hoá đơn, vận đơn, trả hàng, nhập hàng, trả hàng nhập, xuất huỷ)
-
-
-    // CardLayout và panel chứa các panel khác
+public class MainGUI extends JFrame implements ActionListener {
+    private Map<String, JPanel> panelMap;
     private CardLayout cardLayout;
     private JPanel contentPanel;
 
-    public mainGUI(){
-        // Tạo JFrame
+    // Các JMenu
+    private JMenu tongQuanMenu, hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
+
+    // Các JMenuItem cho JMenu giaoDich
+    private JMenuItem hoaDonItem, traHangItem, nhapHangItem, traHangNhapItem;
+
+    // Các JMenuItem cho JMenu hangHoa
+    private JMenuItem danhMucItem, thietLapGiaItem, kiemKhoItem;
+
+    // Các JMenuItem cho JMenu doiTac
+    private JMenuItem khachHangItem, nhaCungCapItem;
+
+    // Các JMenuItem cho JMenu nhanVien
+    private JMenuItem nhanVienItem, chucVuItem, chamCongItem, bangTinhLuongItem;
+
+    // Các JMenuItem cho JMenu người dùng
+    private JMenuItem profileItem, logoutItem;
+
+    public MainGUI() {
+        initializeFrame();
+        setupMenuBar();
+        setupContentPanel();
+        setVisible(true);
+    }
+
+    private void initializeFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setResizable(false);
-
         setLayout(new BorderLayout());
+    }
 
-
-        // Tạo JMenuBar
+    private void setupMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setFont(new Font("Roboto", Font.PLAIN, 14));
 
         // Tạo các JMenu
-        JMenu tongQuanMenu = new JMenu("Tổng quan");
-        JMenu hangHoaMenu = new JMenu("Hàng hóa");
-        JMenu giaoDichMenu = new JMenu("Giao dịch");
-        JMenu doiTacMenu = new JMenu("Đối tác");
-        JMenu nhanVienMenu = new JMenu("Nhân viên");
-        JMenu baoCaoMenu = new JMenu("Báo cáo");
+        createMenus();
 
-        // tạo JMenu người dùng nằm bên phải menuBar
-        JMenu userMenu = new JMenu("Người dùng");
+        // Tạo các JMenuItem
+        createMenuItems();
 
-        // Tạo các Icon cho JMenu người dùng
-        FlatSVGIcon userIcon = new FlatSVGIcon("Icons/user.svg", 20, 20);
-        userMenu.setIcon(userIcon);
+        // Thêm các JMenuItem vào JMenu
+        addMenuItems();
 
-        // Tạo các JMenuItem cho JMenu người dùng
-        JMenuItem profileItem = new JMenuItem("Thông tin");
-        JMenuItem logoutItem = new JMenuItem("Đăng xuất");
+        // Thêm ActionListener cho JMenu và JMenuItem
+        addActionListeners();
 
-        // Tạo các Icon cho các JMenuItem
-        FlatSVGIcon profileIcon = new FlatSVGIcon("Icons/profile.svg", 20, 20);
-        FlatSVGIcon logoutIcon = new FlatSVGIcon("Icons/logout.svg", 20, 20);
-
-        // Thêm các JMenuItem vào JMenu người dùng
-        userMenu.add(profileItem);
-        userMenu.add(logoutItem);
-
-        // Thêm Icon cho các JMenuItem
-        profileItem.setIcon(profileIcon);
-        logoutItem.setIcon(logoutIcon);
-
-        // Thêm các JMenu vào JMenuBar
+        // Thêm các JMenu vào menuBar
         menuBar.add(tongQuanMenu);
         menuBar.add(hangHoaMenu);
         menuBar.add(giaoDichMenu);
@@ -110,250 +89,307 @@ public class mainGUI extends JFrame implements ActionListener {
         menuBar.add(nhanVienMenu);
         menuBar.add(baoCaoMenu);
 
-        // Thêm JMenu người dùng vào menuBar
+        // Thêm JMenu người dùng vào menuBar (ở bên phải)
         menuBar.add(Box.createHorizontalGlue());
         menuBar.add(userMenu);
 
-        // Tạo các Icon cho JMenu
-        FlatSVGIcon tongQuanIcon = new FlatSVGIcon("Icons/tongquan.svg", 16, 16);
-        FlatSVGIcon hangHoaIcon = new FlatSVGIcon("Icons/hanghoa.svg", 16, 16);
-        FlatSVGIcon giaoDichIcon = new FlatSVGIcon("Icons/giaodich.svg", 16, 16);
-        FlatSVGIcon doiTacIcon = new FlatSVGIcon("Icons/doitac.svg", 16, 16);
-        FlatSVGIcon nhanVienIcon = new FlatSVGIcon("Icons/nhanvien.svg", 16, 16);
-        FlatSVGIcon baoCaoIcon = new FlatSVGIcon("Icons/baocao.svg", 16, 16);
+        setJMenuBar(menuBar);
+    }
 
-        // Thêm Icon cho JMenu
-        tongQuanMenu.setIcon(tongQuanIcon);
-        hangHoaMenu.setIcon(hangHoaIcon);
-        giaoDichMenu.setIcon(giaoDichIcon);
-        doiTacMenu.setIcon(doiTacIcon);
-        nhanVienMenu.setIcon(nhanVienIcon);
-        baoCaoMenu.setIcon(baoCaoIcon);
+    private void createMenus() {
+        // Tạo các JMenu
+        tongQuanMenu = new JMenu("Tổng quan");
+        hangHoaMenu = new JMenu("Hàng hóa");
+        giaoDichMenu = new JMenu("Giao dịch");
+        doiTacMenu = new JMenu("Đối tác");
+        nhanVienMenu = new JMenu("Nhân viên");
+        baoCaoMenu = new JMenu("Báo cáo");
+        userMenu = new JMenu("Người dùng");
 
-        //===================GIAODICH===========================
+        // Tạo và thêm Icon cho các JMenu
+        tongQuanMenu.setIcon(createIcon("tongquan", 16));
+        hangHoaMenu.setIcon(createIcon("hanghoa", 16));
+        giaoDichMenu.setIcon(createIcon("giaodich", 16));
+        doiTacMenu.setIcon(createIcon("doitac", 16));
+        nhanVienMenu.setIcon(createIcon("nhanvien", 16));
+        baoCaoMenu.setIcon(createIcon("baocao", 16));
+        userMenu.setIcon(createIcon("user", 20));
+    }
 
-        // Tạo các JMenuItem cho JMenu giaoDich
-        datHangItem = new JMenuItem("Đặt hàng");
-        hoaDonItem = new JMenuItem("Hoá đơn");
-        traHangItem = new JMenuItem("Trả hàng");
-        nhapHangItem = new JMenuItem("Nhập hàng");
-        traHangNhapItem = new JMenuItem("Trả hàng nhập");
+    private void createMenuItems() {
+        // Tạo JMenuItem cho giao dịch
+        hoaDonItem = createMenuItem("Hoá đơn", "hoadon", 16);
+        traHangItem = createMenuItem("Trả hàng", "trahang", 16);
+        nhapHangItem = createMenuItem("Nhập hàng", "nhaphang", 16);
+        traHangNhapItem = createMenuItem("Trả hàng nhập", "trahangnhap", 16);
 
+        // Tạo JMenuItem cho hàng hóa
+        danhMucItem = createMenuItem("Danh mục", "danhmuc", 16);
+        thietLapGiaItem = createMenuItem("Thiết lập giá", "thietlapgia", 16);
+        kiemKhoItem = createMenuItem("Kiểm kho", "kiemkho", 16);
 
-        // Tạo các Icon cho các JMenuItem
-        FlatSVGIcon datHangIcon = new FlatSVGIcon("Icons/dathang.svg", 16, 16);
-        FlatSVGIcon hoaDonIcon = new FlatSVGIcon("Icons/hoadon.svg", 16, 16);
-        FlatSVGIcon traHangIcon = new FlatSVGIcon("Icons/trahang.svg", 16, 16);
-        FlatSVGIcon nhapHangIcon = new FlatSVGIcon("Icons/nhaphang.svg", 16, 16);
-        FlatSVGIcon traHangNhapIcon = new FlatSVGIcon("Icons/trahangnhap.svg", 16, 16);
+        // Tạo JMenuItem cho đối tác
+        khachHangItem = createMenuItem("Khách hàng", "khachhang", 16);
+        nhaCungCapItem = createMenuItem("Nhà cung cấp", "nhacungcap", 16);
 
+        // Tạo JMenuItem cho nhân viên
+        nhanVienItem = createMenuItem("Nhân viên", "nhanvien", 16);
+        chucVuItem = createMenuItem("Chức vụ", "chucvu", 16);
+        chamCongItem = createMenuItem("Chấm công", "chamcong", 16);
+        bangTinhLuongItem = createMenuItem("Bảng tính lương", "luong", 16);
 
-        // Thêm Icon cho các JMenuItem
-        datHangItem.setIcon(datHangIcon);
-        hoaDonItem.setIcon(hoaDonIcon);
-        traHangItem.setIcon(traHangIcon);
-        nhapHangItem.setIcon(nhapHangIcon);
-        traHangNhapItem.setIcon(traHangNhapIcon);
+        // Tạo JMenuItem cho người dùng
+        profileItem = createMenuItem("Thông tin", "profile", 16);
+        logoutItem = createMenuItem("Đăng xuất", "logout", 16);
+    }
 
+    private JMenuItem createMenuItem(String text, String iconName, int size) {
+        JMenuItem item = new JMenuItem(text);
+        item.setIcon(createIcon(iconName, size));
+        return item;
+    }
 
-        // Thêm các JMenuItem vào JMenu giaoDich
-        giaoDichMenu.add(datHangItem);
+    private FlatSVGIcon createIcon(String name, int size) {
+        return new FlatSVGIcon("Icons/" + name + ".svg", size, size);
+    }
+
+    private void addMenuItems() {
+        // Thêm JMenuItem vào giao dịch
         giaoDichMenu.add(hoaDonItem);
         giaoDichMenu.add(nhapHangItem);
         giaoDichMenu.add(traHangNhapItem);
 
-        //===================HANGHOA===========================
-
-        // Tạo các JMenuItem cho các JMenu hangHoa
-        danhMucItem = new JMenuItem("Danh mục");
-        thietLapGiaItem = new JMenuItem("Thiết lập giá");
-        kiemKhoItem = new JMenuItem("Kiểm kho");
-
-        // Tạo các Icon cho các JMenuItem
-        FlatSVGIcon danhMucIcon = new FlatSVGIcon("Icons/danhmuc.svg", 16, 16);
-        FlatSVGIcon thietLapGiaIcon = new FlatSVGIcon("Icons/thietlapgia.svg", 16, 16);
-        FlatSVGIcon kiemKhoIcon = new FlatSVGIcon("Icons/kiemkho.svg", 16, 16);
-
-        // Thêm Icon cho các JMenuItem
-        danhMucItem.setIcon(danhMucIcon);
-        thietLapGiaItem.setIcon(thietLapGiaIcon);
-        kiemKhoItem.setIcon(kiemKhoIcon);
-
-        // Thêm các JMenuItem vào JMenu hangHoa
+        // Thêm JMenuItem vào hàng hóa
         hangHoaMenu.add(danhMucItem);
         hangHoaMenu.add(thietLapGiaItem);
         hangHoaMenu.add(kiemKhoItem);
 
-        //===================DOITAC===========================
+        // Thêm JMenuItem vào đối tác
+        doiTacMenu.add(khachHangItem);
+        doiTacMenu.add(nhaCungCapItem);
 
-        //Tạo các JMenuItem cho JMenu doiTac
-        khachHang = new JMenuItem("Khách hàng");
-        nhaCungCap = new JMenuItem("Nhà cung cấp");
-
-        // Tạo các Icon cho các JMenuItem
-        FlatSVGIcon khachHangIcon = new FlatSVGIcon("Icons/khachhang.svg", 16, 16);
-        FlatSVGIcon nhaCungCapIcon = new FlatSVGIcon("Icons/nhacungcap.svg", 16, 16);
-
-        // Thêm Icon cho các JMenuItem
-        khachHang.setIcon(khachHangIcon);
-        nhaCungCap.setIcon(nhaCungCapIcon);
-
-        // Thêm các JMenuItem vào JMenu doiTac
-        doiTacMenu.add(khachHang);
-        doiTacMenu.add(nhaCungCap);
-
-        //===================NHANVIEN===========================
-
-        // Tạo các JMenuItem cho các JMenu nhanVien
-        nhanVienItem = new JMenuItem("Nhân viên");
-        chucVuItem = new JMenuItem("Chức vụ");
-        chamCongItem = new JMenuItem("Chấm công");
-        bangTinhLuongItem = new JMenuItem("Bảng tính lương");
-
-        // Tạo các Icon cho các JMenuItem
-        FlatSVGIcon nhanVienIIcon = new FlatSVGIcon("Icons/nhanvien.svg", 16, 16);
-        FlatSVGIcon chucVuIcon = new FlatSVGIcon("Icons/chucvu.svg", 16, 16);
-        FlatSVGIcon chamCongIcon = new FlatSVGIcon("Icons/chamcong.svg", 16, 16);
-        FlatSVGIcon bangTinhLuongIcon = new FlatSVGIcon("Icons/luong.svg", 16, 16);
-
-        // Thêm Icon cho các JMenuItem
-        nhanVienItem.setIcon(nhanVienIIcon);
-        chucVuItem.setIcon(chucVuIcon);
-        chamCongItem.setIcon(chamCongIcon);
-        bangTinhLuongItem.setIcon(bangTinhLuongIcon);
-
-        // Thêm các JMenuItem cho các JMenu nhanVien
+        // Thêm JMenuItem vào nhân viên
         nhanVienMenu.add(nhanVienItem);
         nhanVienMenu.add(chucVuItem);
         nhanVienMenu.add(chamCongItem);
         nhanVienMenu.add(bangTinhLuongItem);
 
-        //=================THÊM ACTIONLISTENER=========================
+        // Thêm JMenuItem vào người dùng
+        userMenu.add(profileItem);
+        userMenu.add(logoutItem);
+    }
 
-        // tHEM AcionListener cho JMenu
-        tongQuanMenu.addActionListener(this);
-        baoCaoMenu.addActionListener(this);
+    private void addActionListeners() {
+        // Thêm ActionListener cho JMenu
+        tongQuanMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                showPanel("tongQuan");
+            }
 
-        // Thêm ActionListener cho các JMenuItem
-        datHangItem.addActionListener(this);
+            @Override
+            public void menuDeselected(MenuEvent e) {
+
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {}
+        });
+
+        baoCaoMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                showPanel("baoCao");
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+
+            }
+        });
+
+
+        // Thêm ActionListener cho các JMenuItem giao dịch
         hoaDonItem.addActionListener(this);
         traHangItem.addActionListener(this);
         nhapHangItem.addActionListener(this);
         traHangNhapItem.addActionListener(this);
 
-        // Thêm ActionListener cho các JMenuItem
+        // Thêm ActionListener cho các JMenuItem hàng hóa
         danhMucItem.addActionListener(this);
         thietLapGiaItem.addActionListener(this);
         kiemKhoItem.addActionListener(this);
 
-        // Thêm ActionListener cho các JMenuItem
-        khachHang.addActionListener(this);
-        nhaCungCap.addActionListener(this);
+        // Thêm ActionListener cho các JMenuItem đối tác
+        khachHangItem.addActionListener(this);
+        nhaCungCapItem.addActionListener(this);
 
-        setJMenuBar(menuBar);
+        // Thêm ActionListener cho các JMenuItem nhân viên
+        nhanVienItem.addActionListener(this);
+        chucVuItem.addActionListener(this);
+        chamCongItem.addActionListener(this);
+        bangTinhLuongItem.addActionListener(this);
 
+        // Thêm ActionListener cho các JMenuItem người dùng
+        profileItem.addActionListener(this);
+        logoutItem.addActionListener(this);
+    }
+
+    private void setupContentPanel() {
         // Tạo vùng chứa chính sử dụng CardLayout
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
-        //set panel hiển thị hàng hóa đầu tiên
-        contentPanel.add("danhMuc", new danhMucPanel());
 
+        // Khởi tạo panelMap và các panel
+        initializePanels();
 
-        // Khởi tạo các panel và lưu vào Map
-        panelMap = new HashMap<>();
-        panelMap.put("danhMuc", new danhMucPanel());
-        panelMap.put("kiemKho", new kiemKhoPanel());
-        panelMap.put("thietLapGia", new thietLapGiaPanel());
-        panelMap.put("datHang", new datHangPanel());
-        panelMap.put("hoaDon", new hoaDonPanel());
-        panelMap.put("nhapHang", new nhapHangPanel());
-        panelMap.put("tranHang", new traHangNhapPanel());
-        panelMap.put("khachHang", new khachHangPanel());
-        panelMap.put("nhaCungCap", new nhaCungCapPanel());
-        panelMap.put("nhanVien", new nhanVienPanel());
-        panelMap.put("chucVu", new chucVuPanel());
-        panelMap.put("chamCong", new nhanVienPanel());
-        panelMap.put("bangTinhLuong", new nhaCungCapPanel());
-        panelMap.put("baoCao", new baoCaoPanel());
-
-
-
-        // Thêm các panel vào contentPanel với tên định danh (card name)
+        // Thêm các panel vào contentPanel
         for (Map.Entry<String, JPanel> entry : panelMap.entrySet()) {
             contentPanel.add(entry.getKey(), entry.getValue());
         }
 
+        // Hiển thị panel mặc định
+        cardLayout.show(contentPanel, "danhMuc");
 
-
-        // Thêm contentPanel vào JFrame, ví dụ ở CENTER của BorderLayout
+        // Thêm contentPanel vào JFrame
         add(contentPanel, BorderLayout.CENTER);
+    }
 
-        setVisible(true);
+    private void initializePanels() {
+        panelMap = new HashMap<>();
+
+        panelMap.put("tongQuan", new tongQuanPanel());
+
+        // Hàng hóa panels
+        panelMap.put("danhMuc", new DanhMucPanel());
+        panelMap.put("kiemKho", new kiemKhoPanel());
+        panelMap.put("thietLapGia", new thietLapGiaPanel());
+
+        // Giao dịch panels
+        panelMap.put("hoaDon", new hoaDonPanel());
+        panelMap.put("nhapHang", new nhapHangPanel());
+        panelMap.put("traHang", new traHangNhapPanel());
+
+        // Đối tác panels
+        panelMap.put("khachHang", new khachHangPanel());
+        panelMap.put("nhaCungCap", new nhaCungCapPanel());
+
+        // Nhân viên panels
+        panelMap.put("nhanVien", new nhanVienPanel());
+        panelMap.put("chucVu", new chucVuPanel());
+        panelMap.put("chamCong", new chamCongPanel());
+        panelMap.put("bangTinhLuong", new bangChamLuongPanel());
+
+        // Báo cáo panel
+        panelMap.put("baoCao", new baoCaoPanel());
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Sử dụng CardLayout để hiển thị panel tương ứng
-        if (e.getSource() == danhMucItem) {
-            cardLayout.show(contentPanel, "danhMuc");
-        } else if (e.getSource() == thietLapGiaItem) {
-            cardLayout.show(contentPanel, "thietLapGia");
-        } else if (e.getSource() == kiemKhoItem) {
-            cardLayout.show(contentPanel, "kiemKho");
-        } else if (e.getSource() == datHangItem) {
-            cardLayout.show(contentPanel, "datHang");
-        } else if (e.getSource() == hoaDonItem) {
-            cardLayout.show(contentPanel, "hoaDon");
-        } else if (e.getSource() == nhapHangItem) {
-            cardLayout.show(contentPanel, "nhapHang");
-        } else if (e.getSource() == traHangNhapItem) {
-            cardLayout.show(contentPanel, "tranHang");
-        } else if (e.getSource() == khachHang) {
-            cardLayout.show(contentPanel, "khachHang");
-        } else if (e.getSource() == nhaCungCap) {
-            cardLayout.show(contentPanel, "nhaCungCap");
-        } else if (e.getSource() == nhanVienItem) {
-            cardLayout.show(contentPanel, "nhanVien");
-        } else if (e.getSource() == chucVuItem) {
-            cardLayout.show(contentPanel, "chucVu");
-        } else if (e.getSource() == chamCongItem) {
-            cardLayout.show(contentPanel, "chamCong");
-        } else if (e.getSource() == bangTinhLuongItem) {
-            cardLayout.show(contentPanel, "bangTinhLuong");
+        Object source = e.getSource();
+
+        // Hàng hóa
+        if (source == danhMucItem) {
+            showPanel("danhMuc");
+        } else if (source == thietLapGiaItem) {
+            showPanel("thietLapGia");
+        } else if (source == kiemKhoItem) {
+            showPanel("kiemKho");
         }
-        // Xử lý các menu khác theo cách tương tự
+        // Giao dịch
+        else if (source == hoaDonItem) {
+            showPanel("hoaDon");
+        } else if (source == nhapHangItem) {
+            showPanel("nhapHang");
+        } else if (source == traHangNhapItem) {
+            showPanel("traHang");
+        }
+        // Đối tác
+        else if (source == khachHangItem) {
+            showPanel("khachHang");
+        } else if (source == nhaCungCapItem) {
+            showPanel("nhaCungCap");
+        }
+        // Nhân viên
+        else if (source == nhanVienItem) {
+            showPanel("nhanVien");
+        } else if (source == chucVuItem) {
+            showPanel("chucVu");
+        } else if (source == chamCongItem) {
+            showPanel("chamCong");
+        } else if (source == bangTinhLuongItem) {
+            showPanel("bangTinhLuong");
+        }
+        // Báo cáo
+        else if (source == baoCaoMenu) {
+            showPanel("baoCao");
+        }
+        // Người dùng
+        else if (source == profileItem) {
+            handleProfileAction();
+        } else if (source == logoutItem) {
+            handleLogoutAction();
+        }
+    }
+
+
+    private void showPanel(String panelName) {
+        cardLayout.show(contentPanel, panelName);
+    }
+
+    private void handleProfileAction() {
+        // Xử lý khi người dùng chọn xem thông tin cá nhân
+        JOptionPane.showMessageDialog(this, "Chức năng xem thông tin cá nhân");
+    }
+
+    private void handleLogoutAction() {
+        // Xử lý khi người dùng đăng xuất
+        int option = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn đăng xuất không?", "Xác nhận đăng xuất",
+                JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION) {
+            // Thực hiện đăng xuất
+            dispose();
+            // TODO: Thêm code để trở về màn hình đăng nhập
+        }
+    }
+
+    private static void setupUIManagerProperties() {
+        // TitlePane color
+        UIManager.put("RootPane.background", new Color(0, 102, 204));
+        UIManager.put("TitlePane.background", new Color(0, 102, 204));
+        UIManager.put("TitlePane.foreground", Color.WHITE);
+
+        // Menu
+        UIManager.put("MenuBar.foreground", Color.WHITE);
+        UIManager.put("MenuBar.selectionForeground", Color.WHITE);
+        UIManager.put("MenuBar.hoverBackground", new Color(0, 90, 195));
+        UIManager.put("MenuBar.itemMargins", new Insets(7, 5, 7, 5));
+
+        // JMenuItem
+        UIManager.put("MenuItem.foreground", Color.WHITE);
+        UIManager.put("MenuItem.selectionBackground", new Color(0, 102, 204));
+        UIManager.put("MenuItem.font", new Font("Roboto", Font.PLAIN, 14));
+        UIManager.put("MenuItem.margin", new Insets(7, 7, 7, 7));
+
+        // Popup Menu
+        UIManager.put("PopupMenu.background", new Color(0, 90, 195));
+        UIManager.put("PopupMenu.borderColor", new Color(0, 90, 195));
     }
 
     public static void main(String[] args) {
-        // Thiết lập Look and Feel của FlatLaf
         try {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
-
-            // TitlePane color
-            UIManager.put("RootPane.background",  new Color(0, 102, 204));
-            UIManager.put("TitlePane.background", new Color(0, 102, 204));
-            UIManager.put("TitlePane.foreground", Color.WHITE);
-            UIManager.put("TitlePane.borderColor", new Color(0, 10, 0));
-
-            // Menu
-            UIManager.put("MenuBar.foreground", Color.WHITE);
-            UIManager.put("MenuBar.selectionForeground", Color.WHITE);
-            UIManager.put("MenuBar.hoverBackground", new Color(0, 90, 195));
-            UIManager.put("MenuBar.itemMargins", new Insets(7, 5, 7, 5));
-
-            // JMenuItem
-            UIManager.put("MenuItem.foreground", Color.WHITE);
-            UIManager.put("MenuItem.selectionBackground", new Color(0, 102, 204));
-            UIManager.put("MenuItem.font", new Font("Roboto", Font.PLAIN, 14));
-            UIManager.put("MenuItem.margin", new Insets(7, 7, 7, 7));
-
-            // Popup Menu
-            UIManager.put("PopupMenu.background", new Color(0, 90, 195));
-            UIManager.put("PopupMenu.borderColor", new Color(0, 90, 195));
-
-            new mainGUI();
+            setupUIManagerProperties();
+            new MainGUI();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-}
+    }

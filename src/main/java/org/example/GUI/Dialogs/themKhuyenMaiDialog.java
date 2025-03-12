@@ -6,127 +6,153 @@ import org.example.Components.RoundedPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.SpinnerDateModel;
-public class themKhuyenMaiDialog extends JDialog {
-    public themKhuyenMaiDialog() {
+
+public class ThemKhuyenMaiDialog extends JDialog {
+    private CustomTexField maKhuyenMaiField, tenKhuyenMaiField;
+    private JSpinner phanTramSpinner, ngayBatDauSpinner, ngayKetThucSpinner;
+    private CustomButton luuButton, huyButton;
+
+    public ThemKhuyenMaiDialog() {
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
             UIManager.put("ComboBox.buttonBackground", Color.WHITE);
             UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
-            initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+
+        initGUI();
     }
 
-    public void initGUI() {
-        this.setSize(400, 370);
-        this.getContentPane().setBackground(new Color(245, 245, 245));
-        this.setLocationRelativeTo(null);
-        this.setResizable(false);
-        this.setModal(true);
-        this.setLayout(null);
+    private void initGUI() {
+        setSize(400, 370);
+        getContentPane().setBackground(new Color(245, 245, 245));
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setModal(true);
+        setLayout(null);
 
         RoundedPanel panel = new RoundedPanel(20);
         panel.setBackground(Color.WHITE);
         panel.setBounds(20, 50, 350, 230);
         panel.setLayout(null);
 
-        // Tạo tiêu đề
-        JLabel title = new JLabel("Thêm khuyến mãi");
+        // Tiêu đề
+        JLabel title = new JLabel("Thêm khuyến mãi", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
-        title.setBounds(25, 10, 200, 30);
+        title.setBounds(0, 10, getWidth(), 30);
+        add(title);
 
+        // Tạo các thành phần
+        createComponents(panel);
+
+        // Thêm sự kiện cho các thành phần
+        addEventListeners();
+
+        add(panel);
+        setVisible(true);
+    }
+
+    private void createComponents(JPanel panel) {
         // Mã khuyến mãi
-        JLabel maKhuyenMaiLabel = new JLabel("Mã KM");
-        maKhuyenMaiLabel.setBounds(20, 20, 100, 30);
-        maKhuyenMaiLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomTexField maKhuyenMaiField = new CustomTexField("Mã tự động (vd: KM001)");
+        panel.add(createLabel("Mã KM", 20, 20));
+        maKhuyenMaiField = new CustomTexField("Mã tự động (vd: KM001)");
         maKhuyenMaiField.setBounds(130, 20, 200, 30);
+        panel.add(maKhuyenMaiField);
 
         // Tên khuyến mãi
-        JLabel tenKhuyenMaiLabel = new JLabel("Tên");
-        tenKhuyenMaiLabel.setBounds(20, 60, 100, 30);
-        tenKhuyenMaiLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        CustomTexField tenKhuyenMaiField = new CustomTexField("Nhập tên khuyến mãi");
+        panel.add(createLabel("Tên", 20, 60));
+        tenKhuyenMaiField = new CustomTexField("Nhập tên khuyến mãi");
         tenKhuyenMaiField.setBounds(130, 60, 200, 30);
+        panel.add(tenKhuyenMaiField);
 
         // Phần trăm khuyến mãi
-        JLabel phanTramLabel = new JLabel("Giá trị KM (%)");
-        phanTramLabel.setBounds(20, 100, 100, 30);
-        phanTramLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-
+        panel.add(createLabel("Giá trị KM (%)", 20, 100));
         SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 100, 1);
-        JSpinner phanTramSpinner = new JSpinner(model);
+        phanTramSpinner = new JSpinner(model);
         phanTramSpinner.setBounds(130, 100, 200, 30);
+        panel.add(phanTramSpinner);
 
-
-
-// Ngày bắt đầu
-        JLabel ngayBatDauLabel = new JLabel("Ngày bắt đầu");
-        ngayBatDauLabel.setBounds(20, 140, 100, 30);
-        ngayBatDauLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-
+        // Ngày bắt đầu
+        panel.add(createLabel("Ngày bắt đầu", 20, 140));
         SpinnerDateModel modelBatDau = new SpinnerDateModel();
-        JSpinner ngayBatDauSpinner = new JSpinner(modelBatDau);
+        ngayBatDauSpinner = new JSpinner(modelBatDau);
         ngayBatDauSpinner.setBounds(130, 140, 200, 30);
         ngayBatDauSpinner.setEditor(new JSpinner.DateEditor(ngayBatDauSpinner, "dd/MM/yyyy"));
+        panel.add(ngayBatDauSpinner);
 
-// Ngày kết thúc
-        JLabel ngayKetThucLabel = new JLabel("Ngày kết thúc");
-        ngayKetThucLabel.setBounds(20, 180, 100, 30);
-        ngayKetThucLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-
+        // Ngày kết thúc
+        panel.add(createLabel("Ngày kết thúc", 20, 180));
         SpinnerDateModel modelKetThuc = new SpinnerDateModel();
-        JSpinner ngayKetThucSpinner = new JSpinner(modelKetThuc);
+        ngayKetThucSpinner = new JSpinner(modelKetThuc);
         ngayKetThucSpinner.setBounds(130, 180, 200, 30);
         ngayKetThucSpinner.setEditor(new JSpinner.DateEditor(ngayKetThucSpinner, "dd/MM/yyyy"));
-
-// Thêm vào panel
-        panel.add(ngayBatDauLabel);
-        panel.add(ngayBatDauSpinner);
-        panel.add(ngayKetThucLabel);
         panel.add(ngayKetThucSpinner);
 
-
-        // Thêm vào panel
-        panel.add(phanTramLabel);
-        panel.add(phanTramSpinner);
-
-        //Button lưu
-        CustomButton luuButton = new CustomButton("Lưu");
+        // Button lưu
+        luuButton = new CustomButton("Lưu");
         luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         luuButton.setBounds(260, 290, 110, 30);
+        add(luuButton);
 
-        //Button hủy
-        CustomButton huyButton = new CustomButton("Hủy");
+        // Button hủy
+        huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
         huyButton.setBounds(140, 290, 110, 30);
+        add(huyButton);
+    }
 
+    private JLabel createLabel(String text, int x, int y) {
+        JLabel label = new JLabel(text);
+        label.setBounds(x, y, 100, 30);
+        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        return label;
+    }
 
-        this.add(title);
-        this.add(panel);
+    // Xử lý sự kiện
+    private void addEventListeners() {
+        luuButton.addActionListener(e -> handleSave());
+        huyButton.addActionListener(e -> handleCancel());
+    }
 
-        panel.add(maKhuyenMaiLabel);
-        panel.add(maKhuyenMaiField);
-        panel.add(tenKhuyenMaiLabel);
-        panel.add(tenKhuyenMaiField);
-        panel.add(phanTramLabel);
-        panel.add(phanTramSpinner);
-        panel.add(ngayBatDauLabel);
-        panel.add(ngayBatDauSpinner);
-        panel.add(ngayKetThucLabel);
-        panel.add(ngayKetThucSpinner);
+    private void handleSave() {
+        // Code xử lý lưu dữ liệu
+        if (validateInput()) {
+            // Thực hiện lưu dữ liệu
+            JOptionPane.showMessageDialog(this, "Đã lưu thông tin khuyến mãi!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        }
+    }
 
+    private boolean validateInput() {
+        // Kiểm tra tên khuyến mãi
+        if (tenKhuyenMaiField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên khuyến mãi không được để trống",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
-        this.add(luuButton);
-        this.add(huyButton);
-        this.setVisible(true);
+        // Kiểm tra ngày bắt đầu và kết thúc
+        java.util.Date ngayBatDau = (java.util.Date) ngayBatDauSpinner.getValue();
+        java.util.Date ngayKetThuc = (java.util.Date) ngayKetThucSpinner.getValue();
+
+        if (ngayKetThuc.before(ngayBatDau)) {
+            JOptionPane.showMessageDialog(this, "Ngày kết thúc phải sau ngày bắt đầu",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void handleCancel() {
+        // Code xử lý hủy
+        dispose();
     }
 
     // Main để test giao diện
     public static void main(String[] args) {
-        new themKhuyenMaiDialog();
+        new ThemKhuyenMaiDialog();
     }
 }
