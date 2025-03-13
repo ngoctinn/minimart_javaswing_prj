@@ -185,7 +185,7 @@ public class DanhMucPanel extends JPanel {
 
         //Btn thêm loại sản phẩm
         themLoaiSanPhamButton = new CustomButton("Thêm loại sản phẩm");
-        themLoaiSanPhamButton.setBounds(20, 170, 195, 25);
+        themLoaiSanPhamButton.setBounds(15, 170, 195, 25);
         loaiSanPhamPanel.add(themLoaiSanPhamButton);
     }
 
@@ -208,7 +208,7 @@ public class DanhMucPanel extends JPanel {
 
         //Btn thêm nhà cung cấp
         themNhaCungCapButton = new CustomButton("Thêm nhà cung cấp");
-        themNhaCungCapButton.setBounds(20, 170, 195, 25);
+        themNhaCungCapButton.setBounds(15, 170, 195, 25);
         nhaCungCapPanel.add(themNhaCungCapButton);
     }
 

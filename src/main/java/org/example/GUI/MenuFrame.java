@@ -35,7 +35,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenu tongQuanMenu, hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
 
     // Các JMenuItem cho JMenu giaoDich
-    private JMenuItem hoaDonItem, traHangItem, nhapHangItem, traHangNhapItem;
+    private JMenuItem banHangItem ,hoaDonItem, traHangItem, nhapHangItem, traHangNhapItem;
 
     // Các JMenuItem cho JMenu hangHoa
     private JMenuItem danhMucItem, thietLapGiaItem, kiemKhoItem;
@@ -118,6 +118,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void createMenuItems() {
         // Tạo JMenuItem cho giao dịch
+        banHangItem = createMenuItem("Bán hàng", "banhang", 16);
         hoaDonItem = createMenuItem("Hoá đơn", "hoadon", 16);
         traHangItem = createMenuItem("Trả hàng", "trahang", 16);
         nhapHangItem = createMenuItem("Nhập hàng", "nhaphang", 16);
@@ -155,6 +156,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void addMenuItems() {
         // Thêm JMenuItem vào giao dịch
+        giaoDichMenu.add(banHangItem);
         giaoDichMenu.add(hoaDonItem);
         giaoDichMenu.add(nhapHangItem);
         giaoDichMenu.add(traHangNhapItem);
@@ -215,6 +217,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
 
         // Thêm ActionListener cho các JMenuItem giao dịch
+        banHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
         traHangItem.addActionListener(this);
         nhapHangItem.addActionListener(this);
@@ -271,6 +274,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("thietLapGia", new ThietLapGiaPanel());
 
         // Giao dịch panels
+        panelMap.put("banHang", new BanHangPanel());
         panelMap.put("hoaDon", new hoaDonPanel());
         panelMap.put("nhapHang", new nhapHangPanel());
         panelMap.put("traHang", new traHangNhapPanel());
@@ -302,6 +306,9 @@ public class MenuFrame extends JFrame implements ActionListener {
             showPanel("kiemKho");
         }
         // Giao dịch
+        else if (source == banHangItem) {
+            showPanel("banHang");
+        }
         else if (source == hoaDonItem) {
             showPanel("hoaDon");
         } else if (source == nhapHangItem) {
