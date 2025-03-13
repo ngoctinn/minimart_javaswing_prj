@@ -1,30 +1,37 @@
 package org.example.GUI;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.Components.CustomButton;
+import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import com.formdev.flatlaf.extras.components.FlatTabbedPane;
-import com.formdev.flatlaf.extras.components.FlatTextField;
-import com.formdev.flatlaf.extras.components.FlatButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BanHangGUI extends JPanel {
+public class BanHangPanel extends JPanel {
     // UI Components
     private RoundedPanel topPanel;
     private RoundedPanel bottomPanel;
     private RoundedPanel bottomPanelLeft;
     private RoundedPanel bottomPanelRight;
-    private FlatTabbedPane tabbedPane;
-    private FlatTextField searchField;
+
+    // Top panel components
+    private PlaceholderTextField searchField;
+    private CustomButton searchButton;
+    private CustomButton addTabButton;
+    private CustomButton refreshButton;
+
+    // Bottom panel components
+    private JTabbedPane tabbedPane;
     private JPanel productsPanel;
     private int tabCounter = 1;
-    private JButton addTabButton;
 
-    public BanHangGUI() {
+    public BanHangPanel() {
         initGUI();
     }
 
@@ -34,9 +41,16 @@ public class BanHangGUI extends JPanel {
         setupTopPanel();
         setupBottomPanelLeft();
         setupBottomPanelRight();
+
+        // Add panels to main panel
+        this.add(topPanel);
+        this.add(bottomPanel);
+        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
+        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
     private void setupMainPanel() {
+        // Set up layout and background for main panel
         this.setLayout(new FlowLayout());
         this.setBackground(new Color(225, 225, 225));
         this.setVisible(true);
@@ -66,49 +80,51 @@ public class BanHangGUI extends JPanel {
         bottomPanel.setLayout(new BorderLayout(5, 0));
         bottomPanelLeft.setLayout(new BorderLayout());
         bottomPanelRight.setLayout(new BorderLayout());
-
-        add(topPanel);
-        add(bottomPanel);
-        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
-        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
     private void setupTopPanel() {
-        // Add search field
-        searchField = new FlatTextField();
-        searchField.setPlaceholderText("Tìm kiếm sản phẩm...");
-        searchField.setBounds(20, 10, 300, 30);
+        // Title label
+        JLabel title = new JLabel("Bán Hàng");
+        title.setFont(new Font("Roboto", Font.BOLD, 23));
+        title.setForeground(new Color(0, 0, 0));
+        title.setBounds(10, 10, 220, 30);
+        topPanel.add(title);
 
-        // Add search button
-        FlatButton searchButton = new FlatButton();
-        searchButton.setText("Tìm kiếm");
-        searchButton.setBounds(330, 10, 100, 30);
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Đang tìm kiếm: " + searchField.getText());
-            }
-        });
-
-        // Add new tab button to top panel
-        addTabButton = new FlatButton();
-        addTabButton.setText("+ Thêm hóa đơn mới");
-        addTabButton.setBounds(450, 10, 150, 30);
-        addTabButton.addActionListener(e -> addNewTab());
-
+        // Search field
+        searchField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
+        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        searchField.setBounds(270, 12, 300, 30);
         topPanel.add(searchField);
+
+        // Search button
+        searchButton = new CustomButton("Tìm");
+        searchButton.setBounds(580, 12, 70, 30);
         topPanel.add(searchButton);
+
+        // Add new tab button
+        FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
+        addTabButton = new CustomButton("Thêm hóa đơn", addIcon);
+        addTabButton.setBounds(960, 12, 150, 30);
+        addTabButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        addTabButton.addActionListener(e -> addNewTab());
         topPanel.add(addTabButton);
+
+        // Refresh button
+        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
+        refreshButton = new CustomButton("", refreshIcon);
+        refreshButton.setBounds(1120, 12, 50, 30);
+        refreshButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        topPanel.add(refreshButton);
     }
 
     private void setupBottomPanelLeft() {
         // Create closable tabbed pane
-        tabbedPane = new FlatTabbedPane();
+        tabbedPane = new JTabbedPane();
         tabbedPane.putClientProperty("JTabbedPane.tabClosable", true);
         tabbedPane.putClientProperty("JTabbedPane.tabCloseCallback",
                 (java.util.function.BiConsumer<JTabbedPane, Integer>) (tabPane, tabIndex) -> {
                     if (tabIndex > 0) { // Don't close the first tab
-                        // Hiển thị hộp thoại xác nhận trước khi đóng tab
                         int confirm = JOptionPane.showConfirmDialog(
                                 this,
                                 "Bạn có chắc muốn đóng hóa đơn này?",
@@ -142,14 +158,6 @@ public class BanHangGUI extends JPanel {
         JPanel newPanel = createInvoicePanel("Hóa đơn mới #" + tabCounter);
         tabbedPane.addTab(tabTitle, newPanel);
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-
-        // Hiển thị thông báo nhỏ
-        JOptionPane.showMessageDialog(
-                this,
-                "Đã tạo hóa đơn mới: " + tabTitle,
-                "Thông báo",
-                JOptionPane.INFORMATION_MESSAGE
-        );
     }
 
     private JPanel createInvoicePanel(String title) {
@@ -170,11 +178,37 @@ public class BanHangGUI extends JPanel {
     }
 
     private void setupBottomPanelRight() {
-        // Create a panel for product buttons with grid layout
+        // Create title panel
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        titlePanel.setBackground(Color.WHITE);
+        JLabel titleLabel = new JLabel("Danh sách sản phẩm");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        titlePanel.add(titleLabel);
+
+        // Create products panel (with borders)
+        JPanel productsContainer = createTitledPanel("Sản Phẩm", bottomPanelRight.getWidth(), bottomPanelRight.getHeight() - 50);
+        productsContainer.setLayout(new BorderLayout());
+
+        // Create grid panel for products (3x3 grid)
         productsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         productsPanel.setBackground(Color.WHITE);
 
-        // Add some sample product buttons
+        // Add sample products
+        addSampleProducts();
+
+        // Create scroll pane for products
+        JScrollPane scrollPane = new JScrollPane(productsPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        productsContainer.add(scrollPane, BorderLayout.CENTER);
+
+        // Add components to bottom panel right
+        bottomPanelRight.add(titlePanel, BorderLayout.NORTH);
+        bottomPanelRight.add(productsContainer, BorderLayout.CENTER);
+    }
+
+    private void addSampleProducts() {
         List<String> products = new ArrayList<>();
         products.add("Cà phê");
         products.add("Trà sữa");
@@ -185,6 +219,9 @@ public class BanHangGUI extends JPanel {
         products.add("Snack");
         products.add("Kem");
         products.add("Sữa chua");
+        products.add("Trà đào");
+        products.add("Nước suối");
+        products.add("Bia");
 
         for (String product : products) {
             JButton productButton = new JButton(product);
@@ -194,19 +231,22 @@ public class BanHangGUI extends JPanel {
             });
             productsPanel.add(productButton);
         }
+    }
 
-        // Add scroll pane for products
-        JScrollPane scrollPane = new JScrollPane(productsPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        // Add title for products section
-        JLabel titleLabel = new JLabel("Danh sách sản phẩm");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        bottomPanelRight.add(titleLabel, BorderLayout.NORTH);
-        bottomPanelRight.add(scrollPane, BorderLayout.CENTER);
+    // Helper methods
+    private JPanel createTitledPanel(String title, int width, int height) {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                title,
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                new Font("Segoe UI", Font.BOLD, 15),
+                Color.BLACK
+        ));
+        panel.setPreferredSize(new Dimension(width, height));
+        return panel;
     }
 
     // Hàm main để test giao diện
@@ -216,8 +256,8 @@ public class BanHangGUI extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
+            frame.add(new BanHangPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.add(new BanHangGUI());
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
