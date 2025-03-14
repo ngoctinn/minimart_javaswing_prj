@@ -6,6 +6,7 @@ import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -71,7 +72,8 @@ public class BanHangPanel extends JPanel {
 
         // Set panel sizes
         topPanel.setPreferredSize(new Dimension(1270, 50));
-        bottomPanel.setPreferredSize(new Dimension(1270, 900));
+        bottomPanel.setPreferredSize(new Dimension(1270, 700
+        ));
         bottomPanelLeft.setPreferredSize(new Dimension(1270 * 60 / 100, 900));
         bottomPanelRight.setPreferredSize(new Dimension(1270 * 40 / 100, 900));
 
@@ -83,39 +85,25 @@ public class BanHangPanel extends JPanel {
     }
 
     private void setupTopPanel() {
-        // Title label
-        JLabel title = new JLabel("Bán Hàng");
-        title.setFont(new Font("Roboto", Font.BOLD, 23));
-        title.setForeground(new Color(0, 0, 0));
-        title.setBounds(10, 10, 220, 30);
-        topPanel.add(title);
-
         // Search field
-        searchField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
+        searchField = new PlaceholderTextField("Tìm kiếm khách hàng...");
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        searchField.setBounds(270, 12, 300, 30);
+        searchField.setBounds(20, 12, 300, 30);
         topPanel.add(searchField);
 
         // Search button
         searchButton = new CustomButton("Tìm");
-        searchButton.setBounds(580, 12, 70, 30);
+        searchButton.setBounds(330, 12, 70, 30);
         topPanel.add(searchButton);
 
         // Add new tab button
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addTabButton = new CustomButton("Thêm hóa đơn", addIcon);
-        addTabButton.setBounds(960, 12, 150, 30);
-        addTabButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        addTabButton.setBounds(1090, 12, 150, 30);
         addTabButton.addActionListener(e -> addNewTab());
         topPanel.add(addTabButton);
 
-        // Refresh button
-        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
-        refreshButton = new CustomButton("", refreshIcon);
-        refreshButton.setBounds(1120, 12, 50, 30);
-        refreshButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        topPanel.add(refreshButton);
     }
 
     private void setupBottomPanelLeft() {
@@ -178,35 +166,48 @@ public class BanHangPanel extends JPanel {
     }
 
     private void setupBottomPanelRight() {
-        // Create title panel
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        titlePanel.setBackground(Color.WHITE);
-        JLabel titleLabel = new JLabel("Danh sách sản phẩm");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        titlePanel.add(titleLabel);
+        bottomPanelRight.setLayout(new BorderLayout());
 
-        // Create products panel (with borders)
-        JPanel productsContainer = createTitledPanel("Sản Phẩm", bottomPanelRight.getWidth(), bottomPanelRight.getHeight() - 50);
-        productsContainer.setLayout(new BorderLayout());
+        // Tạo panel chứa ô tìm kiếm
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        searchPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 25));
+        searchPanel.setBackground(Color.WHITE);
 
-        // Create grid panel for products (3x3 grid)
+        // Ô nhập tìm kiếm
+        PlaceholderTextField searchField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
+        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+
+        searchPanel.add(searchField, BorderLayout.CENTER);
+        bottomPanelRight.add(searchPanel, BorderLayout.NORTH);
+
+        // Panel chứa danh sách sản phẩm
         productsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         productsPanel.setBackground(Color.WHITE);
+        productsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Add sample products
+        // Thêm sản phẩm vào danh sách
         addSampleProducts();
 
-        // Create scroll pane for products
+        // Bọc productsPanel trong JScrollPane
         JScrollPane scrollPane = new JScrollPane(productsPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        bottomPanelRight.add(scrollPane, BorderLayout.CENTER);
 
-        productsContainer.add(scrollPane, BorderLayout.CENTER);
+        // Thêm nút thanh toán ở dưới cùng
+        CustomButton btnThanhToan = new CustomButton("Thanh toán");
+        btnThanhToan.setPreferredSize(new Dimension(100, 45));
 
-        // Add components to bottom panel right
-        bottomPanelRight.add(titlePanel, BorderLayout.NORTH);
-        bottomPanelRight.add(productsContainer, BorderLayout.CENTER);
+        // Thêm panel chứa nút thanh toán vào bottomPanelRight
+        JPanel thanhToanPanel = new JPanel(new BorderLayout());
+        thanhToanPanel.add(btnThanhToan, BorderLayout.CENTER);
+        thanhToanPanel.setBackground(Color.WHITE);
+        thanhToanPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 20));
+
+        bottomPanelRight.add(thanhToanPanel, BorderLayout.SOUTH);
     }
+
+
 
     private void addSampleProducts() {
         List<String> products = new ArrayList<>();
@@ -222,10 +223,14 @@ public class BanHangPanel extends JPanel {
         products.add("Trà đào");
         products.add("Nước suối");
         products.add("Bia");
+        products.add("Rượu");
+        products.add("Nước ngọt");
+        products.add("Nước lọc");
+        products.add("Nước ép trái cây");
 
         for (String product : products) {
             JButton productButton = new JButton(product);
-            productButton.setPreferredSize(new Dimension(120, 80));
+            productButton.setPreferredSize(new Dimension(100, 200));
             productButton.addActionListener(e -> {
                 JOptionPane.showMessageDialog(null, "Đã chọn: " + product);
             });
