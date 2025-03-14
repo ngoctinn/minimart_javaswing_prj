@@ -1,17 +1,17 @@
-package org.example.GUI.Panels.hangHoaPanel;
+package org.example.GUI.Panels.nhanVienPanel;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class thietLapGiaPanel extends JPanel {
-    public thietLapGiaPanel()
-    {
+public class ChamCongPanel extends JPanel {
+    public ChamCongPanel() {
         initGUI();
     }
 
     public void initGUI() {
         this.setLayout(null);
-        setBackground(Color.BLACK);
+        setBackground(Color.white);
         this.setVisible(true);
     }
+
 }

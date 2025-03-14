@@ -1,13 +1,11 @@
 package org.example.Components;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.example.test.SVGIconExample;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 public class CustomButton extends JButton {
 
@@ -20,24 +18,23 @@ public class CustomButton extends JButton {
     // =============== ĐỊNH NGHĨA CÁC BỘ MÀU ===============
     public static final class ButtonColors {
         // Xanh dương (mặc định)
-        public static final Color[] BLUE = {
-                new Color(0, 120, 215),  // normal
-                new Color(0, 150, 255),  // hover
-                new Color(0, 90, 175)    // press
-        };
-
+public static final Color[] BLUE = {
+        new Color(0, 102, 204),  // normal
+        new Color(0, 90, 195),   // press
+        new Color(0, 105, 225),  // hover
+};
         // Xanh lá
         public static final Color[] GREEN = {
-                new Color(46, 204, 113),  // normal
-                new Color(88, 214, 141),  // hover
-                new Color(40, 180, 99)    // press
+                new Color(0, 184, 63),  // normal
+                new Color(0, 146, 50),   // hover
+                new Color(0, 180, 76)    // press
         };
 
         // Đỏ
         public static final Color[] RED = {
                 new Color(231, 76, 60),   // normal
-                new Color(236, 112, 99),  // hover
-                new Color(192, 57, 43)    // press
+                new Color(192, 57, 43),    // press
+                new Color(236, 112, 99)  // hover
         };
 
         // Vàng
