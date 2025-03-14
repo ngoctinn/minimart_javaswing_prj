@@ -4,6 +4,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
+import org.example.GUI.Dialogs.ThanhToanDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -197,6 +198,12 @@ public class BanHangPanel extends JPanel {
         // Thêm nút thanh toán ở dưới cùng
         CustomButton btnThanhToan = new CustomButton("Thanh toán");
         btnThanhToan.setPreferredSize(new Dimension(100, 45));
+        btnThanhToan.addActionListener(e -> {
+            // TODO: Tính tổng tiền từ các sản phẩm đã chọn
+            double totalAmount = 400000; // Tạm thời hardcode để test
+            ThanhToanDialog dialog = new ThanhToanDialog( SwingUtilities.getWindowAncestor(this), totalAmount);
+            dialog.setVisible(true);
+        });
 
         // Thêm panel chứa nút thanh toán vào bottomPanelRight
         JPanel thanhToanPanel = new JPanel(new BorderLayout());
@@ -206,8 +213,6 @@ public class BanHangPanel extends JPanel {
 
         bottomPanelRight.add(thanhToanPanel, BorderLayout.SOUTH);
     }
-
-
 
     private void addSampleProducts() {
         List<String> products = new ArrayList<>();

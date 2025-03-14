@@ -13,7 +13,7 @@ public class Main {
         try {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
             setupUIManagerProperties();
-            new LoginGUI();
+            new MenuFrame();
         } catch (Exception e) {
             e.printStackTrace();
         }
