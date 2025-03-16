@@ -54,8 +54,8 @@ public static final Color[] BLUE = {
         // Xám
         public static final Color[] GRAY = {
                 new Color(120, 120, 120), // normal
-                new Color(160, 160, 160), // hover
-                new Color(80, 80, 80)     // press
+                new Color(80, 80, 80),     // press
+                new Color(160, 160, 160) // hover
         };
     }
 

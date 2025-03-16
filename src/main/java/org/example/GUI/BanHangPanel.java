@@ -73,7 +73,7 @@ public class BanHangPanel extends JPanel {
 
         // Set panel sizes
         topPanel.setPreferredSize(new Dimension(1270, 50));
-        bottomPanel.setPreferredSize(new Dimension(1270, 700
+        bottomPanel.setPreferredSize(new Dimension(1270, 600
         ));
         bottomPanelLeft.setPreferredSize(new Dimension(1270 * 60 / 100, 900));
         bottomPanelRight.setPreferredSize(new Dimension(1270 * 40 / 100, 900));
