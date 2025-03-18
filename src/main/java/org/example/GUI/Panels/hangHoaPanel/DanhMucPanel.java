@@ -11,7 +11,6 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
-import static org.example.GUI.Dialogs.ThemHangHoaDialog.setLookAndFeel;
 
 public class DanhMucPanel extends JPanel {
     // UI Components
@@ -119,47 +118,46 @@ public class DanhMucPanel extends JPanel {
         // Refresh button
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
         refreshButton = new CustomButton("", refreshIcon);
-        refreshButton.setBounds(900, 12, 50, 30);
-        refreshButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        refreshButton.setBounds(660, 12, 50, 30);
+        refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         topPanel.add(refreshButton);
 
-        // Add button
+        // Add button - Moved to the right
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
-        addButton = new CustomButton("", addIcon);
-        addButton.setBounds(960, 12, 50, 30);
+        addButton = new CustomButton("Thêm", addIcon);
+        addButton.setBounds(820, 12, 100, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         addButton.addActionListener(e ->
         {
-            setLookAndFeel();
             new ThemHangHoaDialog();
         });
         topPanel.add(addButton);
 
-        // Edit button
+        // Edit button - Moved to the right
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
-        editButton = new CustomButton("", editIcon);
-        editButton.setBounds(1020, 12, 50, 30);
+        editButton = new CustomButton("Sửa", editIcon);
+        editButton.setBounds(930, 12, 100, 30);
         editButton.setButtonColors(CustomButton.ButtonColors.YELLOW);
         topPanel.add(editButton);
 
-        // Delete button
+        // Delete button - Moved to the right
         FlatSVGIcon deleteIcon = new FlatSVGIcon("Icons/delete.svg", 20, 20);
-        deleteButton = new CustomButton("", deleteIcon);
-        deleteButton.setBounds(1080, 12, 50, 30);
+        deleteButton = new CustomButton("Xóa", deleteIcon);
+        deleteButton.setBounds(1040, 12, 100, 30);
         deleteButton.setButtonColors(CustomButton.ButtonColors.RED);
         topPanel.add(deleteButton);
 
-        // Export button
+        // Export button - Moved to the right
         FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg", 16, 16);
         exportButton = new CustomButton("", exportIcon);
-        exportButton.setBounds(1140, 12, 50, 30);
+        exportButton.setBounds(1150, 12, 50, 30);
         exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         topPanel.add(exportButton);
 
-        // Import button
+        // Import button - Moved to the right
         FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg", 16, 16);
         importButton = new CustomButton("", importIcon);
-        importButton.setBounds(1200, 12, 50, 30);
+        importButton.setBounds(1210, 12, 50, 30);
         importButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         topPanel.add(importButton);
     }
