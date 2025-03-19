@@ -54,8 +54,8 @@ public class BanHangPanel extends JPanel {
         // Add panels to main panel
         this.add(topPanel);
         this.add(bottomPanel);
-        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
-        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
+        bottomPanel.add(bottomPanelLeft, BorderLayout.CENTER);
+        bottomPanel.add(bottomPanelRight, BorderLayout.EAST);
     }
 
     private void setupMainPanel() {
@@ -77,6 +77,9 @@ public class BanHangPanel extends JPanel {
         bottomPanel.setBackground(new Color(225, 225, 225));
         bottomPanelLeft.setBackground(Color.WHITE);
         bottomPanelRight.setBackground(Color.WHITE);
+
+        bottomPanelRight.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.4), 0));
+
 
         // Set layouts
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
