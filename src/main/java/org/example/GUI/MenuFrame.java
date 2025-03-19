@@ -3,7 +3,7 @@ package org.example.GUI;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.GUI.Panels.baoCaoPanel;
-import org.example.GUI.Panels.doiTacPanel.khachHangPanel;
+import org.example.GUI.Panels.doiTacPanel.KhachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
@@ -59,9 +59,8 @@ public class MenuFrame extends JFrame implements ActionListener {
     private void initializeFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(800, 600);
+        setSize(1200, 750);
         setLocationRelativeTo(null);
-        setResizable(false);
         setLayout(new BorderLayout());
     }
 
@@ -280,7 +279,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("traHang", new traHangNhapPanel());
 
         // Đối tác panels
-        panelMap.put("khachHang", new khachHangPanel());
+        panelMap.put("khachHang", new KhachHangPanel());
         panelMap.put("nhaCungCap", new nhaCungCapPanel());
 
         // Nhân viên panels
