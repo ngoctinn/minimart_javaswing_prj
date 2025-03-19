@@ -8,10 +8,7 @@ import org.example.GUI.Dialogs.ThanhToanDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,7 +26,6 @@ public class BanHangPanel extends JPanel {
     private PlaceholderTextField searchField;
     private CustomButton searchButton;
     private CustomButton addTabButton;
-    private CustomButton refreshButton;
 
     // Bottom panel components
     private JTabbedPane tabbedPane;
@@ -84,7 +80,7 @@ public class BanHangPanel extends JPanel {
 
         // Set panel sizes
         topPanel.setPreferredSize(new Dimension(1270, 50));
-        bottomPanel.setPreferredSize(new Dimension(1270, 600));
+        bottomPanel.setPreferredSize(new Dimension(1270, 700));
         bottomPanelLeft.setPreferredSize(new Dimension(1270 * 60 / 100, 900));
         bottomPanelRight.setPreferredSize(new Dimension(1270 * 40 / 100, 900));
 
@@ -149,7 +145,7 @@ public class BanHangPanel extends JPanel {
                 });
 
         // Add default tab
-        JPanel defaultPanel = createInvoicePanel("Hóa đơn mặc định");
+        JPanel defaultPanel = createInvoicePanel();
         tabbedPane.addTab("Hóa đơn 1", defaultPanel);
 
         // Khởi tạo giỏ hàng cho tab đầu tiên
@@ -161,7 +157,7 @@ public class BanHangPanel extends JPanel {
     private void addNewTab() {
         tabCounter++;
         String tabTitle = "Hóa đơn " + tabCounter;
-        JPanel newPanel = createInvoicePanel("Hóa đơn mới #" + tabCounter);
+        JPanel newPanel = createInvoicePanel();
         tabbedPane.addTab(tabTitle, newPanel);
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 
@@ -169,18 +165,10 @@ public class BanHangPanel extends JPanel {
         cartItemsByTab.add(new ArrayList<>());
     }
 
-    private JPanel createInvoicePanel(String title) {
+    private JPanel createInvoicePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // Tiêu đề của hóa đơn
-        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(new Color(50, 50, 50));
-        titleLabel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                BorderFactory.createEmptyBorder(15, 0, 15, 0)
-        ));
 
         // Tạo panel chứa giỏ hàng với layout dạng BorderLayout
         JPanel cartPanel = new JPanel(new BorderLayout());
@@ -188,14 +176,14 @@ public class BanHangPanel extends JPanel {
 
         // Panel chứa tiêu đề các cột
         JPanel headerPanel = new JPanel(new GridLayout(1, 4, 10, 0));
-        headerPanel.setBackground(new Color(245, 245, 250));
+        headerPanel.setBackground(new Color(245, 245, 245));
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(220, 220, 220)),
-                BorderFactory.createEmptyBorder(12, 15, 12, 15)
+                BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
 
         Font headerFont = new Font("Segoe UI", Font.BOLD, 14);
-        Color headerColor = new Color(60, 60, 60);
+        Color headerColor = new Color(60,60,60);
 
         JLabel nameHeader = new JLabel("Tên sản phẩm", SwingConstants.CENTER);
         nameHeader.setFont(headerFont);
@@ -248,8 +236,6 @@ public class BanHangPanel extends JPanel {
         cartPanel.add(headerPanel, BorderLayout.NORTH);
         cartPanel.add(scrollPane, BorderLayout.CENTER);
         cartPanel.add(totalPanel, BorderLayout.SOUTH);
-
-        panel.add(titleLabel, BorderLayout.NORTH);
         panel.add(cartPanel, BorderLayout.CENTER);
 
         // Lưu trữ các component quan trọng vào clientProperty để truy cập sau này
@@ -607,22 +593,6 @@ public class BanHangPanel extends JPanel {
 
         totalAmountByTab[tabIndex] = total;
         totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(total));
-    }
-
-    // Helper methods
-    private JPanel createTitledPanel(String title, int width, int height) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                title,
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
-        panel.setPreferredSize(new Dimension(width, height));
-        return panel;
     }
 
     // Hàm main để test giao diện

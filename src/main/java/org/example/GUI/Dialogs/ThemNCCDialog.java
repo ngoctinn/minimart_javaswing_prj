@@ -33,8 +33,6 @@ public class ThemNCCDialog extends JDialog {
         setResizable(false);
         setModal(true);
         setLayout(null);
-        setUndecorated(true); // Xóa title bar
-
         RoundedPanel panel = new RoundedPanel(20);
         panel.setBackground(Color.WHITE);
         panel.setBounds(20, 50, 360, 370);

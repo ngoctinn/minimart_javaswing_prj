@@ -25,16 +25,16 @@ public static final Color[] BLUE = {
 };
         // Xanh lá
         public static final Color[] GREEN = {
-                new Color(0, 184, 63),  // normal
-                new Color(0, 146, 50),   // hover
-                new Color(0, 180, 76)    // press
+                new Color(0, 153, 102),  // normal
+                new Color(0, 130, 90),    // press
+                new Color(0, 180, 120)   // hover
         };
 
         // Đỏ
         public static final Color[] RED = {
-                new Color(231, 76, 60),   // normal
-                new Color(192, 57, 43),    // press
-                new Color(236, 112, 99)  // hover
+                new Color(195, 0, 0),   // normal
+                new Color(180, 0, 0),  // hover
+                new Color(230, 50, 50)    // press
         };
 
         // Vàng
