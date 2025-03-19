@@ -22,98 +22,113 @@ public class ThemHangHoaDialog extends JDialog {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void initGUI() {
         setSize(400, 550);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
         setModal(true);
-        setLayout(null);
-
-        RoundedPanel panel = new RoundedPanel(20);
-        panel.setBackground(Color.WHITE);
-        panel.setBounds(20, 50, 350, 400);
-        panel.setLayout(null);
+        setLayout(new BorderLayout(10, 10));
 
         // Tiêu đề
-        JLabel title = new JLabel("Thêm hàng hóa", SwingConstants.CENTER);
+        JLabel title = new JLabel("THÊM HÀNG HOÁ", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setForeground(new Color(0,102,204));
+        title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(title, BorderLayout.NORTH);
+
+        // Main panel
+        RoundedPanel mainPanel = new RoundedPanel(20);
+        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setLayout(new GridBagLayout());
         
-        title.setBounds(0, 10, getWidth(), 30);
-        add(title);
+        // Create form panel with components
+        JPanel formPanel = createFormPanel();
+        mainPanel.add(formPanel, new GridBagConstraints());
+        add(mainPanel, BorderLayout.CENTER);
 
-        // Tạo các thành phần
-        createComponents(panel);
+        // Button panel
+        JPanel buttonPanel = createButtonPanel();
+        add(buttonPanel, BorderLayout.SOUTH);
 
-        // Thêm sự kiện cho các thành phần
+        // Add event listeners
         addEventListeners();
 
-        add(panel);
+        pack();
         setVisible(true);
     }
 
-    private void createComponents(JPanel panel) {
-        panel.add(createLabel("Mã hàng hóa", 20, 20));
-        maHangHoaField = new CustomTexField("Mã tự động (vd: HH001)");
-        maHangHoaField.setBounds(130, 20, 200, 30);
-        panel.add(maHangHoaField);
+    private JPanel createFormPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
 
-        panel.add(createLabel("Tên hàng hóa", 20, 60));
-        tenHangHoaField = new CustomTexField("Nhập tên (vd: Coca Cola)");
-        tenHangHoaField.setBounds(130, 60, 200, 30);
-        panel.add(tenHangHoaField);
-
-        panel.add(createLabel("Loại hàng hóa", 20, 100));
+        // Add form components
+        addFormRow(panel, "Mã hàng hóa", maHangHoaField = new CustomTexField("Mã tự động (vd: HH001)"), 0, gbc);
+        addFormRow(panel, "Tên hàng hóa", tenHangHoaField = new CustomTexField("Nhập tên (vd: Coca Cola)"), 1, gbc);
+        
         loaiHangHoaComboBox = new JComboBox<>(new String[]{"Thức ăn", "Đồ uống", "Hàng hóa khác"});
-        loaiHangHoaComboBox.setBounds(130, 100, 200, 30);
-        panel.add(loaiHangHoaComboBox);
-
-        panel.add(createLabel("Đơn vị tính", 20, 140));
-        donViTinhField = new CustomTexField("Nhập đơn vị tính (vd: chai)");
-        donViTinhField.setBounds(130, 140, 200, 30);
-        panel.add(donViTinhField);
-
-        panel.add(createLabel("Trạng thái", 20, 180));
+        addFormRow(panel, "Loại hàng hóa", loaiHangHoaComboBox, 2, gbc);
+        
+        addFormRow(panel, "Đơn vị tính", donViTinhField = new CustomTexField("Nhập đơn vị tính (vd: chai)"), 3, gbc);
+        
         trangThaiComboBox = new JComboBox<>(new String[]{"Đang kinh doanh", "Ngừng kinh doanh"});
-        trangThaiComboBox.setBounds(130, 180, 200, 30);
-        panel.add(trangThaiComboBox);
+        addFormRow(panel, "Trạng thái", trangThaiComboBox, 4, gbc);
 
-        panel.add(createLabel("Hình ảnh", 20, 220));
+        // Image panel
         JPanel hinhAnhPanel = new JPanel();
         hinhAnhPanel.setBackground(new Color(225, 225, 225));
-        hinhAnhPanel.setBounds(130, 220, 200, 100);
-        panel.add(hinhAnhPanel);
+        hinhAnhPanel.setPreferredSize(new Dimension(200, 100));
+        addFormRow(panel, "Hình ảnh", hinhAnhPanel, 5, gbc);
 
         chonHinhAnhButton = new CustomButton("Chọn hình ảnh");
         chonHinhAnhButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        chonHinhAnhButton.setBounds(130, 330, 200, 30);
-        panel.add(chonHinhAnhButton);
+        gbc.gridy = 6;
+        gbc.gridx = 1;
+        panel.add(chonHinhAnhButton, gbc);
 
-        // Button lưu
-        luuButton = new CustomButton("Lưu");
-        luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        luuButton.setBounds(260, 460, 110, 30);
-        add(luuButton);
-
-        // Button hủy
-        huyButton = new CustomButton("Hủy");
-        huyButton.setButtonColors(CustomButton.ButtonColors.RED);
-        huyButton.setBounds(140, 460, 110, 30);
-        add(huyButton);
+        return panel;
     }
 
-    private JLabel createLabel(String text, int x, int y) {
+    private void addFormRow(JPanel panel, String labelText, Component component, int row, GridBagConstraints gbc) {
+        gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.weightx = 0.3;
+        panel.add(createLabel(labelText), gbc);
+        
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        panel.add(component, gbc);
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        buttonPanel.setBackground(new Color(245, 245, 245));
+
+        huyButton = new CustomButton("Hủy");
+        huyButton.setButtonColors(CustomButton.ButtonColors.RED);
+        
+        luuButton = new CustomButton("Lưu");
+        luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+
+        buttonPanel.add(huyButton);
+        buttonPanel.add(luuButton);
+
+        return buttonPanel;
+    }
+
+    private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setBounds(x, y, 100, 30);
         label.setFont(new Font("Arial", Font.PLAIN, 15));
         return label;
     }
 
-    // Xử lý sự kiện
     private void addEventListeners() {
         luuButton.addActionListener(e -> handleSave());
         huyButton.addActionListener(e -> handleCancel());
@@ -132,7 +147,6 @@ public class ThemHangHoaDialog extends JDialog {
     private void handleChooseImage() {
         // Code xử lý chọn hình ảnh
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(ThemHangHoaDialog::new);

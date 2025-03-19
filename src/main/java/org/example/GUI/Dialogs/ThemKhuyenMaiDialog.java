@@ -39,9 +39,10 @@ public class ThemKhuyenMaiDialog extends JDialog {
         panel.setLayout(null);
 
         // Tiêu đề
-        JLabel title = new JLabel("Thêm khuyến mãi", SwingConstants.CENTER);
+        JLabel title = new JLabel("THÊM KHUYẾN MÃI", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setBounds(0, 10, getWidth(), 30);
+        title.setForeground(new Color(0,102,204));
         add(title);
 
         // Tạo các thành phần
