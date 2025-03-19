@@ -126,7 +126,7 @@ public class DanhMucPanel extends JPanel {
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addButton = new CustomButton("Thêm", addIcon);
         addButton.setBounds(820, 12, 100, 30);
-        addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         addButton.addActionListener(e ->
         {
             new ThemHangHoaDialog();
@@ -137,7 +137,7 @@ public class DanhMucPanel extends JPanel {
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
         editButton = new CustomButton("Sửa", editIcon);
         editButton.setBounds(930, 12, 100, 30);
-        editButton.setButtonColors(CustomButton.ButtonColors.YELLOW);
+        editButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         topPanel.add(editButton);
 
         // Delete button - Moved to the right
