@@ -82,7 +82,7 @@ public class DanhMucPanel extends JPanel {
         bottomPanelLeft.setPreferredSize(new Dimension(250, 0)); // Fixed width for left panel
 
         // Set layouts
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS)); // Changed from FlowLayout to BoxLayout for better responsiveness
+        topPanel.setLayout(new BorderLayout());
         bottomPanel.setLayout(new BorderLayout(5, 0));
         bottomPanelLeft.setLayout(new FlowLayout());
         bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
@@ -126,23 +126,26 @@ public class DanhMucPanel extends JPanel {
         searchButton.setMaximumSize(new Dimension(70, 30));
         searchPanel.add(searchButton);
         searchPanel.add(Box.createHorizontalStrut(5));
+
+        //Refresh button
+        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
+        refreshButton = new CustomButton("", refreshIcon);
+        refreshButton.setPreferredSize(new Dimension(50, 30));
+        refreshButton.setMaximumSize(new Dimension(50, 30));
+        refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+        searchPanel.add(refreshButton);
+        searchPanel.add(Box.createHorizontalStrut(5));
         
         // Add components to the top panel
-        topPanel.add(titlePanel);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(searchPanel);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(actionPanel);
+        topPanel.add(titlePanel, BorderLayout.WEST);
+        topPanel.add(searchPanel, BorderLayout.CENTER);
+        topPanel.add(actionPanel, BorderLayout.EAST);
         
         // Action buttons will be added to actionPanel
         setupActionButtons(actionPanel);
     }
 
     private void setupActionButtons(JPanel actionPanel) {
-        // Create a panel for the refresh button
-        JPanel refreshPanel = new JPanel();
-        refreshPanel.setLayout(new BoxLayout(refreshPanel, BoxLayout.X_AXIS));
-        refreshPanel.setBackground(Color.WHITE);
         
         // Create a panel for the main action buttons
         JPanel mainButtonsPanel = new JPanel();
@@ -153,15 +156,6 @@ public class DanhMucPanel extends JPanel {
         JPanel importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
-        
-        // Refresh button
-        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
-        refreshButton = new CustomButton("", refreshIcon);
-        refreshButton.setPreferredSize(new Dimension(50, 30));
-        refreshButton.setMaximumSize(new Dimension(50, 30));
-        refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        refreshPanel.add(refreshButton);
-        refreshPanel.add(Box.createHorizontalStrut(10));
         
         // Add button
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
@@ -212,7 +206,6 @@ public class DanhMucPanel extends JPanel {
         importExportPanel.add(importButton);
         
         // Add all button panels to the action panel
-        actionPanel.add(refreshPanel);
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(mainButtonsPanel);
         actionPanel.add(Box.createHorizontalStrut(10));

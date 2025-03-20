@@ -80,7 +80,7 @@ public class KhachHangPanel extends JPanel {
         bottomPanelLeft.setPreferredSize(new Dimension(250, 0)); // Fixed width for left panel
 
         // Set layouts
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        topPanel.setLayout(new BorderLayout());
         bottomPanel.setLayout(new BorderLayout(5, 0));
         bottomPanelLeft.setLayout(new FlowLayout());
         bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
@@ -126,11 +126,9 @@ public class KhachHangPanel extends JPanel {
         searchPanel.add(Box.createHorizontalStrut(5));
         
         // Add components to the top panel
-        topPanel.add(titlePanel);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(searchPanel);
-        topPanel.add(Box.createHorizontalStrut(10));
-        topPanel.add(actionPanel);
+        topPanel.add(titlePanel, BorderLayout.WEST);
+        topPanel.add(searchPanel, BorderLayout.CENTER);
+        topPanel.add(actionPanel, BorderLayout.EAST);
         
         // Action buttons will be added to actionPanel
         setupActionButtons(actionPanel);
