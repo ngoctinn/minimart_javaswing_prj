@@ -82,64 +82,37 @@ public class BanHangPanel extends JPanel {
 
 
         // Set layouts
-            topPanel.setLayout(new BorderLayout());
-            bottomPanel.setLayout(new BorderLayout(5, 0));
-            bottomPanelLeft.setLayout(new BorderLayout());
-            bottomPanelRight.setLayout(new BorderLayout());
-        }
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        bottomPanel.setLayout(new BorderLayout(5, 0));
+        bottomPanelLeft.setLayout(new BorderLayout());
+        bottomPanelRight.setLayout(new BorderLayout());
+    }
 
-        private void setupTopPanel() {
-            //add padding to the top panel
-            topPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+    private void setupTopPanel() {
+        // Search field
+        searchField = new PlaceholderTextField("Tìm kiếm khách hàng...");
+        searchField.setPreferredSize(new Dimension(300, 30));
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        topPanel.add(searchField);
 
-            // Main container for the left part (using FlowLayout)
-            JPanel leftContainer = new JPanel();
-            leftContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-            leftContainer.setBackground(Color.WHITE);
+        // Search button
+        searchButton = new CustomButton("Tìm");
+        searchButton.setPreferredSize(new Dimension(70, 30));
+        topPanel.add(searchButton);
 
-            // Right container for the add button
-            JPanel rightContainer = new JPanel();
-            rightContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-            rightContainer.setBackground(Color.WHITE);
+        // Add a spacer panel to push the add button to the right
+        JPanel spacerPanel = new JPanel();
+        spacerPanel.setOpaque(false);
+        spacerPanel.setPreferredSize(new Dimension(680, 30));
+        topPanel.add(spacerPanel);
 
-            // Create title panel
-            JPanel titlePanel = new JPanel();
-            titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-            titlePanel.setBackground(Color.WHITE);
-
-            JPanel searchPanel = new JPanel();
-            searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
-            searchPanel.setBackground(Color.WHITE);
-
-            // Search field
-            searchField = new PlaceholderTextField("Nhập khách hàng cần tìm");
-            searchField.setPreferredSize(new Dimension(300, 30));
-            searchField.setMaximumSize(new Dimension(300, 30));
-            searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-            searchPanel.add(searchField);
-            searchPanel.add(Box.createHorizontalStrut(5));
-
-            // Search button
-            searchButton = new CustomButton("Tìm");
-            searchButton.setPreferredSize(new Dimension(70, 30));
-            searchButton.setMaximumSize(new Dimension(70, 30));
-            searchPanel.add(searchButton);
-
-            // Add components to the left container
-            leftContainer.add(titlePanel);
-            leftContainer.add(searchPanel);
-
-            // Add new tab button to the right container
-            FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
-            addTabButton = new CustomButton("Thêm hóa đơn", addIcon);
-            addTabButton.setPreferredSize(new Dimension(150, 30));
-            addTabButton.addActionListener(e -> addNewTab());
-            rightContainer.add(addTabButton);
-
-            // Add containers to the top panel using BorderLayout
-            topPanel.add(leftContainer, BorderLayout.WEST);
-            topPanel.add(rightContainer, BorderLayout.EAST);
-        }
+        // Add new tab button
+        FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
+        addTabButton = new CustomButton("Thêm hóa đơn", addIcon);
+        addTabButton.setPreferredSize(new Dimension(150, 30));
+        addTabButton.addActionListener(e -> addNewTab());
+        topPanel.add(addTabButton);
+    }
 
     private void setupBottomPanelLeft() {
         // Create closable tabbed pane
@@ -329,9 +302,6 @@ public class BanHangPanel extends JPanel {
             this.totalItemLabel.setText(NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(getTotalPrice()));
         }
 
-        public JPanel getPanel() {
-            return panel;
-        }
 
         public double getTotalPrice() {
             return product.getPrice() * quantity;

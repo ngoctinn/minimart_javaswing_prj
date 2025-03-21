@@ -11,7 +11,6 @@ public class loaiSanPhamDTO {
 
     public loaiSanPhamDTO( String maLSP, String tenSP, int trangThai) {
         this.maLSP = maLSP;
-
         this.tenSP = tenSP;
         this.trangThai = trangThai;
     }
