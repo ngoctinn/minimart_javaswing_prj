@@ -10,6 +10,7 @@ import org.example.GUI.Dialogs.ThemHangHoaDialog;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.HashMap;
 
 
 public class DanhMucPanel extends JPanel {
@@ -106,7 +107,7 @@ public class DanhMucPanel extends JPanel {
         actionPanel.setBackground(Color.WHITE);
         
         // Title label
-        JLabel title = new JLabel("Danh mục hàng hoá");
+        JLabel title = new JLabel("Danh mục sản phẩm");
         title.setFont(new Font("Roboto", Font.BOLD, 23));
         title.setForeground(new Color(0, 0, 0));
         titlePanel.add(title);
@@ -220,7 +221,7 @@ public class DanhMucPanel extends JPanel {
 
     private void setupNhomHangPanel() {
         // Nhóm hàng panel
-        JPanel loaiSanPhamPanel = createTitledPanel("Nhóm hàng", 230, 210);
+        JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 210);
         loaiSanPhamPanel.setLayout(null);
         bottomPanelLeft.add(loaiSanPhamPanel);
 
@@ -284,6 +285,13 @@ public class DanhMucPanel extends JPanel {
     }
 
     private void setupBottomPanelRight() {
+        // Change layout to BorderLayout
+        bottomPanelRight.setLayout(new BorderLayout(0, 10));
+
+        // Upper part - Table panel
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBackground(Color.WHITE);
+
         // Table data
         String[] columnNames = {"Mã hàng", "Tên hàng", "Nhóm hàng", "Nhà cung cấp", "Giá bán", "Giá vốn", "Tồn kho", "Khách đặt"};
         Object[][] data = {
@@ -296,7 +304,109 @@ public class DanhMucPanel extends JPanel {
         hangHoaTable = new CustomTable(data, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(hangHoaTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        bottomPanelRight.add(tableScrollPane);
+        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
+
+        // Lower part - Product details panel
+        JPanel detailsPanel = createProductDetailsPanel();
+
+        // Add selection listener to update details when a row is selected
+        hangHoaTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && hangHoaTable.getSelectedRow() != -1) {
+                updateProductDetails(hangHoaTable.getSelectedRow());
+            }
+        });
+
+        // Add panels to bottomPanelRight
+        bottomPanelRight.add(tablePanel, BorderLayout.CENTER);
+        bottomPanelRight.add(detailsPanel, BorderLayout.SOUTH);
+    }
+
+    private JPanel createProductDetailsPanel() {
+        JPanel detailsPanel = createTitledPanel("Chi tiết sản phẩm", 0, 200);
+        detailsPanel.setLayout(new BorderLayout(10, 10));
+        detailsPanel.setBorder(BorderFactory.createCompoundBorder(
+                detailsPanel.getBorder(),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        // Left panel for product image
+        JPanel imagePanel = new JPanel();
+        imagePanel.setPreferredSize(new Dimension(150, 150));
+        imagePanel.setBackground(Color.WHITE);
+        imagePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+        // Placeholder for image
+        JLabel imageLabel = new JLabel("Hình ảnh sản phẩm");
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imagePanel.add(imageLabel);
+
+        // Right panel for product attributes
+        JPanel attributesPanel = new JPanel();
+        attributesPanel.setBackground(Color.WHITE);
+        attributesPanel.setLayout(new GridLayout(0, 2, 10, 5));
+
+        // Add attribute labels
+        addAttributeRow(attributesPanel, "Mã sản phẩm:", "");
+        addAttributeRow(attributesPanel, "Tên sản phẩm:", "");
+        addAttributeRow(attributesPanel, "Loại sản phẩm:", "");
+        addAttributeRow(attributesPanel, "Nhà cung cấp:", "");
+        addAttributeRow(attributesPanel, "Giá bán:", "");
+        addAttributeRow(attributesPanel, "Giá vốn:", "");
+        addAttributeRow(attributesPanel, "Tồn kho:", "");
+        addAttributeRow(attributesPanel, "Trạng thái:", "");
+
+        // Add components to details panel
+        detailsPanel.add(imagePanel, BorderLayout.WEST);
+        detailsPanel.add(attributesPanel, BorderLayout.CENTER);
+
+        return detailsPanel;
+    }
+
+    private void addAttributeRow(JPanel panel, String labelText, String valueText) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        JLabel value = new JLabel(valueText);
+        value.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        panel.add(label);
+        panel.add(value);
+
+        // Store the value label with the label text as the key for later updates
+        if (attributeLabels == null) {
+            attributeLabels = new HashMap<>();
+        }
+        attributeLabels.put(labelText, value);
+    }
+
+    // HashMap to store attribute labels for updating
+    private HashMap<String, JLabel> attributeLabels;
+
+    private void updateProductDetails(int rowIndex) {
+        if (attributeLabels != null && rowIndex >= 0) {
+            // Get data from selected row
+            String maHang = hangHoaTable.getValueAt(rowIndex, 0).toString();
+            String tenHang = hangHoaTable.getValueAt(rowIndex, 1).toString();
+            String nhomHang = hangHoaTable.getValueAt(rowIndex, 2).toString();
+            String nhaCungCap = hangHoaTable.getValueAt(rowIndex, 3).toString();
+            String giaBan = hangHoaTable.getValueAt(rowIndex, 4).toString();
+            String giaVon = hangHoaTable.getValueAt(rowIndex, 5).toString();
+            String tonKho = hangHoaTable.getValueAt(rowIndex, 6).toString();
+
+            // Update the labels
+            attributeLabels.get("Mã sản phẩm:").setText(maHang);
+            attributeLabels.get("Tên sản phẩm:").setText(tenHang);
+            attributeLabels.get("Loại sản phẩm:").setText(nhomHang);
+            attributeLabels.get("Nhà cung cấp:").setText(nhaCungCap);
+            attributeLabels.get("Giá bán:").setText(giaBan + " đ");
+            attributeLabels.get("Giá vốn:").setText(giaVon + " đ");
+            attributeLabels.get("Tồn kho:").setText(tonKho);
+
+            // Set status based on inventory
+            int inventory = Integer.parseInt(tonKho);
+            String status = inventory > 0 ? "Đang kinh doanh" : "Hết hàng";
+            attributeLabels.get("Trạng thái:").setText(status);
+        }
     }
 
     // Helper methods
