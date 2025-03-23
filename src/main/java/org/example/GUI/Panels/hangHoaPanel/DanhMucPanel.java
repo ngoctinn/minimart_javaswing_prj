@@ -293,11 +293,11 @@ public class DanhMucPanel extends JPanel {
         tablePanel.setBackground(Color.WHITE);
 
         // Table data
-        String[] columnNames = {"Mã hàng", "Tên hàng", "Nhóm hàng", "Nhà cung cấp", "Giá bán", "Giá vốn", "Tồn kho", "Khách đặt"};
+        String[] columnNames = {"Mã hàng", "Tên hàng", "Loại sản phẩm", "Nhà cung cấp", "Tồn kho"};
         Object[][] data = {
-                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 10000, 8000, 192, 0},
-                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 15000, 14000, 0, 0},
-                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 45000, 44000, 0, 0},
+                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 192},
+                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 0},
+                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 0},
         };
 
         // Create table
@@ -343,15 +343,13 @@ public class DanhMucPanel extends JPanel {
         // Right panel for product attributes
         JPanel attributesPanel = new JPanel();
         attributesPanel.setBackground(Color.WHITE);
-        attributesPanel.setLayout(new GridLayout(0, 2, 10, 5));
+        attributesPanel.setLayout(new GridLayout(0, 4, 10, 5));
 
         // Add attribute labels
         addAttributeRow(attributesPanel, "Mã sản phẩm:", "");
         addAttributeRow(attributesPanel, "Tên sản phẩm:", "");
         addAttributeRow(attributesPanel, "Loại sản phẩm:", "");
         addAttributeRow(attributesPanel, "Nhà cung cấp:", "");
-        addAttributeRow(attributesPanel, "Giá bán:", "");
-        addAttributeRow(attributesPanel, "Giá vốn:", "");
         addAttributeRow(attributesPanel, "Tồn kho:", "");
         addAttributeRow(attributesPanel, "Trạng thái:", "");
 
@@ -364,10 +362,10 @@ public class DanhMucPanel extends JPanel {
 
     private void addAttributeRow(JPanel panel, String labelText, String valueText) {
         JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        label.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
         JLabel value = new JLabel(valueText);
-        value.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        value.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
         panel.add(label);
         panel.add(value);
@@ -387,19 +385,15 @@ public class DanhMucPanel extends JPanel {
             // Get data from selected row
             String maHang = hangHoaTable.getValueAt(rowIndex, 0).toString();
             String tenHang = hangHoaTable.getValueAt(rowIndex, 1).toString();
-            String nhomHang = hangHoaTable.getValueAt(rowIndex, 2).toString();
+            String loaiSanPham = hangHoaTable.getValueAt(rowIndex, 2).toString();
             String nhaCungCap = hangHoaTable.getValueAt(rowIndex, 3).toString();
-            String giaBan = hangHoaTable.getValueAt(rowIndex, 4).toString();
-            String giaVon = hangHoaTable.getValueAt(rowIndex, 5).toString();
-            String tonKho = hangHoaTable.getValueAt(rowIndex, 6).toString();
+            String tonKho = hangHoaTable.getValueAt(rowIndex, 4).toString();
 
             // Update the labels
             attributeLabels.get("Mã sản phẩm:").setText(maHang);
             attributeLabels.get("Tên sản phẩm:").setText(tenHang);
-            attributeLabels.get("Loại sản phẩm:").setText(nhomHang);
+            attributeLabels.get("Loại sản phẩm:").setText(loaiSanPham);
             attributeLabels.get("Nhà cung cấp:").setText(nhaCungCap);
-            attributeLabels.get("Giá bán:").setText(giaBan + " đ");
-            attributeLabels.get("Giá vốn:").setText(giaVon + " đ");
             attributeLabels.get("Tồn kho:").setText(tonKho);
 
             // Set status based on inventory
