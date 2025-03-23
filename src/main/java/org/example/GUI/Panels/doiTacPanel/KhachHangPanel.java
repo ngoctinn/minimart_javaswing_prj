@@ -125,6 +125,15 @@ public class KhachHangPanel extends JPanel {
         searchPanel.add(searchButton);
         searchPanel.add(Box.createHorizontalStrut(5));
         
+        // Refresh button
+        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
+        refreshButton = new CustomButton("", refreshIcon);
+        refreshButton.setPreferredSize(new Dimension(50, 30));
+        refreshButton.setMaximumSize(new Dimension(50, 30));
+        refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+        searchPanel.add(refreshButton);
+        searchPanel.add(Box.createHorizontalStrut(5));
+        
         // Add components to the top panel
         topPanel.add(titlePanel, BorderLayout.WEST);
         topPanel.add(searchPanel, BorderLayout.CENTER);
@@ -135,11 +144,6 @@ public class KhachHangPanel extends JPanel {
     }
 
     private void setupActionButtons(JPanel actionPanel) {
-        // Create a panel for the refresh button
-        JPanel refreshPanel = new JPanel();
-        refreshPanel.setLayout(new BoxLayout(refreshPanel, BoxLayout.X_AXIS));
-        refreshPanel.setBackground(Color.WHITE);
-        
         // Create a panel for the main action buttons
         JPanel mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
@@ -150,15 +154,6 @@ public class KhachHangPanel extends JPanel {
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
         
-        // Refresh button
-        FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
-        refreshButton = new CustomButton("", refreshIcon);
-        refreshButton.setPreferredSize(new Dimension(50, 30));
-        refreshButton.setMaximumSize(new Dimension(50, 30));
-        refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        refreshPanel.add(refreshButton);
-        refreshPanel.add(Box.createHorizontalStrut(10));
-        
         // Add button
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addButton = new CustomButton("Thêm", addIcon);
@@ -167,7 +162,6 @@ public class KhachHangPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         addButton.addActionListener(e -> {
             ThemKhachHangDialog themKhachHangDialog = new ThemKhachHangDialog();
-            themKhachHangDialog.setVisible(true);
         });
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
@@ -208,7 +202,6 @@ public class KhachHangPanel extends JPanel {
         importExportPanel.add(importButton);
         
         // Add all button panels to the action panel
-        actionPanel.add(refreshPanel);
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(mainButtonsPanel);
         actionPanel.add(Box.createHorizontalStrut(10));
@@ -217,7 +210,7 @@ public class KhachHangPanel extends JPanel {
 
     private void setupBottomPanelLeft() {
         setupDateFilterPanel();
-        setupNhomKhachHangPanel();
+        // Đã loại bỏ setupNhomKhachHangPanel();
         setupNguoiTaoPanel();
     }
     
@@ -254,7 +247,7 @@ public class KhachHangPanel extends JPanel {
         // Filter button
         filterDateButton = new CustomButton("Lọc");
         filterDateButton.setBounds(15, 130, 200, 25);
-        filterDateButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        filterDateButton.setButtonColors(CustomButton.ButtonColors.BLUE); // Đã thay đổi màu từ GRAY sang BLUE
         datePanel.add(filterDateButton);
     }
 

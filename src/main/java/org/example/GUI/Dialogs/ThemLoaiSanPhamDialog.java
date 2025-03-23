@@ -14,18 +14,20 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     public ThemLoaiSanPhamDialog() {
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.put("ComboBox.buttonStyle", "icon-only");
+            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-
-        initGUI();
     }
 
     private void initGUI() {
         setSize(400, 250);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
         setModal(true);
         setLayout(new BorderLayout(10, 10));
 
@@ -53,6 +55,7 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         // Add event listeners
         addEventListeners();
 
+        pack();
         setVisible(true);
     }
 
@@ -75,10 +78,18 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         gbc.gridy = row;
         gbc.gridx = 0;
         gbc.weightx = 0.3;
+        gbc.anchor = GridBagConstraints.WEST;
         panel.add(createLabel(labelText), gbc);
         
         gbc.gridx = 1;
         gbc.weightx = 0.7;
+        gbc.anchor = GridBagConstraints.CENTER;
+        
+        // Đảm bảo component có kích thước phù hợp
+        if (component instanceof JTextField || component instanceof JComboBox || component instanceof JSpinner) {
+            component.setPreferredSize(new Dimension(component.getPreferredSize().width, 30));
+        }
+        
         panel.add(component, gbc);
     }
 
@@ -100,7 +111,9 @@ public class ThemLoaiSanPhamDialog extends JDialog {
 
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(new Color(51, 51, 51));
+        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         return label;
     }
 

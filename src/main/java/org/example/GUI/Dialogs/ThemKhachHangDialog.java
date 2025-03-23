@@ -23,143 +23,208 @@ public class ThemKhachHangDialog extends JDialog {
             UIManager.put("ComboBox.buttonStyle", "icon-only");
             UIManager.put("ComboBox.buttonBackground", Color.WHITE);
             UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-
-        initGUI();
     }
 
     private void initGUI() {
-        setSize(790, 440);
+        setSize(800, 500);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
         setModal(true);
-        setLayout(null);
-
-        RoundedPanel panel = new RoundedPanel(20);
-        panel.setBackground(Color.WHITE);
-        panel.setBounds(20, 50, 740, 280);
-        panel.setLayout(null);
+        setLayout(new BorderLayout(10, 10));
 
         // Tiêu đề
         JLabel title = new JLabel("THÊM KHÁCH HÀNG", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
-        title.setBounds(0, 10, getWidth(), 30);
         title.setForeground(new Color(0,102,204));
-        add(title);
+        title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(title, BorderLayout.NORTH);
 
-        // Tạo các thành phần
-        createLeftComponents(panel);
-        createRightComponents(panel);
+        // Main panel
+        RoundedPanel mainPanel = new RoundedPanel(20);
+        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setLayout(new GridBagLayout());
+        
+        // Create form panel with components
+        JPanel formPanel = createFormPanel();
+        GridBagConstraints mainGbc = new GridBagConstraints();
+        mainGbc.fill = GridBagConstraints.BOTH;
+        mainGbc.weightx = 1.0;
+        mainGbc.weighty = 1.0;
+        mainGbc.insets = new Insets(5, 5, 5, 5);
+        mainPanel.add(formPanel, mainGbc);
+        add(mainPanel, BorderLayout.CENTER);
 
-        // Thêm sự kiện cho các thành phần
+        // Button panel
+        JPanel buttonPanel = createButtonPanel();
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add event listeners
         addEventListeners();
 
-        add(panel);
+        pack();
         setVisible(true);
     }
 
-    private void createLeftComponents(JPanel panel) {
-        // Mã khách hàng
-        panel.add(createLabel("Mã KH", 20, 20));
-        maKhachHangField = new CustomTexField("Mã tự động (vd: KH001)");
-        maKhachHangField.setBounds(130, 20, 200, 30);
-        panel.add(maKhachHangField);
+    private JPanel createFormPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
 
-        // Điểm tích lũy
-        panel.add(createLabel("Điểm tích lũy", 20, 60));
-        diemField = new CustomTexField("0");
-        diemField.setBounds(130, 60, 200, 30);
-        panel.add(diemField);
+        // Tạo panel bên trái
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        leftPanel.setBackground(Color.WHITE);
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        GridBagConstraints leftGbc = new GridBagConstraints();
+        leftGbc.fill = GridBagConstraints.HORIZONTAL;
+        leftGbc.insets = new Insets(6, 2, 6, 2);
+        leftGbc.weightx = 1.0;
 
-        // Họ tên
-        panel.add(createLabel("Họ và tên", 20, 100));
-        hoTenField = new CustomTexField("Nguyễn Văn A");
-        hoTenField.setBounds(130, 100, 200, 30);
-        panel.add(hoTenField);
-
-        // Trạng thái
-        panel.add(createLabel("Trạng thái", 20, 140));
+        // Thêm các thành phần bên trái
+        addFormRow(leftPanel, "Mã KH", maKhachHangField = new CustomTexField("Mã tự động (vd: KH001)"), 0, leftGbc);
+        addFormRow(leftPanel, "Điểm tích lũy", diemField = new CustomTexField("0"), 1, leftGbc);
+        addFormRow(leftPanel, "Họ và tên", hoTenField = new CustomTexField("Nguyễn Văn A"), 2, leftGbc);
+        
         trangThaiComboBox = new JComboBox<>(new String[]{
                 "Đang hoạt động", "Ngưng hoạt động", "Chưa xác minh"
         });
-        trangThaiComboBox.setBounds(130, 140, 200, 30);
-        panel.add(trangThaiComboBox);
-
+        addFormRow(leftPanel, "Trạng thái", trangThaiComboBox, 3, leftGbc);
+        
         // Ngày sinh
-        panel.add(createLabel("Ngày sinh", 20, 180));
         SpinnerDateModel model = new SpinnerDateModel();
         ngaySinhSpinner = new JSpinner(model);
         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(ngaySinhSpinner, "dd/MM/yyyy");
         ngaySinhSpinner.setEditor(dateEditor);
-        ngaySinhSpinner.setBounds(130, 180, 200, 30);
-        panel.add(ngaySinhSpinner);
-
+        addFormRow(leftPanel, "Ngày sinh", ngaySinhSpinner, 4, leftGbc);
+        
         // Giới tính
-        panel.add(createLabel("Giới tính", 20, 220));
+        JPanel gioiTinhPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        gioiTinhPanel.setBackground(Color.WHITE);
         gioiTinhNam = new JRadioButton("Nam");
         gioiTinhNu = new JRadioButton("Nữ");
         ButtonGroup gioiTinhGroup = new ButtonGroup();
         gioiTinhGroup.add(gioiTinhNam);
         gioiTinhGroup.add(gioiTinhNu);
-        gioiTinhNam.setBounds(130, 220, 100, 30);
-        gioiTinhNu.setBounds(230, 220, 100, 30);
         gioiTinhNam.setSelected(true); // Default selection
-        panel.add(gioiTinhNam);
-        panel.add(gioiTinhNu);
+        gioiTinhPanel.add(gioiTinhNam);
+        gioiTinhPanel.add(gioiTinhNu);
+        addFormRow(leftPanel, "Giới tính", gioiTinhPanel, 5, leftGbc);
+
+        // Tạo panel bên phải
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        rightPanel.setBackground(Color.WHITE);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
+        GridBagConstraints rightGbc = new GridBagConstraints();
+        rightGbc.fill = GridBagConstraints.HORIZONTAL;
+        rightGbc.insets = new Insets(6, 2, 6, 2);
+        rightGbc.weightx = 1.0;
+
+        // Thêm các thành phần bên phải
+            // Số điện thoại
+        addFormRow(rightPanel, "Số điện thoại", soDienThoaiField = new CustomTexField("0123456789"), 1, rightGbc);
+        
+        // Email
+        addFormRow(rightPanel, "Email", emailField = new CustomTexField("example@gmail.com"), 2, rightGbc);
+        
+        
+        // Thêm tiêu đề cho phần địa chỉ
+        
+        // Thêm panel địa chỉ
+        diaChiPanel = new diaChiPanelAPI();
+        rightGbc.gridx = 0;
+        rightGbc.gridy = 3; 
+        rightGbc.gridwidth = 2;
+        rightGbc.gridheight = 3;
+        rightGbc.anchor = GridBagConstraints.CENTER;
+        rightPanel.add(diaChiPanel, rightGbc);
+        
+        // Reset gridwidth và gridheight cho các thành phần tiếp theo
+        rightGbc.gridwidth = 1;
+        rightGbc.gridheight = 1;
+
+        // Thêm cả hai panel vào panel chính
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        panel.add(leftPanel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        panel.add(rightPanel, gbc);
+
+        return panel;
     }
 
-    private void createRightComponents(JPanel panel) {
-        // Địa chỉ
-        panel.add(createLabel("Địa chỉ", 400, 20));
-        diaChiPanel = new diaChiPanelAPI();
-        diaChiPanel.setBounds(390, 50, 340, 170);
-        panel.add(diaChiPanel);
+    private void addFormRow(JPanel panel, String labelText, Component component, int row, GridBagConstraints gbc) {
+        gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.weightx = 0.3;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(createLabel(labelText), gbc);
+        
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        gbc.anchor = GridBagConstraints.CENTER;
+        
+        // Đảm bảo component có kích thước phù hợp
+        if (component instanceof JTextField || component instanceof JComboBox || component instanceof JSpinner) {
+            component.setPreferredSize(new Dimension(component.getPreferredSize().width, 30));
+        }
+        
+        panel.add(component, gbc);
+    }
 
-        // Số điện thoại
-        panel.add(createLabel("Số điện thoại", 400, 180));
-        soDienThoaiField = new CustomTexField("0123456789");
-        soDienThoaiField.setBounds(520, 180, 200, 30);
-        panel.add(soDienThoaiField);
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        buttonPanel.setBackground(new Color(245, 245, 245));
 
-        // Email
-        panel.add(createLabel("Email", 400, 220));
-        emailField = new CustomTexField("example@gmail.com");
-        emailField.setBounds(520, 220, 200, 30);
-        panel.add(emailField);
-
-        // Button lưu
-        luuButton = new CustomButton("Lưu");
-        luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        luuButton.setBounds(650, 340, 110, 30);
-        add(luuButton);
-
-        // Button hủy
         huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
-        huyButton.setBounds(530, 340, 110, 30);
-        add(huyButton);
+        
+        luuButton = new CustomButton("Lưu");
+        luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+
+        buttonPanel.add(huyButton);
+        buttonPanel.add(luuButton);
+
+        return buttonPanel;
     }
 
-    private JLabel createLabel(String text, int x, int y) {
+    private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setBounds(x, y, 100, 30);
-        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(new Color(51, 51, 51));
+        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         return label;
     }
 
-    // Xử lý sự kiện
     private void addEventListeners() {
-        // Nút lưu: Sẽ xử lý lưu thông tin khách hàng khi được nhấn
-        luuButton.addActionListener(e -> dispose());
+        luuButton.addActionListener(e -> handleSave());
+        huyButton.addActionListener(e -> handleCancel());
+    }
 
-        // Nút hủy: Đóng dialog khi được nhấn
-        huyButton.addActionListener(e -> dispose());
+    private void handleSave() {
+        // Code xử lý lưu dữ liệu
+        dispose();
+    }
+
+    private void handleCancel() {
+        // Code xử lý hủy
+        dispose();
     }
 
     public static void main(String[] args) {
-        new ThemKhachHangDialog();
+        SwingUtilities.invokeLater(ThemKhachHangDialog::new);
     }
 }
