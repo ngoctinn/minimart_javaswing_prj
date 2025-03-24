@@ -6,7 +6,7 @@ public class SQLServerJDBC {
 
     public static void main(String[] args) {
 
-        String serverName = "DESKTOP-3J3NO7F\\SQLEXPRESS"; // Kiểm tra lại tên server
+        String serverName = "RILEY"; // Kiểm tra lại tên server
         String databaseName = "QuanLyBanHang"; // Thay đổi thành tên database của bạn
         String username = "sa"; // Thay đổi nếu cần
         String password = "123"; // Thay đổi nếu cần

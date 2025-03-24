@@ -19,6 +19,9 @@ public class diaChiPanelAPI extends JPanel {
     private JComboBox<District> districtComboBox;
     private JComboBox<Ward> wardComboBox;
     private List<Province> provinces;
+    // Khai báo thêm 2 biến này để lấy dữ liệu
+    private CustomTexField soNhaField;
+    private CustomTexField duongField;
 
     public diaChiPanelAPI() {
 
@@ -33,11 +36,11 @@ public class diaChiPanelAPI extends JPanel {
         wardComboBox = new JComboBox<>();
 
 
-        CustomTexField soNhaField = new CustomTexField("Số nhà");
+        soNhaField = new CustomTexField("Số nhà");
         soNhaField.setBounds(10, 10, 100, 30); // Lùi lên 10 đơn vị
         soNhaField.setFont(customFont);
 
-        CustomTexField duongField = new CustomTexField("Đường");
+        duongField = new CustomTexField("Đường");
         duongField.setBounds(130, 10, 200, 30); // Lùi lên 10 đơn vị
         duongField.setFont(customFont);
 
@@ -103,6 +106,7 @@ public class diaChiPanelAPI extends JPanel {
 
 
 
+
     private void loadData() {
         try {
             String urlStr = "https://provinces.open-api.vn/api/?depth=3";
@@ -165,6 +169,14 @@ public class diaChiPanelAPI extends JPanel {
 
     public Ward getSelectedWard() {
         return (Ward) wardComboBox.getSelectedItem();
+    }
+
+    // Khai báo thêm 2 biến này để lấy dữ liệu
+    public String getSoNha() {
+        return soNhaField.getText();
+    }
+    public String getDuong() {
+        return duongField.getText();
     }
 
     public static void main(String[] args) {

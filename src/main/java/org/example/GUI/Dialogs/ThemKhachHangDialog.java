@@ -3,10 +3,16 @@ package org.example.GUI.Dialogs;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTexField;
 import org.example.Components.RoundedPanel;
+import org.example.DAO.KhachHangDAO_test;
+import org.example.DTO.khachHangDTO;
 import org.example.Utils.diaChiPanelAPI;
+import org.example.BUS.khachHangBUS_test;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class ThemKhachHangDialog extends JDialog {
     private CustomTexField maKhachHangField, diemField, hoTenField;
@@ -152,12 +158,73 @@ public class ThemKhachHangDialog extends JDialog {
     // Xử lý sự kiện
     private void addEventListeners() {
         // Nút lưu: Sẽ xử lý lưu thông tin khách hàng khi được nhấn
-        luuButton.addActionListener(e -> dispose());
+        luuButton.addActionListener(e -> {
+            if (checkForm()) { // Kiểm tra form có hợp lệ không
+                if (saveCustomerData()) { // Nếu lưu thành công thì đóng cửa sổ
+                    JOptionPane.showMessageDialog(null, "Lưu khách hàng thành công!");
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Lưu khách hàng thất bại! Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         // Nút hủy: Đóng dialog khi được nhấn
         huyButton.addActionListener(e -> dispose());
     }
+    private boolean checkForm() {
+        return true;
+    }
 
+    private boolean saveCustomerData() {
+        try {
+            // Lấy dữ liệu từ các trường nhập liệu
+            String maKH = maKhachHangField.getText();
+            int diemTichLuy = Integer.parseInt(diemField.getText());
+            String hoTen = hoTenField.getText();
+            String diaChi = " ";
+            String soNha = diaChiPanel.getSoNha().toString();
+            String tenDuong = diaChiPanel.getDuong().toString();
+            diaChiPanelAPI.Province tinh = diaChiPanel.getSelectedProvince();
+            diaChiPanelAPI.District quan  = diaChiPanel.getSelectedDistrict();
+            diaChiPanelAPI.Ward phuong = diaChiPanel.getSelectedWard();
+            diaChi = (soNha +", " + tenDuong +", " + phuong + ", " + quan +", " + tinh).toString();
+            String sdt = hoTenField.getText();
+            String gioiTinh = "";
+            if (gioiTinhNam.isSelected()) {
+                gioiTinh = "Nam";
+            } else if (gioiTinhNu.isSelected()) {
+                gioiTinh = "Nữ";
+            }
+            String email = emailField.getText();
+            // Lấy giá trị từ JSpinner
+            Date selectedDate = (Date) ngaySinhSpinner.getValue();
+            // Chuyển đổi từ java.util.Date sang LocalDate
+            LocalDate ngaySinh = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int trangThai = 0;
+            String tt = (String) trangThaiComboBox.getSelectedItem();
+            if (tt.equals("Đang hoạt động")) {
+                trangThai = 1;
+            }
+            if (tt.equals("Ngưng hoạt động")) {
+                trangThai = 0;
+            } else trangThai = 2;
+            
+            // Tạo đối tượng khách hàng
+            khachHangBUS_test khBus = new khachHangBUS_test();
+            khachHangDTO newKH = new khachHangDTO(maKH, diemTichLuy, hoTen, diaChi, sdt, gioiTinh, email, ngaySinh, trangThai);
+            if (khBus.addData(newKH)) {
+                JOptionPane.showMessageDialog(null, "Thêm khách hàng thành công!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Thêm khách hàng vào cơ thất bại!");
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        } catch (HeadlessException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
     public static void main(String[] args) {
         new ThemKhachHangDialog();
     }

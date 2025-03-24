@@ -1,19 +1,25 @@
 package org.example.DTO;
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class khachHangDTO {
     private String maKH;
+    private int diemTichLuy;
     private String hoTen;
     private String diaChi;
-    private int SDT;
+    private String SDT;
     private String gioiTinh;
     private String email;
     private LocalDate ngaySinh;
     private int trangThai;
-    public khachHangDTO() {}
 
-    public khachHangDTO(String maKH, String hoTen, String diaChi, int SDT, String gioiTinh, String email, LocalDate ngaySinh, int trangThai) {
+    public khachHangDTO() {
+
+    }
+
+    public khachHangDTO(String maKH, int diemTichLuy, String hoTen, String diaChi, String SDT, String gioiTinh, String email, LocalDate ngaySinh, int trangThai) {
         this.maKH = maKH;
+        this.diemTichLuy = diemTichLuy;
         this.hoTen = hoTen;
         this.diaChi = diaChi;
         this.SDT = SDT;
@@ -37,6 +43,14 @@ public class khachHangDTO {
         this.hoTen = hoTen;
     }
 
+    public int getDiemTichLuy() {
+        return diemTichLuy;
+    }
+
+    public void setDiemTichLuy(int diemTichLuy) {
+        this.diemTichLuy = diemTichLuy;
+    }
+
     public String getDiaChi() {
         return diaChi;
     }
@@ -44,10 +58,10 @@ public class khachHangDTO {
         this.diaChi = diaChi;
     }
 
-    public int getSDT() {
+    public String getSDT() {
         return SDT;
     }
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
 
@@ -78,4 +92,19 @@ public class khachHangDTO {
     public void setTrangThai(int trangThai) {
         this.trangThai = trangThai;
     }
+
+    @Override
+    public String toString() {
+        return "Khách Hàng { " +
+                "Mã KH: " + maKH +
+                ", Họ Tên: " + hoTen +
+                ", Địa Chỉ: " + diaChi +
+                ", SĐT: " + SDT +
+                ", Giới Tính: " + gioiTinh +
+                ", Email: " + email +
+                ", Ngày Sinh: " + ngaySinh +
+                ", Trạng Thái: " + trangThai +
+                " }";
+    }
+
 }

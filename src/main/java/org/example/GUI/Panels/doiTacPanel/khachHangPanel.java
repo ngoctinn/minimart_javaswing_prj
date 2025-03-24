@@ -5,6 +5,8 @@ import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.khachHangDTO;
+import org.example.BUS.khachHangBUS_test;
 import org.example.GUI.Dialogs.ThemKhachHangDialog;
 
 import javax.swing.*;
@@ -12,6 +14,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 
 public class khachHangPanel extends JPanel {
@@ -264,23 +267,30 @@ public class khachHangPanel extends JPanel {
         tablePanel.setBackground(Color.WHITE);
         tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
         tablePanel.setPreferredSize(new Dimension(1270 * 80 / 100, 900));
-
         // Create table with data
-        String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số Điện Thoại", "Tổng Bán"};
-        Object[][] data = {
-                {"KH000005", "Anh Giang - Kim Mã", "", 1858000},
-                {"KH000004", "Anh Hoàng - Sài Gòn", "", 1286000},
-                {"KH000003", "Tuấn - Hà Nội", "", 1243000},
-                {"KH000002", "Phạm Thu Hương", "", 1358000},
-                {"KH000001", "Nguyễn Văn Hải", "", 656000}
-        };
-
+        String[] columnNames = {"Mã Khách Hàng", "Điểm tích lũy", "Tên Khách Hàng", "Địa Chỉ", "Số Điện Thoại", "Giới tính", "Email", "Ngayf sinh", "Trạng Thái"};
+        khachHangBUS_test khBUS = new khachHangBUS_test();
+        // Gọi phương thức getKhList()
+        List<khachHangDTO> customer = khBUS.getAllList();
+        // Khởi tạo mảng dữ liệu
+        Object[][] data = new Object[customer.size()][columnNames.length];
+        //  Thêm dữ liệu vào mảng
+        for (int i = 0; i < customer.size(); i++) {
+            khachHangDTO kh = customer.get(i);
+            data[i][0] = kh.getMaKH();
+            data[i][1] = kh.getDiemTichLuy();
+            data[i][2] = kh.getHoTen();
+            data[i][3] = kh.getDiaChi();
+            data[i][4] = kh.getSDT();
+            data[i][5] = kh.getGioiTinh();
+            data[i][6] = kh.getEmail();
+            data[i][7] = kh.getNgaySinh();
+            data[i][8] = kh.getTrangThai();
+        }
         khachHangTable = new CustomTable(data, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(khachHangTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
-
         tablePanel.add(tableScrollPane);
-
         return tablePanel;
     }
 
