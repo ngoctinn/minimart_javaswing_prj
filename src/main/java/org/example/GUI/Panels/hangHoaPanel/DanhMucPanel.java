@@ -36,6 +36,8 @@ public class DanhMucPanel extends JPanel {
     private JRadioButton radioTatCa;
     private JRadioButton radioHangDangKinhDoanh;
     private JRadioButton radioHangNgungKinhDoanh;
+    private JRadioButton radioGiaTangDan;
+    private JRadioButton radioGiaGiamDan;
     private CustomTable hangHoaTable;
     private CustomButton themLoaiSanPhamButton;
     private CustomButton themNhaCungCapButton;
@@ -216,31 +218,32 @@ public class DanhMucPanel extends JPanel {
     private void setupBottomPanelLeft() {
         setupNhomHangPanel();
         setupNhaCungCapPanel();
+        setupSapXepTheoGiaPanel(); // Add new panel for price sorting
         setupLuaChonHienThiPanel();
     }
 
     private void setupNhomHangPanel() {
-        // Nhóm hàng panel
-        JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 210);
+        // Nhóm hàng panel - reduced height from 210 to 180
+        JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 180);
         loaiSanPhamPanel.setLayout(null);
         bottomPanelLeft.add(loaiSanPhamPanel);
 
         // Nhóm hàng list
         String[] loaiSanPhamData = {"Bánh kẹo", "Thực phẩm khô", "Thực phẩm tươi", "Đồ uống","Bia","Đồ gia dụng", "Hàng hóa khác"};
         loaiSanPhamList = createScrollableList(loaiSanPhamData);
-        JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 130);
-        scrollPane.setBounds(15, 25, 200, 130);
+        JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 100);
+        scrollPane.setBounds(15, 25, 200, 100);
         loaiSanPhamPanel.add(scrollPane);
 
         //Btn thêm loại sản phẩm
         themLoaiSanPhamButton = new CustomButton("Thêm loại sản phẩm");
-        themLoaiSanPhamButton.setBounds(15, 170, 195, 25);
+        themLoaiSanPhamButton.setBounds(15, 140, 195, 25);
         loaiSanPhamPanel.add(themLoaiSanPhamButton);
     }
 
     private void setupNhaCungCapPanel() {
-        // Nhà cung cấp panel
-        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 210);
+        // Nhà cung cấp panel - reduced height from 210 to 180
+        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 180);
         nhaCungCapPanel.setLayout(null);
         bottomPanelLeft.add(nhaCungCapPanel);
 
@@ -251,13 +254,13 @@ public class DanhMucPanel extends JPanel {
                 "Nhà cung cấp 13", "Nhà cung cấp 14", "Nhà cung cấp 15", "Nhà cung cấp 16",
                 "Nhà cung cấp 17", "Nhà cung cấp 18", "Nhà cung cấp 19", "Nhà cung cấp 20"};
         nhaCungCapList = createScrollableList(nhaCungCapData);
-        JScrollPane scrollPane = createScrollPane(nhaCungCapList, 200, 130);
-        scrollPane.setBounds(15, 25, 200, 130);
+        JScrollPane scrollPane = createScrollPane(nhaCungCapList, 200, 100);
+        scrollPane.setBounds(15, 25, 200, 100);
         nhaCungCapPanel.add(scrollPane);
 
         //Btn thêm nhà cung cấp
         themNhaCungCapButton = new CustomButton("Thêm nhà cung cấp");
-        themNhaCungCapButton.setBounds(15, 170, 195, 25);
+        themNhaCungCapButton.setBounds(15, 140, 195, 25);
         nhaCungCapPanel.add(themNhaCungCapButton);
     }
 
@@ -283,6 +286,26 @@ public class DanhMucPanel extends JPanel {
         luaChonPanel.add(radioHangDangKinhDoanh);
         luaChonPanel.add(radioHangNgungKinhDoanh);
     }
+    
+    private void setupSapXepTheoGiaPanel() {
+        // Sắp xếp theo giá panel
+        JPanel sapXepPanel = createTitledPanel("Sắp xếp theo giá", 230, 80);
+        sapXepPanel.setLayout(new BoxLayout(sapXepPanel, BoxLayout.Y_AXIS));
+        bottomPanelLeft.add(sapXepPanel);
+
+        // Radio buttons
+        radioGiaTangDan = createRadioButton("Giá tăng dần");
+        radioGiaGiamDan = createRadioButton("Giá giảm dần");
+
+        // Group radio buttons
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioGiaTangDan);
+        buttonGroup.add(radioGiaGiamDan);
+
+        // Add to panel
+        sapXepPanel.add(radioGiaTangDan);
+        sapXepPanel.add(radioGiaGiamDan);
+    }
 
     private void setupBottomPanelRight() {
         // Change layout to BorderLayout
@@ -292,12 +315,12 @@ public class DanhMucPanel extends JPanel {
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBackground(Color.WHITE);
 
-        // Table data
-        String[] columnNames = {"Mã hàng", "Tên hàng", "Loại sản phẩm", "Nhà cung cấp", "Tồn kho"};
+        // Table data - added price column
+        String[] columnNames = {"Mã hàng", "Tên hàng", "Loại sản phẩm", "Nhà cung cấp", "Giá bán", "Tồn kho"};
         Object[][] data = {
-                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 192},
-                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 0},
-                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 0},
+                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 25000, 192},
+                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 15000, 0},
+                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 40000, 0},
         };
 
         // Create table
@@ -345,11 +368,12 @@ public class DanhMucPanel extends JPanel {
         attributesPanel.setBackground(Color.WHITE);
         attributesPanel.setLayout(new GridLayout(0, 4, 10, 5));
 
-        // Add attribute labels
+        // Add attribute labels - added price
         addAttributeRow(attributesPanel, "Mã sản phẩm:", "");
         addAttributeRow(attributesPanel, "Tên sản phẩm:", "");
         addAttributeRow(attributesPanel, "Loại sản phẩm:", "");
         addAttributeRow(attributesPanel, "Nhà cung cấp:", "");
+        addAttributeRow(attributesPanel, "Giá bán:", "");
         addAttributeRow(attributesPanel, "Tồn kho:", "");
         addAttributeRow(attributesPanel, "Trạng thái:", "");
 
@@ -387,13 +411,15 @@ public class DanhMucPanel extends JPanel {
             String tenHang = hangHoaTable.getValueAt(rowIndex, 1).toString();
             String loaiSanPham = hangHoaTable.getValueAt(rowIndex, 2).toString();
             String nhaCungCap = hangHoaTable.getValueAt(rowIndex, 3).toString();
-            String tonKho = hangHoaTable.getValueAt(rowIndex, 4).toString();
+            String giaBan = hangHoaTable.getValueAt(rowIndex, 4).toString();
+            String tonKho = hangHoaTable.getValueAt(rowIndex, 5).toString();
 
             // Update the labels
             attributeLabels.get("Mã sản phẩm:").setText(maHang);
             attributeLabels.get("Tên sản phẩm:").setText(tenHang);
             attributeLabels.get("Loại sản phẩm:").setText(loaiSanPham);
             attributeLabels.get("Nhà cung cấp:").setText(nhaCungCap);
+            attributeLabels.get("Giá bán:").setText(giaBan + " VNĐ");
             attributeLabels.get("Tồn kho:").setText(tonKho);
 
             // Set status based on inventory

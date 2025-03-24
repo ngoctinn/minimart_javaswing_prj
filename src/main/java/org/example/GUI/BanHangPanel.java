@@ -365,24 +365,28 @@ public class BanHangPanel extends JPanel {
 
     private void addSampleProducts() {
         List<Product> products = new ArrayList<>();
+        
+        // Path to the product image
+        String imagePath = "Images/Products/sample.png";
+        ImageIcon productImage = loadProductImage(imagePath);
 
-        // Tạo danh sách sản phẩm mẫu
-        products.add(new Product("Cà phê sữa", 25000, createDummyImage("Cà phê", new Color(139, 69, 19))));
-        products.add(new Product("Cà phê đen", 20000, createDummyImage("Cà phê đen", new Color(60, 30, 10))));
-        products.add(new Product("Trà sữa trân châu", 35000, createDummyImage("Trà sữa", new Color(230, 210, 190))));
-        products.add(new Product("Nước ép cam", 30000, createDummyImage("Cam", Color.ORANGE)));
-        products.add(new Product("Bánh mì thịt", 25000, createDummyImage("Bánh mì", new Color(240, 220, 180))));
-        products.add(new Product("Sandwich gà", 45000, createDummyImage("Sandwich", new Color(220, 200, 150))));
-        products.add(new Product("Bánh ngọt chocolate", 50000, createDummyImage("Bánh ngọt", new Color(102, 51, 0))));
-        products.add(new Product("Snack khoai tây", 20000, createDummyImage("Snack", Color.YELLOW)));
-        products.add(new Product("Kem vanilla", 35000, createDummyImage("Kem", Color.WHITE)));
-        products.add(new Product("Sữa chua dâu", 30000, createDummyImage("Sữa chua", new Color(255, 230, 230))));
-        products.add(new Product("Trà đào", 35000, createDummyImage("Trà đào", new Color(255, 200, 150))));
-        products.add(new Product("Nước suối", 10000, createDummyImage("Nước", new Color(200, 240, 255))));
-        products.add(new Product("Bia Heineken", 25000, createDummyImage("Bia", new Color(220, 180, 100))));
-        products.add(new Product("Sinh tố bơ", 40000, createDummyImage("Sinh tố", new Color(120, 180, 80))));
-        products.add(new Product("Nước ngọt Coca", 15000, createDummyImage("Coca", new Color(160, 40, 40))));
-        products.add(new Product("Matcha đá xay", 45000, createDummyImage("Matcha", new Color(100, 160, 80))));
+        // Tạo danh sách sản phẩm mẫu với ảnh thực tế
+        products.add(new Product("Cà phê sữa", 25000, productImage));
+        products.add(new Product("Cà phê đen", 20000, productImage));
+        products.add(new Product("Trà sữa trân châu", 35000, productImage));
+        products.add(new Product("Nước ép cam", 30000, productImage));
+        products.add(new Product("Bánh mì thịt", 25000, productImage));
+        products.add(new Product("Sandwich gà", 45000, productImage));
+        products.add(new Product("Bánh ngọt chocolate", 50000, productImage));
+        products.add(new Product("Snack khoai tây", 20000, productImage));
+        products.add(new Product("Kem vanilla", 35000, productImage));
+        products.add(new Product("Sữa chua dâu", 30000, productImage));
+        products.add(new Product("Trà đào", 35000, productImage));
+        products.add(new Product("Nước suối", 10000, productImage));
+        products.add(new Product("Bia Heineken", 25000, productImage));
+        products.add(new Product("Sinh tố bơ", 40000, productImage));
+        products.add(new Product("Nước ngọt Coca", 15000, productImage));
+        products.add(new Product("Matcha đá xay", 45000, productImage));
 
         // Thêm từng sản phẩm vào giao diện
         for (Product product : products) {
@@ -412,6 +416,24 @@ public class BanHangPanel extends JPanel {
 
         g2d.dispose();
         return new ImageIcon(img);
+    }
+    
+    // Load image from file path
+    private ImageIcon loadProductImage(String imagePath) {
+        try {
+            // Load the image file
+            ImageIcon originalIcon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
+            
+            // Resize the image to fit the product panel (100x100 pixels)
+            Image originalImage = originalIcon.getImage();
+            Image resizedImage = originalImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            
+            return new ImageIcon(resizedImage);
+        } catch (Exception e) {
+            System.err.println("Error loading image from " + imagePath + ": " + e.getMessage());
+            // Return a dummy image as fallback
+            return createDummyImage("Image Error", Color.RED);
+        }
     }
 
     // Tạo panel hiển thị sản phẩm
