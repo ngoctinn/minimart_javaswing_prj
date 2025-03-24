@@ -3,13 +3,14 @@ package org.example.GUI;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.GUI.Panels.baoCaoPanel;
-import org.example.GUI.Panels.doiTacPanel.khachHangPanel;
+import org.example.GUI.Panels.doiTacPanel.KhachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.DanhMucPanel;
 import org.example.GUI.Panels.hangHoaPanel.KiemKhoPanel;
+import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
 import org.example.GUI.Panels.hangHoaPanel.ThietLapGiaPanel;
 import org.example.GUI.Panels.nhanVienPanel.BangChamLuongPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
@@ -38,7 +39,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenuItem banHangItem ,hoaDonItem, traHangItem, nhapHangItem, traHangNhapItem;
 
     // Các JMenuItem cho JMenu hangHoa
-    private JMenuItem danhMucItem, thietLapGiaItem, kiemKhoItem;
+    private JMenuItem danhMucItem, loaiSanPhamItem, thietLapGiaItem, kiemKhoItem;
 
     // Các JMenuItem cho JMenu doiTac
     private JMenuItem khachHangItem, nhaCungCapItem;
@@ -59,9 +60,8 @@ public class MenuFrame extends JFrame implements ActionListener {
     private void initializeFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(800, 600);
+        setSize(1200, 750);
         setLocationRelativeTo(null);
-        setResizable(false);
         setLayout(new BorderLayout());
     }
 
@@ -126,6 +126,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Tạo JMenuItem cho hàng hóa
         danhMucItem = createMenuItem("Danh mục", "danhmuc", 16);
+        loaiSanPhamItem = createMenuItem("Loại sản phẩm", "loaisanpham", 16);
         thietLapGiaItem = createMenuItem("Thiết lập giá", "thietlapgia", 16);
         kiemKhoItem = createMenuItem("Kiểm kho", "kiemkho", 16);
 
@@ -163,6 +164,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Thêm JMenuItem vào hàng hóa
         hangHoaMenu.add(danhMucItem);
+        hangHoaMenu.add(loaiSanPhamItem);
         hangHoaMenu.add(thietLapGiaItem);
         hangHoaMenu.add(kiemKhoItem);
 
@@ -225,6 +227,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Thêm ActionListener cho các JMenuItem hàng hóa
         danhMucItem.addActionListener(this);
+        loaiSanPhamItem.addActionListener(this);
         thietLapGiaItem.addActionListener(this);
         kiemKhoItem.addActionListener(this);
 
@@ -270,6 +273,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Hàng hóa panels
         panelMap.put("danhMuc", new DanhMucPanel());
+        panelMap.put("loaiSanPham", new LoaiSanPhamPanel());
         panelMap.put("kiemKho", new KiemKhoPanel());
         panelMap.put("thietLapGia", new ThietLapGiaPanel());
 
@@ -280,7 +284,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("traHang", new traHangNhapPanel());
 
         // Đối tác panels
-        panelMap.put("khachHang", new khachHangPanel());
+        panelMap.put("khachHang", new KhachHangPanel());
         panelMap.put("nhaCungCap", new nhaCungCapPanel());
 
         // Nhân viên panels
@@ -300,6 +304,8 @@ public class MenuFrame extends JFrame implements ActionListener {
         // Hàng hóa
         if (source == danhMucItem) {
             showPanel("danhMuc");
+        } else if (source == loaiSanPhamItem) {
+            showPanel("loaiSanPham");
         } else if (source == thietLapGiaItem) {
             showPanel("thietLapGia");
         } else if (source == kiemKhoItem) {

@@ -24,58 +24,93 @@ public class diaChiPanelAPI extends JPanel {
     private CustomTexField duongField;
 
     public diaChiPanelAPI() {
+        setLayout(new GridBagLayout());
+        setPreferredSize(new Dimension(330, 140));
+        setBackground(Color.white);
+        setFont(new java.awt.Font("Arial", Font.BOLD, 15));
 
-        setLayout(null);
-        setBounds(400,50,330,200);
-        setFont(new java.awt.Font("Arial", 0, 15));
-
-        Font customFont = new Font("Arial", Font.PLAIN, 15);
+        Font customFont = new Font("Arial", Font.PLAIN, 14);
+        Font customFontTitle = new Font("Arial", Font.BOLD, 15);
 
         provinceComboBox = new JComboBox<>();
         districtComboBox = new JComboBox<>();
         wardComboBox = new JComboBox<>();
 
+        // Cấu hình GridBagConstraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         soNhaField = new CustomTexField("Số nhà");
-        soNhaField.setBounds(10, 10, 100, 30); // Lùi lên 10 đơn vị
         soNhaField.setFont(customFont);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.3;
+        gbc.insets = new Insets(0, 0, 5, 10);
+        add(soNhaField, gbc);
 
         duongField = new CustomTexField("Đường");
-        duongField.setBounds(130, 10, 200, 30); // Lùi lên 10 đơn vị
         duongField.setFont(customFont);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.7;
+        gbc.insets = new Insets(0, 10, 5, 0);
+        add(duongField, gbc);
 
+        // Tỉnh/Thành phố
         JLabel provincesLabel = new JLabel("Tỉnh/Thành phố");
-        provincesLabel.setBounds(10, 50, 100, 30); // Lùi lên 10 đơn vị
-        provincesLabel.setFont(customFont);
+        provincesLabel.setFont(customFontTitle);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.3;
+        gbc.insets = new Insets(5, 0, 5, 10);
+        add(provincesLabel, gbc);
 
-
-        provinceComboBox.setBounds(130, 50, 200, 30); // Lùi lên 10 đơn vị
         provinceComboBox.setFont(customFont);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.7;
+        gbc.insets = new Insets(5, 10, 5, 0);
+        add(provinceComboBox, gbc);
 
+        // Quận/Huyện
         JLabel districtLabel = new JLabel("Quận/Huyện");
-        districtLabel.setBounds(10, 90, 100, 30); // Lùi lên 10 đơn vị
-        districtLabel.setFont(customFont);
+        districtLabel.setFont(customFontTitle);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.3;
+        gbc.insets = new Insets(5, 0, 5, 10);
+        add(districtLabel, gbc);
 
-        districtComboBox.setBounds(130, 90, 200, 30); // Lùi lên 10 đơn vị
         districtComboBox.setFont(customFont);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.7;
+        gbc.insets = new Insets(5, 10, 5, 0);
+        add(districtComboBox, gbc);
 
+        // Phường/Xã
         JLabel wardLabel = new JLabel("Phường/Xã");
-        wardLabel.setBounds(10, 130, 100, 30); // Lùi lên 10 đơn vị
-        wardLabel.setFont(customFont);
+        wardLabel.setFont(customFontTitle);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.3;
+        gbc.insets = new Insets(0, 0, 0, 10);
+        add(wardLabel, gbc);
 
-        wardComboBox.setBounds(130, 130, 200, 30); // Lùi lên 10 đơn vị
         wardComboBox.setFont(customFont);
-
-
-
-        add(soNhaField);
-        add(duongField);
-        add(provincesLabel);
-        add(provinceComboBox);
-        add(districtLabel);
-        add(districtComboBox);
-        add(wardLabel);
-        add(wardComboBox);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.7;
+        gbc.insets = new Insets(0, 10, 0, 0);
+        add(wardComboBox, gbc);
 
 
         // Load dữ liệu từ API

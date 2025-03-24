@@ -52,15 +52,15 @@ public class BanHangPanel extends JPanel {
         setupBottomPanelRight();
 
         // Add panels to main panel
-        this.add(topPanel);
+        this.add(topPanel,BorderLayout.NORTH);
         this.add(bottomPanel);
-        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
-        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
+        bottomPanel.add(bottomPanelLeft, BorderLayout.CENTER);
+        bottomPanel.add(bottomPanelRight, BorderLayout.EAST);
     }
 
     private void setupMainPanel() {
         // Set up layout and background for main panel
-        this.setLayout(new FlowLayout());
+        this.setLayout(new BorderLayout(10, 10));
         this.setBackground(new Color(225, 225, 225));
         this.setVisible(true);
     }
@@ -78,14 +78,11 @@ public class BanHangPanel extends JPanel {
         bottomPanelLeft.setBackground(Color.WHITE);
         bottomPanelRight.setBackground(Color.WHITE);
 
-        // Set panel sizes
-        topPanel.setPreferredSize(new Dimension(1270, 50));
-        bottomPanel.setPreferredSize(new Dimension(1270, 700));
-        bottomPanelLeft.setPreferredSize(new Dimension(1270 * 60 / 100, 900));
-        bottomPanelRight.setPreferredSize(new Dimension(1270 * 40 / 100, 900));
+        bottomPanelRight.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.4), 0));
+
 
         // Set layouts
-        topPanel.setLayout(null);
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         bottomPanel.setLayout(new BorderLayout(5, 0));
         bottomPanelLeft.setLayout(new BorderLayout());
         bottomPanelRight.setLayout(new BorderLayout());
@@ -94,20 +91,25 @@ public class BanHangPanel extends JPanel {
     private void setupTopPanel() {
         // Search field
         searchField = new PlaceholderTextField("Tìm kiếm khách hàng...");
-        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        searchField.setBounds(20, 12, 300, 30);
         topPanel.add(searchField);
 
         // Search button
         searchButton = new CustomButton("Tìm");
-        searchButton.setBounds(330, 12, 70, 30);
+        searchButton.setPreferredSize(new Dimension(70, 30));
         topPanel.add(searchButton);
+
+        // Add a spacer panel to push the add button to the right
+        JPanel spacerPanel = new JPanel();
+        spacerPanel.setOpaque(false);
+        spacerPanel.setPreferredSize(new Dimension(680, 30));
+        topPanel.add(spacerPanel);
 
         // Add new tab button
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addTabButton = new CustomButton("Thêm hóa đơn", addIcon);
-        addTabButton.setBounds(1090, 12, 150, 30);
+        addTabButton.setPreferredSize(new Dimension(150, 30));
         addTabButton.addActionListener(e -> addNewTab());
         topPanel.add(addTabButton);
     }
@@ -300,9 +302,6 @@ public class BanHangPanel extends JPanel {
             this.totalItemLabel.setText(NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(getTotalPrice()));
         }
 
-        public JPanel getPanel() {
-            return panel;
-        }
 
         public double getTotalPrice() {
             return product.getPrice() * quantity;
