@@ -6,10 +6,12 @@ import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
 import org.example.GUI.Dialogs.ThemHangHoaDialog;
+import org.example.GUI.MenuFrame;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -92,7 +94,14 @@ public class hoaDonPanel extends JPanel {
         addButton = new CustomButton("Thêm", addIcon);
         addButton.setBounds(820, 12, 100, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        addButton.addActionListener(e -> new ThemHangHoaDialog());
+        //MenuFrame hiển thị panel bán hàng
+        addButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MenuFrame menuFrame = new MenuFrame();
+                menuFrame.showPanel("banHang");
+            }
+        });
         panel.add(addButton);
 
         // Edit button - Adjusted position
