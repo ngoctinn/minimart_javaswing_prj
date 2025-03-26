@@ -13,49 +13,56 @@ public class CustomButton extends JButton {
     private Color normalColor;
     private Color hoverColor;
     private Color pressColor;
+    private Color disabledColor;
     private ImageIcon originalIcon;
 
     // =============== ĐỊNH NGHĨA CÁC BỘ MÀU ===============
     public static final class ButtonColors {
         // Xanh dương (mặc định)
-public static final Color[] BLUE = {
-        new Color(0, 102, 204),  // normal
-        new Color(0, 90, 195),   // press
-        new Color(0, 105, 225),  // hover
-};
+        public static final Color[] BLUE = {
+                new Color(0, 102, 204),  // normal
+                new Color(0, 90, 195),   // press
+                new Color(0, 105, 225),  // hover
+                new Color(0, 102, 204, 120)  // disabled
+        };
         // Xanh lá
         public static final Color[] GREEN = {
                 new Color(0, 153, 102),  // normal
                 new Color(0, 130, 90),    // press
-                new Color(0, 180, 120)   // hover
+                new Color(0, 180, 120),   // hover
+                new Color(0, 153, 102, 120)  // disabled
         };
 
         // Đỏ
         public static final Color[] RED = {
                 new Color(195, 0, 0),   // normal
                 new Color(180, 0, 0),  // hover
-                new Color(230, 50, 50)    // press
+                new Color(230, 50, 50),    // press
+                new Color(195, 0, 0, 120)  // disabled
         };
 
         // Vàng
         public static final Color[] YELLOW = {
                 new Color(241, 196, 15),  // normal
                 new Color(245, 215, 110), // hover
-                new Color(230, 163, 10)   // press
+                new Color(230, 163, 10),   // press
+                new Color(241, 196, 15, 120)  // disabled
         };
 
         // Cam
         public static final Color[] ORANGE = {
                 new Color(243, 156, 18),  // normal
                 new Color(247, 202, 24),  // hover
-                new Color(230, 126, 34)   // press
+                new Color(230, 126, 34),   // press
+                new Color(243, 156, 18, 120)  // disabled
         };
 
         // Xám
         public static final Color[] GRAY = {
                 new Color(120, 120, 120), // normal
                 new Color(80, 80, 80),     // press
-                new Color(160, 160, 160) // hover
+                new Color(160, 160, 160), // hover
+                new Color(120, 120, 120, 120)  // disabled
         };
     }
 
@@ -92,39 +99,56 @@ public static final Color[] BLUE = {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                setBackground(hoverColor);
-                repaint();
+                if (isEnabled()) {
+                    setBackground(hoverColor);
+                    repaint();
+                }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                setBackground(normalColor);
-                repaint();
+                if (isEnabled()) {
+                    setBackground(normalColor);
+                    repaint();
+                }
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                setBackground(pressColor);
-                repaint();
+                if (isEnabled()) {
+                    setBackground(pressColor);
+                    repaint();
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                setBackground(hoverColor);
-                repaint();
+                if (isEnabled()) {
+                    setBackground(hoverColor);
+                    repaint();
+                }
             }
         });
     }
 
     // =============== CUSTOM METHODS ===============
     public void setButtonColors(Color[] colors) {
-        if (colors.length != 3) {
-            throw new IllegalArgumentException("Colors array must contain exactly 3 colors");
+        if (colors.length < 4) {
+            throw new IllegalArgumentException("Colors array must contain at least 4 colors (normal, press, hover, disabled)");
         }
         this.normalColor = colors[0];
         this.hoverColor = colors[1];
         this.pressColor = colors[2];
-        setBackground(normalColor);
+        this.disabledColor = colors[3];
+        setBackground(isEnabled() ? normalColor : disabledColor);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        setBackground(enabled ? normalColor : disabledColor);
+        setForeground(enabled ? Color.WHITE : new Color(255, 255, 255, 150));
+        repaint();
     }
 
     // =============== PAINT METHOD ===============
@@ -134,7 +158,17 @@ public static final Color[] BLUE = {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
-        super.paintComponent(g);
+        
+        // If disabled, draw with different alpha
+        if (!isEnabled() && getIcon() != null) {
+            Composite oldComposite = g2.getComposite();
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+            super.paintComponent(g2);
+            g2.setComposite(oldComposite);
+        } else {
+            super.paintComponent(g);
+        }
+        
         g2.dispose();
     }
 
@@ -171,6 +205,7 @@ public static final Color[] BLUE = {
         // Button màu đỏ
         CustomButton redButton = new CustomButton("Red Button");
         redButton.setButtonColors(CustomButton.ButtonColors.RED);
+        redButton.setEnabled(false);
 
         // Button màu xám
         CustomButton grayButton = new CustomButton("Gray Button");
@@ -180,10 +215,12 @@ public static final Color[] BLUE = {
         Color[] customColors = {
                 new Color(155, 89, 182),  // normal
                 new Color(165, 105, 189), // hover
-                new Color(142, 68, 173)   // press
+                new Color(142, 68, 173),   // press
+                new Color(155, 89, 182, 120)  // disabled
         };
         CustomButton customButton = new CustomButton("Custom Color");
         customButton.setButtonColors(customColors);
+
 
         // 5. Thêm sự kiện click
         basicButton.addActionListener(e -> {

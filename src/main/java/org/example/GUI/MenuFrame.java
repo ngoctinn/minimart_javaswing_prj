@@ -351,7 +351,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     }
 
 
-    private void showPanel(String panelName) {
+    public void showPanel(String panelName) {
         cardLayout.show(contentPanel, panelName);
     }
 

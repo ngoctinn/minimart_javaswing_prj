@@ -9,6 +9,8 @@ import org.example.GUI.Dialogs.ThemKhachHangDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,8 +20,6 @@ public class KhachHangPanel extends JPanel {
     // UI Components
     private RoundedPanel topPanel;
     private RoundedPanel bottomPanel;
-    private RoundedPanel bottomPanelLeft;
-    private RoundedPanel bottomPanelRight;
     
     // Top panel components
     private PlaceholderTextField searchField;
@@ -32,11 +32,16 @@ public class KhachHangPanel extends JPanel {
     private CustomButton exportButton;
     
     // Bottom panel components
+    private JPanel leftPanel;
+    private JPanel rightPanel;
     private JSpinner startDateSpinner, endDateSpinner;
-    private JList<String> nhomKhachHangList;
     private JList<String> nguoiTaoList;
     private CustomTable khachHangTable;
+    private CustomTable hoaDonTable;
     private CustomButton filterDateButton;
+    private JRadioButton radioTatCa;
+    private JRadioButton radioActive;
+    private JRadioButton radioInactive;
 
     public KhachHangPanel() {
         initGUI();
@@ -46,14 +51,11 @@ public class KhachHangPanel extends JPanel {
         setupMainPanel();
         createPanels();
         setupTopPanel();
-        setupBottomPanelLeft();
-        setupBottomPanelRight();
+        setupBottomPanel();
 
         // Add panels to main panel with proper constraints
         this.add(topPanel, BorderLayout.NORTH);
         this.add(bottomPanel, BorderLayout.CENTER);
-        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
-        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
     private void setupMainPanel() {
@@ -67,23 +69,14 @@ public class KhachHangPanel extends JPanel {
         // Create sub-panels
         topPanel = new RoundedPanel(20);
         bottomPanel = new RoundedPanel(20);
-        bottomPanelLeft = new RoundedPanel(20);
-        bottomPanelRight = new RoundedPanel(20);
 
         // Set background colors
         topPanel.setBackground(Color.WHITE);
-        bottomPanel.setBackground(new Color(225, 225, 225));
-        bottomPanelLeft.setBackground(Color.WHITE);
-        bottomPanelRight.setBackground(Color.WHITE);
-
-        // Set panel sizes
-        bottomPanelLeft.setPreferredSize(new Dimension(250, 0)); // Fixed width for left panel
+        bottomPanel.setBackground(Color.WHITE);
 
         // Set layouts
         topPanel.setLayout(new BorderLayout());
-        bottomPanel.setLayout(new BorderLayout(5, 0));
-        bottomPanelLeft.setLayout(new FlowLayout());
-        bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
+        bottomPanel.setLayout(new BorderLayout());
     }
 
     private void setupTopPanel() {
@@ -208,17 +201,105 @@ public class KhachHangPanel extends JPanel {
         actionPanel.add(importExportPanel);
     }
 
-    private void setupBottomPanelLeft() {
-        setupDateFilterPanel();
-        // Đã loại bỏ setupNhomKhachHangPanel();
-        setupNguoiTaoPanel();
+    private void setupBottomPanel() {
+        // Add padding to the bottom panel
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Create a main content panel with split layout
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setBorder(null);
+        splitPane.setBackground(Color.WHITE);
+        splitPane.setDividerSize(5);
+        splitPane.setResizeWeight(0.4); // 40% left, 60% right
+
+        // Create left and right panels
+        leftPanel = new JPanel(new BorderLayout(10, 10));
+        leftPanel.setBackground(Color.WHITE);
+
+        rightPanel = new JPanel(new BorderLayout(10, 10));
+        rightPanel.setBackground(Color.WHITE);
+
+        // Setup left panel (customers)
+        setupLeftCustomerPanel();
+
+        // Setup right panel (invoices)
+        setupRightInvoicePanel();
+
+        // Add panels to split pane
+        splitPane.setLeftComponent(leftPanel);
+        splitPane.setRightComponent(rightPanel);
+
+        // Add split pane to bottom panel
+        bottomPanel.add(splitPane, BorderLayout.CENTER);
     }
-    
-    private void setupDateFilterPanel() {
+
+    private void setupLeftCustomerPanel() {
+        // Add filter panel at the top of left panel
+        JPanel topLeftPanel = new JPanel(new BorderLayout());
+        topLeftPanel.setBackground(Color.WHITE);
+
+        // Setup filter panels
+        JPanel filterPanel = createFilterPanel();
+        JPanel dateFilterPanel = createDateFilterPanel();
+
+        topLeftPanel.add(filterPanel, BorderLayout.NORTH);
+        topLeftPanel.add(dateFilterPanel, BorderLayout.CENTER);
+
+        // Create customer table panel
+        JPanel customerTablePanel = createCustomerTablePanel();
+
+        // Add to left panel
+        leftPanel.add(topLeftPanel, BorderLayout.NORTH);
+        leftPanel.add(customerTablePanel, BorderLayout.CENTER);
+    }
+
+    private void setupRightInvoicePanel() {
+        // Create a title panel for the invoice list
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(Color.WHITE);
+        JLabel titleLabel = new JLabel("Lịch sử mua hàng");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
+        titlePanel.add(titleLabel, BorderLayout.WEST);
+
+        // Create invoice table panel
+        JPanel invoiceTablePanel = createInvoiceTablePanel();
+
+        // Add to right panel
+        rightPanel.add(titlePanel, BorderLayout.NORTH);
+        rightPanel.add(invoiceTablePanel, BorderLayout.CENTER);
+    }
+
+    private JPanel createFilterPanel() {
+        JPanel filterPanel = createTitledPanel("Lựa chọn hiển thị", 0, 80);
+        filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
+
+        // Radio buttons
+        radioTatCa = createRadioButton("Tất cả");
+        radioActive = createRadioButton("Đang hoạt động");
+        radioInactive = createRadioButton("Không hoạt động");
+
+        // Group radio buttons
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioTatCa);
+        buttonGroup.add(radioActive);
+        buttonGroup.add(radioInactive);
+
+        // Set default selection
+        radioTatCa.setSelected(true);
+
+        // Add to panel
+        filterPanel.add(radioTatCa);
+        filterPanel.add(radioActive);
+        filterPanel.add(radioInactive);
+
+        return filterPanel;
+    }
+
+    private JPanel createDateFilterPanel() {
         // Date filter panel
-        JPanel datePanel = createTitledPanel("Ngày Tạo", 230, 170);
+        JPanel datePanel = createTitledPanel("Ngày Tạo", 0, 170);
         datePanel.setLayout(null);
-        bottomPanelLeft.add(datePanel);
         
         // Start date components
         JLabel startLabel = new JLabel("Ngày bắt đầu:");
@@ -247,62 +328,123 @@ public class KhachHangPanel extends JPanel {
         // Filter button
         filterDateButton = new CustomButton("Lọc");
         filterDateButton.setBounds(15, 130, 200, 25);
-        filterDateButton.setButtonColors(CustomButton.ButtonColors.BLUE); // Đã thay đổi màu từ GRAY sang BLUE
+        filterDateButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         datePanel.add(filterDateButton);
+        
+        return datePanel;
     }
 
+    private JPanel createCustomerTablePanel() {
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBackground(Color.WHITE);
+        tablePanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                "Danh sách khách hàng",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                new Font("Segoe UI", Font.BOLD, 15),
+                Color.BLACK
+        ));
 
-
-    private void setupNhomKhachHangPanel() {
-        // Nhóm khách hàng panel
-        JPanel nhomKhachHangPanel = createTitledPanel("Nhóm Khách Hàng", 230, 210);
-        nhomKhachHangPanel.setLayout(null);
-        bottomPanelLeft.add(nhomKhachHangPanel);
-
-        // Nhóm khách hàng list
-        String[] nhomKhachHangData = {"Tây Bán Bom", "Tín Víp Pro", "Thư Bồ Tín", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"};
-        nhomKhachHangList = createScrollableList(nhomKhachHangData);
-        JScrollPane scrollPane = createScrollPane(nhomKhachHangList, 200, 130);
-        scrollPane.setBounds(15, 25, 200, 130);
-        nhomKhachHangPanel.add(scrollPane);
-
-        // Button to add customer group could be added here if needed
-    }
-
-    private void setupNguoiTaoPanel() {
-        // Người tạo panel
-        JPanel nguoiTaoPanel = createTitledPanel("Người Tạo", 230, 210);
-        nguoiTaoPanel.setLayout(null);
-        bottomPanelLeft.add(nguoiTaoPanel);
-
-        // Người tạo list
-        String[] nguoiTaoData = {"Tây Bán Bom", "Tín Víp Pro", "Thư Bồ Tín", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"};
-        nguoiTaoList = createScrollableList(nguoiTaoData);
-        JScrollPane scrollPane = createScrollPane(nguoiTaoList, 200, 130);
-        scrollPane.setBounds(15, 25, 200, 130);
-        nguoiTaoPanel.add(scrollPane);
-
-        // Button to add creator could be added here if needed
-    }
-
-    private void setupBottomPanelRight() {
         // Table data
         String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số Điện Thoại", "Tổng Bán"};
         Object[][] data = {
-                {"KH000005", "Anh Giang - Kim Mã", "", 1858000},
-                {"KH000004", "Anh Hoàng - Sài Gòn", "", 1286000},
-                {"KH000003", "Tuấn - Hà Nội", "", 1243000},
-                {"KH000002", "Phạm Thu Hương", "", 1358000},
-                {"KH000001", "Nguyễn Văn Hải", "", 656000}
+                {"KH000005", "Anh Giang - Kim Mã", "0123456789", 1858000},
+                {"KH000004", "Anh Hoàng - Sài Gòn", "0987654321", 1286000},
+                {"KH000003", "Tuấn - Hà Nội", "0123123123", 1243000},
+                {"KH000002", "Phạm Thu Hương", "0456456456", 1358000},
+                {"KH000001", "Nguyễn Văn Hải", "0789789789", 656000}
         };
 
         // Create table
         khachHangTable = new CustomTable(data, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(khachHangTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        bottomPanelRight.add(tableScrollPane);
+
+        // Add selection listener to update right panel when customer is selected
+        khachHangTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting() && khachHangTable.getSelectedRow() != -1) {
+                    updateInvoiceTable(khachHangTable.getValueAt(khachHangTable.getSelectedRow(), 0).toString());
+                }
+            }
+        });
+
+        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
+        return tablePanel;
     }
-    
+
+    private JPanel createInvoiceTablePanel() {
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBackground(Color.WHITE);
+
+        // Table data - initialize with empty data
+        String[] columnNames = {"Mã hóa đơn", "Ngày tạo", "Nhân viên bán", "Tổng tiền", "Trạng thái"};
+        Object[][] data = {}; // Empty initially, will be populated when a customer is selected
+
+        // Create table
+        hoaDonTable = new CustomTable(data, columnNames);
+        JScrollPane tableScrollPane = new JScrollPane(hoaDonTable);
+        tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
+        return tablePanel;
+    }
+
+    private void updateInvoiceTable(String customerId) {
+        // This method is called when a customer is selected
+        // For demonstration, we'll populate with example data based on the selected customer
+
+        Object[][] invoiceData;
+
+        // Example data based on customer ID
+        switch (customerId) {
+            case "KH000001":
+                invoiceData = new Object[][] {
+                        {"HD000001", "12/05/2023", "Nguyễn Văn A", 256000, "Đã thanh toán"},
+                        {"HD000002", "18/06/2023", "Trần Thị B", 400000, "Đã thanh toán"}
+                };
+                break;
+            case "KH000002":
+                invoiceData = new Object[][] {
+                        {"HD000003", "05/03/2023", "Nguyễn Văn A", 358000, "Đã thanh toán"},
+                        {"HD000004", "27/04/2023", "Lê Văn C", 500000, "Đã thanh toán"},
+                        {"HD000005", "14/07/2023", "Trần Thị B", 500000, "Đã thanh toán"}
+                };
+                break;
+            case "KH000003":
+                invoiceData = new Object[][] {
+                        {"HD000006", "10/01/2023", "Lê Văn C", 843000, "Đã thanh toán"},
+                        {"HD000007", "22/02/2023", "Nguyễn Văn A", 400000, "Đã thanh toán"}
+                };
+                break;
+            case "KH000004":
+                invoiceData = new Object[][] {
+                        {"HD000008", "15/04/2023", "Trần Thị B", 586000, "Đã thanh toán"},
+                        {"HD000009", "28/05/2023", "Lê Văn C", 700000, "Đã thanh toán"}
+                };
+                break;
+            case "KH000005":
+                invoiceData = new Object[][] {
+                        {"HD000010", "03/02/2023", "Nguyễn Văn A", 458000, "Đã thanh toán"},
+                        {"HD000011", "19/03/2023", "Trần Thị B", 700000, "Đã thanh toán"},
+                        {"HD000012", "30/06/2023", "Lê Văn C", 700000, "Đã thanh toán"}
+                };
+                break;
+            default:
+                invoiceData = new Object[][] {
+                        {"", "Chọn khách hàng để xem lịch sử mua hàng", "", "", ""}
+                };
+        }
+
+        // Update the invoice table with new data
+        hoaDonTable.setModel(new javax.swing.table.DefaultTableModel(
+                invoiceData,
+                new String[] {"Mã hóa đơn", "Ngày tạo", "Nhân viên bán", "Tổng tiền", "Trạng thái"}
+        ));
+    }
+
     // Helper methods
     private JPanel createTitledPanel(String title, int width, int height) {
         JPanel panel = new JPanel();
@@ -315,8 +457,19 @@ public class KhachHangPanel extends JPanel {
                 new Font("Segoe UI", Font.BOLD, 15),
                 Color.BLACK
         ));
-        panel.setPreferredSize(new Dimension(width, height));
+        
+        if (width > 0 && height > 0) {
+            panel.setPreferredSize(new Dimension(width, height));
+        }
+        
         return panel;
+    }
+
+    private JRadioButton createRadioButton(String text) {
+        JRadioButton radioButton = new JRadioButton(text);
+        radioButton.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        radioButton.setBackground(Color.WHITE);
+        return radioButton;
     }
 
     private JList<String> createScrollableList(String[] data) {
@@ -348,3 +501,4 @@ public class KhachHangPanel extends JPanel {
         }
     }
 }
+

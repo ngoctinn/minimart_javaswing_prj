@@ -5,6 +5,7 @@ import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
+import org.example.GUI.Dialogs.ThemLoaiSanPhamDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -148,6 +149,7 @@ public class LoaiSanPhamPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
+        addButton.addActionListener(e -> new ThemLoaiSanPhamDialog());
 
         // Edit button
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
@@ -225,11 +227,17 @@ public class LoaiSanPhamPanel extends JPanel {
 
     private void setupLeftCategoryPanel() {
         // Add filter panel at the top of left panel
+        JPanel topLeftPanel = new JPanel(new BorderLayout());
+        topLeftPanel.setBackground(Color.WHITE);
+        
         JPanel filterPanel = createFilterPanel();
-        leftPanel.add(filterPanel, BorderLayout.NORTH);
+        topLeftPanel.add(filterPanel, BorderLayout.NORTH);
 
         // Create category table panel
         JPanel categoryTablePanel = createCategoryTablePanel();
+
+        // Add to left panel
+        leftPanel.add(topLeftPanel, BorderLayout.NORTH);
         leftPanel.add(categoryTablePanel, BorderLayout.CENTER);
     }
 
