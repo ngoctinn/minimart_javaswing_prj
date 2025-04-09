@@ -265,7 +265,7 @@ public class hoaDonPanel extends JPanel {
         userPanel.setLayout(new BorderLayout(5, 5));
         userPanel.setPreferredSize(new Dimension(220, 180));
 
-        userList = new JList<>(new String[]{"Tây Bán Bom", "Tín Víp Pro", "Thư Bồ Tín", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"});
+        userList = new JList<>(new String[]{"Nguyễn Đức Tây", "Nguyễn Ngọc Tín", "Nguyễn Thị Tuyết Thư", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"});
         userList.setLayoutOrientation(JList.VERTICAL);
         userList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         userList.setVisibleRowCount(6);

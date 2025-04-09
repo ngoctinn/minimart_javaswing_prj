@@ -88,20 +88,6 @@ public class TaoLoHangDialog extends JDialog {
         gbc.weightx = 0.7;
         panel.add(batchIdLabel, gbc);
 
-        // Nhà cung cấp
-        JLabel supplierLabel = new JLabel("Nhà cung cấp:");
-        supplierLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        panel.add(supplierLabel, gbc);
-
-        // Danh sách nhà cung cấp mẫu
-        String[] suppliers = {"NCC001 - Công ty TNHH ABC", "NCC002 - Công ty CP XYZ", "NCC003 - Công ty TNHH DEF"};
-        supplierComboBox = new JComboBox<>(suppliers);
-        supplierComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        gbc.gridx = 1;
-        panel.add(supplierComboBox, gbc);
-
         // Ngày sản xuất
         JLabel ngaySanXuatLabel = new JLabel("Ngày sản xuất:");
         ngaySanXuatLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));

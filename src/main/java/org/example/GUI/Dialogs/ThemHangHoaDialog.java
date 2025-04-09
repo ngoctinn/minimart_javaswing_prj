@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ThemHangHoaDialog extends JDialog {
-    private CustomTexField maHangHoaField, tenHangHoaField, donViTinhField;
+    private CustomTexField maHangHoaField, tenHangHoaField, donViTinhField, giaBanField;
     private JComboBox<String> loaiHangHoaComboBox, trangThaiComboBox;
     private CustomButton chonHinhAnhButton, luuButton, huyButton;
 
@@ -78,18 +78,20 @@ public class ThemHangHoaDialog extends JDialog {
         
         addFormRow(panel, "Đơn vị tính", donViTinhField = new CustomTexField("Nhập đơn vị tính (vd: chai)"), 3, gbc);
         
+        addFormRow(panel, "Giá bán", giaBanField = new CustomTexField("Nhập giá bán (vd: 15000)"), 4, gbc);
+        
         trangThaiComboBox = new JComboBox<>(new String[]{"Đang kinh doanh", "Ngừng kinh doanh"});
-        addFormRow(panel, "Trạng thái", trangThaiComboBox, 4, gbc);
+        addFormRow(panel, "Trạng thái", trangThaiComboBox, 5, gbc);
 
         // Image panel
         JPanel hinhAnhPanel = new JPanel();
         hinhAnhPanel.setBackground(new Color(225, 225, 225));
         hinhAnhPanel.setPreferredSize(new Dimension(200, 100));
-        addFormRow(panel, "Hình ảnh", hinhAnhPanel, 5, gbc);
+        addFormRow(panel, "Hình ảnh", hinhAnhPanel, 6, gbc);
 
         chonHinhAnhButton = new CustomButton("Chọn hình ảnh");
         chonHinhAnhButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridx = 1;
         panel.add(chonHinhAnhButton, gbc);
 
@@ -152,3 +154,4 @@ public class ThemHangHoaDialog extends JDialog {
         SwingUtilities.invokeLater(ThemHangHoaDialog::new);
     }
 }
+
