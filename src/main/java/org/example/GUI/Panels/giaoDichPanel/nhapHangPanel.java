@@ -50,11 +50,9 @@ public class nhapHangPanel extends JPanel {
     private double totalAmount = 0;
     private JLabel totalLabel;
 
-    // Thông tin lô hàng hiện tại
-    private String currentBatchId = "";
+    // Thông tin nhà cung cấp hiện tại
     private String currentSupplier = "";
-    private Date currentNgaySanXuat;
-    private Date currentHanSuDung;
+    private JComboBox<String> supplierComboBox;
 
     public nhapHangPanel() {
         initGUI();
@@ -165,7 +163,7 @@ public class nhapHangPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // Header panel with batch info
+        // Header panel with supplier info
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
@@ -173,85 +171,64 @@ public class nhapHangPanel extends JPanel {
         ));
         headerPanel.setBackground(new Color(250, 250, 255));
 
-        // Info panel for batch details
-        JPanel infoPanel = new JPanel(new GridLayout(4, 2, 10, 5));
+        // Info panel for supplier selection
+        JPanel infoPanel = new JPanel(new GridLayout(1, 2, 10, 5));
         infoPanel.setBackground(new Color(250, 250, 255));
-
-        // Batch ID
-        JLabel batchIdLabel = new JLabel("Mã lô hàng:");
-        batchIdLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        JLabel batchIdValueLabel = new JLabel("Chưa có");
-        batchIdValueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         // Supplier
         JLabel supplierLabel = new JLabel("Nhà cung cấp:");
         supplierLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
-        JLabel supplierValueLabel = new JLabel("Chưa chọn");
-        supplierValueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        // Combo box để chọn nhà cung cấp
+        String[] suppliers = {"Chọn nhà cung cấp", "NCC001 - Công ty TNHH ABC",
+                "NCC002 - Công ty CP XYZ", "NCC003 - Công ty TNHH DEF"};
+        supplierComboBox = new JComboBox<>(suppliers);
+        supplierComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        supplierComboBox.addActionListener(e -> {
+            if (supplierComboBox.getSelectedIndex() > 0) {
+                currentSupplier = (String) supplierComboBox.getSelectedItem();
+            } else {
+                currentSupplier = "";
+            }
+        });
 
-        // Manufacturing date
-        JLabel mfgDateLabel = new JLabel("Ngày sản xuất:");
-        mfgDateLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        JPanel supplierSelectPanel = new JPanel(new BorderLayout(5, 0));
+        supplierSelectPanel.setBackground(new Color(250, 250, 255));
+        supplierSelectPanel.add(supplierComboBox, BorderLayout.CENTER);
 
-        JLabel mfgDateValueLabel = new JLabel("--/--/----");
-        mfgDateValueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        // Create supplier button
+        CustomButton createSupplierButton = new CustomButton("Tạo mới");
+        createSupplierButton.setPreferredSize(new Dimension(100, 30));
+        createSupplierButton.addActionListener(e -> {
+            String newSupplier = JOptionPane.showInputDialog(
+                    this,
+                    "Nhập tên nhà cung cấp mới:",
+                    "Tạo nhà cung cấp mới",
+                    JOptionPane.QUESTION_MESSAGE
+            );
+            if (newSupplier != null && !newSupplier.trim().isEmpty()) {
+                String supplierId = "NCC" + (int)(Math.random() * 1000);
+                String supplierFullName = supplierId + " - " + newSupplier;
 
-        // Expiry date
-        JLabel expDateLabel = new JLabel("Hạn sử dụng:");
-        expDateLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        JLabel expDateValueLabel = new JLabel("--/--/----");
-        expDateValueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-        infoPanel.add(batchIdLabel);
-        infoPanel.add(batchIdValueLabel);
-        infoPanel.add(supplierLabel);
-        infoPanel.add(supplierValueLabel);
-        infoPanel.add(mfgDateLabel);
-        infoPanel.add(mfgDateValueLabel);
-        infoPanel.add(expDateLabel);
-        infoPanel.add(expDateValueLabel);
-
-        // Create batch button
-        CustomButton createBatchButton = new CustomButton("Tạo lô hàng mới");
-        createBatchButton.setPreferredSize(new Dimension(150, 40));
-        createBatchButton.addActionListener(e -> {
-            // Generate a new batch ID
-            String newBatchId = "LH" + System.currentTimeMillis() % 10000;
-
-            // Show dialog to create a new batch
-            TaoLoHangDialog dialog = new TaoLoHangDialog(SwingUtilities.getWindowAncestor(this), newBatchId);
-            dialog.setVisible(true);
-
-            // If confirmed, update the batch info
-            if (dialog.isConfirmed()) {
-                currentBatchId = newBatchId;
-                currentSupplier = dialog.getSupplier();
-                currentNgaySanXuat = dialog.getNgaySanXuat();
-                currentHanSuDung = dialog.getHanSuDung();
-
-                // Update the labels
-                batchIdValueLabel.setText(currentBatchId);
-                supplierValueLabel.setText(currentSupplier);
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                mfgDateValueLabel.setText(dateFormat.format(currentNgaySanXuat));
-                expDateValueLabel.setText(dateFormat.format(currentHanSuDung));
+                supplierComboBox.addItem(supplierFullName);
+                supplierComboBox.setSelectedItem(supplierFullName);
+                currentSupplier = supplierFullName;
 
                 JOptionPane.showMessageDialog(
                         this,
-                        "Đã tạo lô hàng mới: " + currentBatchId,
+                        "Đã tạo nhà cung cấp mới: " + supplierFullName,
                         "Thông báo",
                         JOptionPane.INFORMATION_MESSAGE
                 );
             }
         });
+        supplierSelectPanel.add(createSupplierButton, BorderLayout.EAST);
+
+        infoPanel.add(supplierLabel);
+        infoPanel.add(supplierSelectPanel);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(new Color(250, 250, 255));
-        buttonPanel.add(createBatchButton);
 
         headerPanel.add(infoPanel, BorderLayout.CENTER);
         headerPanel.add(buttonPanel, BorderLayout.EAST);
@@ -268,7 +245,7 @@ public class nhapHangPanel extends JPanel {
         productAddPanel.add(titleLabel, BorderLayout.NORTH);
 
         // Panel chứa tiêu đề các cột
-        JPanel headerCartPanel = new JPanel(new GridLayout(1, 5, 10, 0));
+        JPanel headerCartPanel = new JPanel(new GridLayout(1, 6, 10, 0));
         headerCartPanel.setBackground(new Color(245, 245, 245));
         headerCartPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(220, 220, 220)),
@@ -298,11 +275,16 @@ public class nhapHangPanel extends JPanel {
         totalHeader.setFont(headerFont);
         totalHeader.setForeground(headerColor);
 
+        JLabel batchHeader = new JLabel("Lô hàng", SwingConstants.CENTER);
+        batchHeader.setFont(headerFont);
+        batchHeader.setForeground(headerColor);
+
         headerCartPanel.add(codeHeader);
         headerCartPanel.add(nameHeader);
         headerCartPanel.add(qtyHeader);
         headerCartPanel.add(priceHeader);
         headerCartPanel.add(totalHeader);
+        headerCartPanel.add(batchHeader);
 
         // Panel chính chứa danh sách các sản phẩm nhập hàng
         JPanel itemsPanel = new JPanel();
@@ -336,10 +318,10 @@ public class nhapHangPanel extends JPanel {
         CustomButton saveButton = new CustomButton("Lưu phiếu nhập");
         saveButton.setPreferredSize(new Dimension(150, 40));
         saveButton.addActionListener(e -> {
-            if (currentBatchId.isEmpty()) {
+            if (currentSupplier.isEmpty()) {
                 JOptionPane.showMessageDialog(
                         this,
-                        "Vui lòng tạo lô hàng trước khi lưu!",
+                        "Vui lòng chọn nhà cung cấp trước khi lưu!",
                         "Thông báo",
                         JOptionPane.WARNING_MESSAGE
                 );
@@ -350,6 +332,25 @@ public class nhapHangPanel extends JPanel {
                 JOptionPane.showMessageDialog(
                         this,
                         "Chưa có sản phẩm nào được nhập!",
+                        "Thông báo",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
+            // Kiểm tra tất cả sản phẩm đã có lô hàng chưa
+            boolean allHaveBatch = true;
+            for (ImportItem item : importItems) {
+                if (item.getBatchId().isEmpty()) {
+                    allHaveBatch = false;
+                    break;
+                }
+            }
+
+            if (!allHaveBatch) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Một số sản phẩm chưa được chọn lô hàng!",
                         "Thông báo",
                         JOptionPane.WARNING_MESSAGE
                 );
@@ -372,11 +373,8 @@ public class nhapHangPanel extends JPanel {
             itemsPanel.repaint();
             importItems.clear();
 
-            currentBatchId = "";
-            batchIdValueLabel.setText("Chưa có");
-            supplierValueLabel.setText("Chưa chọn");
-            mfgDateValueLabel.setText("--/--/----");
-            expDateValueLabel.setText("--/--/----");
+            supplierComboBox.setSelectedIndex(0);
+            currentSupplier = "";
             totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(0));
             totalAmount = 0;
         });
@@ -398,11 +396,8 @@ public class nhapHangPanel extends JPanel {
                 itemsPanel.repaint();
                 importItems.clear();
 
-                currentBatchId = "";
-                batchIdValueLabel.setText("Chưa có");
-                supplierValueLabel.setText("Chưa chọn");
-                mfgDateValueLabel.setText("--/--/----");
-                expDateValueLabel.setText("--/--/----");
+                supplierComboBox.setSelectedIndex(0);
+                currentSupplier = "";
                 totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(0));
                 totalAmount = 0;
             }
@@ -688,11 +683,11 @@ public class nhapHangPanel extends JPanel {
 
     // Thêm sản phẩm vào giỏ hàng
     private void addProductToImport(Product product) {
-        // Kiểm tra nếu chưa tạo lô hàng
-        if (currentBatchId.isEmpty()) {
+        // Kiểm tra nếu chưa chọn nhà cung cấp
+        if (currentSupplier.isEmpty() || supplierComboBox.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Vui lòng tạo lô hàng trước khi thêm sản phẩm!",
+                    "Vui lòng chọn nhà cung cấp trước khi thêm sản phẩm!",
                     "Thông báo",
                     JOptionPane.WARNING_MESSAGE
             );
@@ -740,13 +735,13 @@ public class nhapHangPanel extends JPanel {
             }
 
             // Tạo panel hiển thị sản phẩm nhập
-            JPanel itemPanel = new JPanel(new GridLayout(1, 5, 10, 0));
+            JPanel itemPanel = new JPanel(new GridLayout(1, 6, 0, 0));
             itemPanel.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                    BorderFactory.createEmptyBorder(8, 5, 8, 5)
+                    BorderFactory.createEmptyBorder(5, 0, 5, 0)
             ));
             itemPanel.setBackground(Color.WHITE);
-            itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
+            itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 47));  // Reduced height from 55 to 45
 
             // Mã sản phẩm
             JLabel codeLabel = new JLabel(product.getId(), SwingConstants.CENTER);
@@ -794,7 +789,7 @@ public class nhapHangPanel extends JPanel {
             priceField.setFont(new Font("Segoe UI", Font.BOLD, 14));
             priceField.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                    BorderFactory.createEmptyBorder(2, 5, 2, 5)
+                    BorderFactory.createEmptyBorder(2, 3, 2, 3)
             ));
             pricePanel.add(priceField);
 
@@ -803,15 +798,65 @@ public class nhapHangPanel extends JPanel {
             totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
             totalItemLabel.setForeground(priceColor);
 
+            // Panel lô hàng
+            JPanel batchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));  // Removed spacing
+            batchPanel.setBackground(Color.WHITE);
+            
+            // Tạo dữ liệu mẫu cho combobox lô hàng
+            String[] batches = {"Chọn lô hàng", "LH1001 - Lô hàng 12/2023", 
+                                "LH1002 - Lô hàng 01/2024", "LH1003 - Lô hàng 02/2024",
+                                "LH1004 - Lô hàng 03/2024"};
+            JComboBox<String> batchComboBox = new JComboBox<>(batches);
+            batchComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            batchComboBox.setPreferredSize(new Dimension(100, 30));  // Made combobox wider
+            
+            // Thêm action listener cho combobox
+            batchComboBox.addActionListener(e -> {
+                if (batchComboBox.getSelectedIndex() > 0) {
+                    String selectedBatch = (String) batchComboBox.getSelectedItem();
+                    String batchId = selectedBatch.split(" - ")[0];
+                    
+                    // Cập nhật thông tin lô hàng cho ImportItem
+                    ImportItem item = null;
+                    for (ImportItem i : importItems) {
+                        if (i.getPanel() == itemPanel) {
+                            item = i;
+                            break;
+                        }
+                    }
+
+                    if (item != null) {
+                        item.setBatchId(batchId);
+                        
+                        // Giả lập ngày sản xuất và hạn sử dụng
+                        Calendar cal = Calendar.getInstance();
+                        item.setNgaySanXuat(cal.getTime());
+                        
+                        cal.add(Calendar.MONTH, 6); // Thêm 6 tháng cho hạn sử dụng
+                        item.setHanSuDung(cal.getTime());
+                        
+                        JOptionPane.showMessageDialog(
+                                nhapHangPanel.this,
+                                "Đã chọn " + selectedBatch,
+                                "Thông báo",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                }
+            });
+
+            batchPanel.add(batchComboBox);
+
             // Thêm các thành phần vào itemPanel
             itemPanel.add(codeLabel);
             itemPanel.add(nameLabel);
             itemPanel.add(qtyPanel);
             itemPanel.add(pricePanel);
             itemPanel.add(totalItemLabel);
+            itemPanel.add(batchPanel);
 
             // Tạo đối tượng ImportItem
-            ImportItem importItem = new ImportItem(product, 1, price, itemPanel, qtyField, priceField, totalItemLabel);
+            ImportItem importItem = new ImportItem(product, 1, price, itemPanel, qtyField, priceField, totalItemLabel, null);
             importItems.add(importItem);
 
             // Thêm sự kiện cho các nút và field
@@ -940,9 +985,15 @@ public class nhapHangPanel extends JPanel {
         private JTextField qtyField;
         private JTextField priceField;
         private JLabel totalItemLabel;
+        private JLabel batchLabel;
+
+        // Thông tin lô hàng
+        private String batchId = "";
+        private Date ngaySanXuat;
+        private Date hanSuDung;
 
         public ImportItem(Product product, int quantity, double price, JPanel panel,
-                          JTextField qtyField, JTextField priceField, JLabel totalItemLabel) {
+                          JTextField qtyField, JTextField priceField, JLabel totalItemLabel, JLabel batchLabel) {
             this.product = product;
             this.quantity = quantity;
             this.price = price;
@@ -950,6 +1001,7 @@ public class nhapHangPanel extends JPanel {
             this.qtyField = qtyField;
             this.priceField = priceField;
             this.totalItemLabel = totalItemLabel;
+            this.batchLabel = batchLabel;
         }
 
         public Product getProduct() {
@@ -980,6 +1032,34 @@ public class nhapHangPanel extends JPanel {
             return quantity * price;
         }
 
+        public JPanel getPanel() {
+            return panel;
+        }
+
+        public String getBatchId() {
+            return batchId;
+        }
+
+        public void setBatchId(String batchId) {
+            this.batchId = batchId;
+        }
+
+        public Date getNgaySanXuat() {
+            return ngaySanXuat;
+        }
+
+        public void setNgaySanXuat(Date ngaySanXuat) {
+            this.ngaySanXuat = ngaySanXuat;
+        }
+
+        public Date getHanSuDung() {
+            return hanSuDung;
+        }
+
+        public void setHanSuDung(Date hanSuDung) {
+            this.hanSuDung = hanSuDung;
+        }
+
         private void updateTotalItemPrice() {
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             totalItemLabel.setText(currencyFormat.format(getTotalPrice()));
@@ -1001,3 +1081,4 @@ public class nhapHangPanel extends JPanel {
         }
     }
 }
+

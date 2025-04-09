@@ -164,7 +164,6 @@ public class nhaCungCapPanel extends JPanel {
     private void setupBottomPanelLeft() {
         setupThoiGianPanel();
         setupTrangThaiPanel();
-        setupNhomNCCPanel();
     }
 
     private void setupThoiGianPanel() {
@@ -217,18 +216,7 @@ public class nhaCungCapPanel extends JPanel {
         trangThaiPanel.add(radioButtonshow3);
     }
 
-    private void setupNhomNCCPanel() {
-        // Nhóm NCC panel
-        JPanel nhomNCCPanel = createTitledPanel("Nhóm NCC", 230, 150);
-        nhomNCCPanel.setLayout(new BoxLayout(nhomNCCPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(nhomNCCPanel);
 
-        // Nhóm NCC list
-        String[] nhomNCCData = {"Tây Bán Bom", "Tín Víp Pro", "Thư Bồ Tín", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"};
-        nhomNCCList = createScrollableList(nhomNCCData);
-        JScrollPane scrollPane = createScrollPane(nhomNCCList, 200, 150);
-        nhomNCCPanel.add(scrollPane);
-    }
 
     private void setupBottomPanelRight() {
         // Table data
