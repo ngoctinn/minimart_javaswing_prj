@@ -1,17 +1,21 @@
 package org.example.GUI.Panels.hangHoaPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.LoaiSanPhamBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.LoaiSanPhamDTO;
 import org.example.GUI.Dialogs.ThemLoaiSanPhamDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class LoaiSanPhamPanel extends JPanel {
     // UI Components
@@ -298,18 +302,19 @@ public class LoaiSanPhamPanel extends JPanel {
 
         // Table data
         String[] columnNames = {"Mã loại", "Tên loại sản phẩm", "Trạng thái"};
-        Object[][] data = {
-                {"LSP001", "Bánh kẹo", "Đang hoạt động"},
-                {"LSP002", "Thực phẩm khô", "Đang hoạt động"},
-                {"LSP003", "Thực phẩm tươi", "Đang hoạt động"},
-                {"LSP004", "Đồ uống", "Đang hoạt động"},
-                {"LSP005", "Bia", "Đang hoạt động"},
-                {"LSP006", "Đồ gia dụng", "Không hoạt động"},
-                {"LSP007", "Hàng hóa khác", "Đang hoạt động"}
-        };
+        ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
+        DefaultTableModel model = new DefaultTableModel(null, columnNames);
+        for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
+           Object [] rowData = new Object[] {
+                    loaiSanPham.getMaLSP(),
+                    loaiSanPham.getTenLSP(),
+                    loaiSanPham.getTrangThai() == 1 ? "Đang hoạt động" : "Không hoạt động"
+            };
+            model.addRow(rowData);
+        }
 
         // Create table
-        loaiSanPhamTable = new CustomTable(data, columnNames);
+        loaiSanPhamTable = new CustomTable(model);
         JScrollPane tableScrollPane = new JScrollPane(loaiSanPhamTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
 

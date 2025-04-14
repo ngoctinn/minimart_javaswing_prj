@@ -1,17 +1,17 @@
 package org.example.DTO;
 
-public class loaiSanPhamDTO {
+public class LoaiSanPhamDTO {
     private String maLSP;
-    private String tenSP;
+    private String tenLSP;
     private int trangThai;
 
-    public loaiSanPhamDTO() {
+    public LoaiSanPhamDTO() {
 
     }
 
-    public loaiSanPhamDTO( String maLSP, String tenSP, int trangThai) {
+    public LoaiSanPhamDTO(String maLSP, String tenLSP, int trangThai) {
         this.maLSP = maLSP;
-        this.tenSP = tenSP;
+        this.tenLSP = tenLSP;
         this.trangThai = trangThai;
     }
 
@@ -22,11 +22,11 @@ public class loaiSanPhamDTO {
         this.maLSP = maLSP;
     }
 
-    public String getTenSP() {
-        return tenSP;
+    public String getTenLSP() {
+        return tenLSP;
     }
-    public void setTenSP(String tenSP) {
-        this.tenSP = tenSP;
+    public void setTenLSP(String tenLSP) {
+        this.tenLSP = tenLSP;
     }
 
     public int getTrangThai() {
