@@ -21,6 +21,8 @@ public class SanPhamDAO implements DAOInterface<sanPhamDTO> {
             //Bước 3: Thực thi câu lệnh SQL
             String sql = "INSERT INTO SanPham (maSP, tenSP, trangThai, soLuong, hinhAnh, donVi, maLSP) " +
                     "VALUES (t.get, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, t.getMaSP());
 
 
 
