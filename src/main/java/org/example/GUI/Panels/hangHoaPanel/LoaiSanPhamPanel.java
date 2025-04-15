@@ -153,7 +153,7 @@ public class LoaiSanPhamPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
-        addButton.addActionListener(e -> new ThemLoaiSanPhamDialog());
+        addButton.addActionListener(e -> new ThemLoaiSanPhamDialog(this));
 
         // Edit button
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
@@ -172,6 +172,25 @@ public class LoaiSanPhamPanel extends JPanel {
         deleteButton.setButtonColors(CustomButton.ButtonColors.RED);
         mainButtonsPanel.add(deleteButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
+        // hành động xóa
+        deleteButton.addActionListener(e -> {
+            int selectedRow = loaiSanPhamTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String maLSP = loaiSanPhamTable.getValueAt(selectedRow, 0).toString();
+                String tenLSP = loaiSanPhamTable.getValueAt(selectedRow, 1).toString();
+                LoaiSanPhamDTO selectedLoaiSanPham = new LoaiSanPhamDTO();
+                selectedLoaiSanPham.setMaLSP(maLSP);
+
+                // Show confirmation dialog
+                int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa loại sản phẩm này không?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    LoaiSanPhamBUS.xoaLoaiSanPham(selectedLoaiSanPham);
+                    refreshLoaiSanPhamTable();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn loại sản phẩm để xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
         // Export button
         FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg", 16, 16);
@@ -230,18 +249,9 @@ public class LoaiSanPhamPanel extends JPanel {
     }
 
     private void setupLeftCategoryPanel() {
-        // Add filter panel at the top of left panel
-        JPanel topLeftPanel = new JPanel(new BorderLayout());
-        topLeftPanel.setBackground(Color.WHITE);
-        
-        JPanel filterPanel = createFilterPanel();
-        topLeftPanel.add(filterPanel, BorderLayout.NORTH);
-
         // Create category table panel
         JPanel categoryTablePanel = createCategoryTablePanel();
 
-        // Add to left panel
-        leftPanel.add(topLeftPanel, BorderLayout.NORTH);
         leftPanel.add(categoryTablePanel, BorderLayout.CENTER);
     }
 
@@ -250,8 +260,8 @@ public class LoaiSanPhamPanel extends JPanel {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(Color.WHITE);
         JLabel titleLabel = new JLabel("Danh sách sản phẩm thuộc loại");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0 , 5, 0, 0));
         titlePanel.add(titleLabel, BorderLayout.WEST);
 
         // Create product table panel
@@ -262,43 +272,10 @@ public class LoaiSanPhamPanel extends JPanel {
         rightPanel.add(productTablePanel, BorderLayout.CENTER);
     }
 
-    private JPanel createFilterPanel() {
-        JPanel filterPanel = createTitledPanel("Lựa chọn hiển thị", 0, 80);
-        filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
-
-        // Radio buttons
-        radioTatCa = createRadioButton("Tất cả");
-        radioHoatDong = createRadioButton("Đang hoạt động");
-        radioKhongHoatDong = createRadioButton("Không hoạt động");
-
-        // Group radio buttons
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioTatCa);
-        buttonGroup.add(radioHoatDong);
-        buttonGroup.add(radioKhongHoatDong);
-
-        // Set default selection
-        radioTatCa.setSelected(true);
-
-        // Add to panel
-        filterPanel.add(radioTatCa);
-        filterPanel.add(radioHoatDong);
-        filterPanel.add(radioKhongHoatDong);
-
-        return filterPanel;
-    }
 
     private JPanel createCategoryTablePanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBackground(Color.WHITE);
-        tablePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                "Danh sách loại sản phẩm",
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
 
         // Table data
         String[] columnNames = {"Mã loại", "Tên loại sản phẩm", "Trạng thái"};
@@ -308,7 +285,7 @@ public class LoaiSanPhamPanel extends JPanel {
            Object [] rowData = new Object[] {
                     loaiSanPham.getMaLSP(),
                     loaiSanPham.getTenLSP(),
-                    loaiSanPham.getTrangThai() == 1 ? "Đang hoạt động" : "Không hoạt động"
+                    loaiSanPham.getTrangThai() == true ? "Đang hoạt động" : "Không hoạt động"
             };
             model.addRow(rowData);
         }
@@ -332,16 +309,38 @@ public class LoaiSanPhamPanel extends JPanel {
         return tablePanel;
     }
 
+    public void refreshLoaiSanPhamTable() {
+        // Get updated list of categories
+        ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
+
+        // Create new model with updated data
+        String[] columnNames = {"Mã loại", "Tên loại sản phẩm", "Trạng thái"};
+        DefaultTableModel model = new DefaultTableModel(null, columnNames);
+
+        for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
+            Object[] rowData = new Object[] {
+                loaiSanPham.getMaLSP(),
+                loaiSanPham.getTenLSP(),
+                loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+            };
+            model.addRow(rowData);
+        }
+
+        // Update the table model
+        loaiSanPhamTable.setModel(model);
+    }
+
+
     private JPanel createProductTablePanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBackground(Color.WHITE);
 
         // Table data - initialize with empty data
         String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Trạng thái"};
-        Object[][] data = {}; // Empty initially, will be populated when a category is selected
+        Object[][] dataLoaiSanPham = {}; // Empty initially, will be populated when a category is selected
 
         // Create table
-        sanPhamTable = new CustomTable(data, columnNames);
+        sanPhamTable = new CustomTable(dataLoaiSanPham, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(sanPhamTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
