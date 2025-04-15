@@ -10,8 +10,12 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
 
     @Override
     public int insert(LoaiSanPhamDTO loaiSanPhamDTO) {
-
-        return 0;
+        // Bước 1: Tạo kết nối đến CSDL
+        Connection connection = JDBCUtil.getConnection();
+        // Bước 2: Tạo ra đối tượng statement từ connection
+        String sql = "INSERT INTO LOAISP (maLSP, tenLSP, trangThai) VALUES (?, ?, 1)";
+        int result = JDBCUtil.executePreparedUpdate(sql, loaiSanPhamDTO.getMaLSP(), loaiSanPhamDTO.getTenLSP());
+        return result;
     }
 
     @Override
@@ -37,9 +41,11 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
                 LoaiSanPhamDTO loaiSanPhamDTO = new LoaiSanPhamDTO();
                 loaiSanPhamDTO.setMaLSP(resultSet.getString("maLSP"));
                 loaiSanPhamDTO.setTenLSP(resultSet.getString("tenLSP"));
-                loaiSanPhamDTO.setTrangThai(resultSet.getInt("trangThai"));
+                loaiSanPhamDTO.setTrangThai(resultSet.getBoolean("trangThai"));
                 dsLoaiSanPham.add(loaiSanPhamDTO);
             }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,8 +1,11 @@
 package org.example.GUI.Dialogs;
 
+import org.example.BUS.LoaiSanPhamBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTexField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.LoaiSanPhamDTO;
+import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,14 +13,17 @@ import java.awt.*;
 public class ThemLoaiSanPhamDialog extends JDialog {
     private CustomTexField maLoaiField, tenLoaiField;
     private CustomButton luuButton, huyButton;
+    private LoaiSanPhamPanel parentPanel;
 
-    public ThemLoaiSanPhamDialog() {
+    public ThemLoaiSanPhamDialog(LoaiSanPhamPanel parentPanel) {
+        this.parentPanel = parentPanel;
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
             UIManager.put("ComboBox.buttonBackground", Color.WHITE);
             UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
             initGUI();
+
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
@@ -68,7 +74,10 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         gbc.weightx = 1.0;
 
         // Add form components
-        addFormRow(panel, "Mã loại", maLoaiField = new CustomTexField("Mã tự động (vd: LSP001)"), 0, gbc);
+        addFormRow(panel, "Mã loại", maLoaiField = new CustomTexField(""), 0, gbc);
+        maLoaiField.setEnabled(false);
+        String maLoai = LoaiSanPhamBUS.generateNextMaLSP();
+        maLoaiField.setText(maLoai);
         addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField("Nhập tên loại (vd: Đồ uống)"), 1, gbc);
 
         return panel;
@@ -124,9 +133,23 @@ public class ThemLoaiSanPhamDialog extends JDialog {
 
     private void handleSave() {
         if (validateInput()) {
-            JOptionPane.showMessageDialog(this, "Đã lưu thông tin loại sản phẩm!",
-                    "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+            String maLoai = maLoaiField.getText().trim();
+            String tenLoai = tenLoaiField.getText().trim();
+
+            LoaiSanPhamDTO loaiSanPhamDTO = new LoaiSanPhamDTO(maLoai, tenLoai, true);
+            int result = LoaiSanPhamBUS.themLoaiSanPham(loaiSanPhamDTO);
+
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Thêm loại sản phẩm thành công", "Thành công",
+                        JOptionPane.INFORMATION_MESSAGE);
+                if (parentPanel != null) {
+                    parentPanel.refreshLoaiSanPhamTable();
+                }
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm loại sản phẩm thất bại", "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -143,7 +166,8 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         dispose();
     }
 
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(ThemLoaiSanPhamDialog::new);
+        SwingUtilities.invokeLater(() -> new ThemLoaiSanPhamDialog(null));
     }
 }

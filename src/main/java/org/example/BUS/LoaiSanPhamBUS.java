@@ -12,4 +12,33 @@ public class LoaiSanPhamBUS {
         ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = loaiSanPhamDAO.selectAll();
         return dsLoaiSanPham;
     }
+
+    public static int themLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO) {
+        LoaiSanPhamDAO loaiSanPhamDAO = new LoaiSanPhamDAO();
+        return loaiSanPhamDAO.insert(loaiSanPhamDTO);
+    }
+
+    public static String generateNextMaLSP() {
+        ArrayList<LoaiSanPhamDTO> danhSach = layDanhSachLoaiSanPham();
+        int maxId = 0;
+
+        // Find the highest existing ID number
+        for (LoaiSanPhamDTO loai : danhSach) {
+            String maLSP = loai.getMaLSP();
+            if (maLSP.startsWith("LSP")) {
+                try {
+                    int idNumber = Integer.parseInt(maLSP.substring(3));
+                    if (idNumber > maxId) {
+                        maxId = idNumber;
+                    }
+                } catch (NumberFormatException e) {
+                    // Skip if not a valid number format
+                }
+            }
+        }
+
+        // Generate next ID
+        int nextId = maxId + 1;
+        return String.format("LSP%03d", nextId);
+    }
 }

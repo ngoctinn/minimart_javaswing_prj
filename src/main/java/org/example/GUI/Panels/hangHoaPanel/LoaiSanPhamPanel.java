@@ -153,7 +153,7 @@ public class LoaiSanPhamPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
-        addButton.addActionListener(e -> new ThemLoaiSanPhamDialog());
+        addButton.addActionListener(e -> new ThemLoaiSanPhamDialog(this));
 
         // Edit button
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
@@ -308,7 +308,7 @@ public class LoaiSanPhamPanel extends JPanel {
            Object [] rowData = new Object[] {
                     loaiSanPham.getMaLSP(),
                     loaiSanPham.getTenLSP(),
-                    loaiSanPham.getTrangThai() == 1 ? "Đang hoạt động" : "Không hoạt động"
+                    loaiSanPham.getTrangThai() == true ? "Đang hoạt động" : "Không hoạt động"
             };
             model.addRow(rowData);
         }
@@ -332,16 +332,38 @@ public class LoaiSanPhamPanel extends JPanel {
         return tablePanel;
     }
 
+    public void refreshLoaiSanPhamTable() {
+        // Get updated list of categories
+        ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
+
+        // Create new model with updated data
+        String[] columnNames = {"Mã loại", "Tên loại sản phẩm", "Trạng thái"};
+        DefaultTableModel model = new DefaultTableModel(null, columnNames);
+
+        for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
+            Object[] rowData = new Object[] {
+                loaiSanPham.getMaLSP(),
+                loaiSanPham.getTenLSP(),
+                loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+            };
+            model.addRow(rowData);
+        }
+
+        // Update the table model
+        loaiSanPhamTable.setModel(model);
+    }
+
+
     private JPanel createProductTablePanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBackground(Color.WHITE);
 
         // Table data - initialize with empty data
         String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Trạng thái"};
-        Object[][] data = {}; // Empty initially, will be populated when a category is selected
+        Object[][] dataLoaiSanPham = {}; // Empty initially, will be populated when a category is selected
 
         // Create table
-        sanPhamTable = new CustomTable(data, columnNames);
+        sanPhamTable = new CustomTable(dataLoaiSanPham, columnNames);
         JScrollPane tableScrollPane = new JScrollPane(sanPhamTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
 

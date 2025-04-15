@@ -3,13 +3,13 @@ package org.example.DTO;
 public class LoaiSanPhamDTO {
     private String maLSP;
     private String tenLSP;
-    private int trangThai;
+    private boolean trangThai;
 
     public LoaiSanPhamDTO() {
 
     }
 
-    public LoaiSanPhamDTO(String maLSP, String tenLSP, int trangThai) {
+    public LoaiSanPhamDTO(String maLSP, String tenLSP, boolean trangThai) {
         this.maLSP = maLSP;
         this.tenLSP = tenLSP;
         this.trangThai = trangThai;
@@ -29,10 +29,10 @@ public class LoaiSanPhamDTO {
         this.tenLSP = tenLSP;
     }
 
-    public int getTrangThai() {
+    public boolean getTrangThai() {
         return trangThai;
     }
-    public void setTrangThai(int trangThai) {
+    public void setTrangThai(boolean trangThai) {
         this.trangThai = trangThai;
     }
 }
