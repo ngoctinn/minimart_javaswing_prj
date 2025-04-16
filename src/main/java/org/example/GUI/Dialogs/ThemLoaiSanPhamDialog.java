@@ -98,12 +98,12 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         
         if (isEditMode) {
             maLoaiField.setText(loaiSanPhamEdit.getMaLSP());
-            addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField("Nhập tên loại (vd: Đồ uống)"), 1, gbc);
+            addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField(""), 1, gbc);
             tenLoaiField.setText(loaiSanPhamEdit.getTenLSP());
         } else {
             String maLoai = LoaiSanPhamBUS.generateNextMaLSP();
             maLoaiField.setText(maLoai);
-            addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField("Nhập tên loại (vd: Đồ uống)"), 1, gbc);
+            addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField(""), 1, gbc);
         }
 
         return panel;
@@ -122,7 +122,7 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         
         // Đảm bảo component có kích thước phù hợp
         if (component instanceof JTextField || component instanceof JComboBox || component instanceof JSpinner) {
-            component.setPreferredSize(new Dimension(component.getPreferredSize().width, 30));
+            component.setPreferredSize(new Dimension(200, 30));
         }
         
         panel.add(component, gbc);
@@ -142,7 +142,7 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         buttonPanel.add(luuButton);
 
         return buttonPanel;
-    }
+}
 
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
@@ -183,6 +183,7 @@ public class ThemLoaiSanPhamDialog extends JDialog {
                 // Thêm mới loại sản phẩm
                 LoaiSanPhamDTO loaiSanPhamDTO = new LoaiSanPhamDTO(maLoai, tenLoai, true);
                 result = LoaiSanPhamBUS.themLoaiSanPham(loaiSanPhamDTO);
+
                 
                 if (result > 0) {
                     JOptionPane.showMessageDialog(this, "Thêm loại sản phẩm thành công", "Thành công",
@@ -200,7 +201,7 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     }
 
     private boolean validateInput() {
-        if (tenLoaiField.getText().trim().isEmpty()) {
+        if (tenLoaiField.getText().trim().isEmpty() || tenLoaiField.getText() == "Nhập tên loại (vd: Đồ uống)") {
             JOptionPane.showMessageDialog(this, "Tên loại sản phẩm không được để trống",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
