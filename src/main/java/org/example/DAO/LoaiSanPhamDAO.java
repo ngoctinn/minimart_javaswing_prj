@@ -56,6 +56,7 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
             }
             //Bước 3: Đóng kết nối
             JDBCUtil.closeConnection();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

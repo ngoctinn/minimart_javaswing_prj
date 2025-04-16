@@ -1,19 +1,24 @@
 package org.example.GUI.Panels.hangHoaPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.SanPhamBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.ThemHangHoaDialog;
+import org.example.DTO.SanPhamDTO;
+import org.example.GUI.Dialogs.ThemSanPhamDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.HashMap;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
 
 
-public class DanhMucPanel extends JPanel {
+public class SanPhamPanel extends JPanel {
     // UI Components
     private RoundedPanel topPanel;
     private RoundedPanel bottomPanel;
@@ -42,7 +47,7 @@ public class DanhMucPanel extends JPanel {
     private CustomButton themLoaiSanPhamButton;
     private CustomButton themNhaCungCapButton;
 
-    public DanhMucPanel() {
+    public SanPhamPanel() {
         initGUI();
     }
 
@@ -168,7 +173,7 @@ public class DanhMucPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         addButton.addActionListener(e ->
         {
-            new ThemHangHoaDialog();
+            new ThemSanPhamDialog(this);
         });
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
@@ -217,52 +222,43 @@ public class DanhMucPanel extends JPanel {
 
     private void setupBottomPanelLeft() {
         setupNhomHangPanel();
-        setupNhaCungCapPanel();
         setupSapXepTheoGiaPanel(); // Add new panel for price sorting
         setupLuaChonHienThiPanel();
     }
 
     private void setupNhomHangPanel() {
         // Nhóm hàng panel - reduced height from 210 to 180
-        JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 180);
-        loaiSanPhamPanel.setLayout(null);
+        JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 250);
+
+        // Change from BorderLayout to a more flexible layout
+        loaiSanPhamPanel.setLayout(new BoxLayout(loaiSanPhamPanel, BoxLayout.Y_AXIS));
         bottomPanelLeft.add(loaiSanPhamPanel);
 
         // Nhóm hàng list
-        String[] loaiSanPhamData = {"Bánh kẹo", "Thực phẩm khô", "Thực phẩm tươi", "Đồ uống","Bia","Đồ gia dụng", "Hàng hóa khác"};
+        String[] loaiSanPhamData = {"Bánh kẹo", "Thực phẩm khô", "Thực phẩm tươi", "Đồ uống","Bia","Đồ gia dụng", "Hàng hóa khác", "Thực phẩm chức năng", "Thực phẩm bổ sung", "Thực phẩm dinh dưỡng"};
         loaiSanPhamList = createScrollableList(loaiSanPhamData);
-        JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 100);
-        scrollPane.setBounds(15, 25, 200, 100);
+        JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 180);
+        scrollPane.setBounds(15, 25, 200, 180);
         loaiSanPhamPanel.add(scrollPane);
 
-        //Btn thêm loại sản phẩm
+        // Add some vertical space between the list and button
+        loaiSanPhamPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        // Create a panel to hold the button and center it horizontally
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setMaximumSize(new Dimension(230, 35)); // Control the height
+
+        // Button with smaller size
         themLoaiSanPhamButton = new CustomButton("Thêm loại sản phẩm");
-        themLoaiSanPhamButton.setBounds(15, 140, 195, 25);
-        loaiSanPhamPanel.add(themLoaiSanPhamButton);
+        themLoaiSanPhamButton.setPreferredSize(new Dimension(200, 30)); // Smaller button size
+        buttonPanel.add(themLoaiSanPhamButton);
+
+        loaiSanPhamPanel.add(buttonPanel);
     }
 
-    private void setupNhaCungCapPanel() {
-        // Nhà cung cấp panel - reduced height from 210 to 180
-        JPanel nhaCungCapPanel = createTitledPanel("Nhà cung cấp", 230, 180);
-        nhaCungCapPanel.setLayout(null);
-        bottomPanelLeft.add(nhaCungCapPanel);
 
-        // Nhà cung cấp list
-        String[] nhaCungCapData = {"Nhà cung cấp 1", "Nhà cung cấp 2", "Nhà cung cấp 3", "Nhà cung cấp 4",
-                "Nhà cung cấp 5", "Nhà cung cấp 6", "Nhà cung cấp 7", "Nhà cung cấp 8",
-                "Nhà cung cấp 9", "Nhà cung cấp 10", "Nhà cung cấp 11", "Nhà cung cấp 12",
-                "Nhà cung cấp 13", "Nhà cung cấp 14", "Nhà cung cấp 15", "Nhà cung cấp 16",
-                "Nhà cung cấp 17", "Nhà cung cấp 18", "Nhà cung cấp 19", "Nhà cung cấp 20"};
-        nhaCungCapList = createScrollableList(nhaCungCapData);
-        JScrollPane scrollPane = createScrollPane(nhaCungCapList, 200, 100);
-        scrollPane.setBounds(15, 25, 200, 100);
-        nhaCungCapPanel.add(scrollPane);
-
-        //Btn thêm nhà cung cấp
-        themNhaCungCapButton = new CustomButton("Thêm nhà cung cấp");
-        themNhaCungCapButton.setBounds(15, 140, 195, 25);
-        nhaCungCapPanel.add(themNhaCungCapButton);
-    }
 
     private void setupLuaChonHienThiPanel() {
         // Lựa chọn hiển thị panel
@@ -316,118 +312,128 @@ public class DanhMucPanel extends JPanel {
         tablePanel.setBackground(Color.WHITE);
 
         // Table data - added price column
-        String[] columnNames = {"Mã hàng", "Tên hàng", "Loại sản phẩm", "Nhà cung cấp", "Giá bán", "Tồn kho"};
-        Object[][] data = {
-                {"SP000025", "Hộp phở bò", "Nhóm 1", "Nhà cung cấp 1", 25000, 192},
-                {"SP000024", "Mì bò hầm", "Nhóm 2", "Nhà cung cấp 2", 15000, 0},
-                {"SP000023", "Thịt bò khô", "Nhóm 3", "Nhà cung cấp 3", 40000, 0},
+        String[] columnNames = {"Mã sản phẩm", "Hình ảnh", "Tên sản phẩm", "Loại sản phẩm", "Giá bán", "Tồn kho" };
+        ArrayList<SanPhamDTO> danhSachSanPham = new SanPhamBUS().layDanhSachSanPham();
+        // Create a custom table model that can handle different data types
+        DefaultTableModel model = new DefaultTableModel(null, columnNames) {
+            @Override
+            public Class<?> getColumnClass(int column) {
+                // Column 1 (index 1) is the image column
+                return column == 1 ? ImageIcon.class : Object.class;
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
         };
 
+        // Add data to the model
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            // Load and scale the image
+            ImageIcon imageIcon = null;
+            try {
+                String imagePath = sanPham.getHinhAnh();
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    // Try to load from resources first
+                    URL imageUrl = getClass().getClassLoader().getResource("Images/Products/" + imagePath);
+
+                    if (imageUrl != null) {
+                        // Load and scale the image from resources
+                        ImageIcon originalIcon = new ImageIcon(imageUrl);
+                        Image image = originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        imageIcon = new ImageIcon(image);
+                    } else {
+                        // Fallback to file system if not found in resources
+                        File imageFile = new File("d:\\Projects\\minimart_javaswing_prj\\src\\main\\resources\\Images\\Products", imagePath);
+                        if (imageFile.exists()) {
+                            ImageIcon originalIcon = new ImageIcon(imageFile.getAbsolutePath());
+                            Image image = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                            imageIcon = new ImageIcon(image);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Create row data with the image
+            Object[] rowData = {
+                    sanPham.getMaSP(),
+                    imageIcon, // ImageIcon object instead of string path
+                    sanPham.getTenSP(),
+                    sanPham.getMaLSP(),
+                    String.valueOf(sanPham.getGiaBan()),
+                    String.valueOf(sanPham.getTonKho())
+            };
+            model.addRow(rowData);
+        }
+
+
         // Create table
-        hangHoaTable = new CustomTable(data, columnNames);
+        hangHoaTable = new CustomTable(model);
+        hangHoaTable.setRowHeight(70);
         JScrollPane tableScrollPane = new JScrollPane(hangHoaTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
 
-        // Lower part - Product details panel
-        JPanel detailsPanel = createProductDetailsPanel();
-
-        // Add selection listener to update details when a row is selected
-        hangHoaTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && hangHoaTable.getSelectedRow() != -1) {
-                updateProductDetails(hangHoaTable.getSelectedRow());
-            }
-        });
 
         // Add panels to bottomPanelRight
         bottomPanelRight.add(tablePanel, BorderLayout.CENTER);
-        bottomPanelRight.add(detailsPanel, BorderLayout.SOUTH);
     }
 
-    private JPanel createProductDetailsPanel() {
-        JPanel detailsPanel = createTitledPanel("Chi tiết sản phẩm", 0, 200);
-        detailsPanel.setLayout(new BorderLayout(10, 10));
-        detailsPanel.setBorder(BorderFactory.createCompoundBorder(
-                detailsPanel.getBorder(),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
+    //refresh table
+    public void refreshSanPhamTable() {
+        // Clear the existing rows
+        DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
+        model.setRowCount(0);
 
-        // Left panel for product image
-        JPanel imagePanel = new JPanel();
-        imagePanel.setPreferredSize(new Dimension(150, 150));
-        imagePanel.setBackground(Color.WHITE);
-        imagePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        // Fetch the updated data
+        ArrayList<SanPhamDTO> danhSachSanPham = new SanPhamBUS().layDanhSachSanPham();
 
-        // Placeholder for image
-        JLabel imageLabel = new JLabel("Hình ảnh sản phẩm");
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imagePanel.add(imageLabel);
+        // Add the updated data to the table
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            // Load and scale the image
+            ImageIcon imageIcon = null;
+            try {
+                String imagePath = sanPham.getHinhAnh();
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    // Try to load from resources first
+                    URL imageUrl = getClass().getClassLoader().getResource("Images/Products/" + imagePath);
 
-        // Right panel for product attributes
-        JPanel attributesPanel = new JPanel();
-        attributesPanel.setBackground(Color.WHITE);
-        attributesPanel.setLayout(new GridLayout(0, 4, 10, 5));
+                    if (imageUrl != null) {
+                        // Load and scale the image from resources
+                        ImageIcon originalIcon = new ImageIcon(imageUrl);
+                        Image image = originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        imageIcon = new ImageIcon(image);
+                    } else {
+                        // Fallback to file system if not found in resources
+                        File imageFile = new File("d:\\Projects\\minimart_javaswing_prj\\src\\main\\resources\\Images\\Products", imagePath);
+                        if (imageFile.exists()) {
+                            ImageIcon originalIcon = new ImageIcon(imageFile.getAbsolutePath());
+                            Image image = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                            imageIcon = new ImageIcon(image);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        // Add attribute labels - added price
-        addAttributeRow(attributesPanel, "Mã sản phẩm:", "");
-        addAttributeRow(attributesPanel, "Tên sản phẩm:", "");
-        addAttributeRow(attributesPanel, "Loại sản phẩm:", "");
-        addAttributeRow(attributesPanel, "Nhà cung cấp:", "");
-        addAttributeRow(attributesPanel, "Giá bán:", "");
-        addAttributeRow(attributesPanel, "Tồn kho:", "");
-        addAttributeRow(attributesPanel, "Trạng thái:", "");
-
-        // Add components to details panel
-        detailsPanel.add(imagePanel, BorderLayout.WEST);
-        detailsPanel.add(attributesPanel, BorderLayout.CENTER);
-
-        return detailsPanel;
-    }
-
-    private void addAttributeRow(JPanel panel, String labelText, String valueText) {
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 16));
-
-        JLabel value = new JLabel(valueText);
-        value.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-
-        panel.add(label);
-        panel.add(value);
-
-        // Store the value label with the label text as the key for later updates
-        if (attributeLabels == null) {
-            attributeLabels = new HashMap<>();
-        }
-        attributeLabels.put(labelText, value);
-    }
-
-    // HashMap to store attribute labels for updating
-    private HashMap<String, JLabel> attributeLabels;
-
-    private void updateProductDetails(int rowIndex) {
-        if (attributeLabels != null && rowIndex >= 0) {
-            // Get data from selected row
-            String maHang = hangHoaTable.getValueAt(rowIndex, 0).toString();
-            String tenHang = hangHoaTable.getValueAt(rowIndex, 1).toString();
-            String loaiSanPham = hangHoaTable.getValueAt(rowIndex, 2).toString();
-            String nhaCungCap = hangHoaTable.getValueAt(rowIndex, 3).toString();
-            String giaBan = hangHoaTable.getValueAt(rowIndex, 4).toString();
-            String tonKho = hangHoaTable.getValueAt(rowIndex, 5).toString();
-
-            // Update the labels
-            attributeLabels.get("Mã sản phẩm:").setText(maHang);
-            attributeLabels.get("Tên sản phẩm:").setText(tenHang);
-            attributeLabels.get("Loại sản phẩm:").setText(loaiSanPham);
-            attributeLabels.get("Nhà cung cấp:").setText(nhaCungCap);
-            attributeLabels.get("Giá bán:").setText(giaBan + " VNĐ");
-            attributeLabels.get("Tồn kho:").setText(tonKho);
-
-            // Set status based on inventory
-            int inventory = Integer.parseInt(tonKho);
-            String status = inventory > 0 ? "Đang kinh doanh" : "Hết hàng";
-            attributeLabels.get("Trạng thái:").setText(status);
+            // Create row data with the image
+            Object[] rowData = {
+                    sanPham.getMaSP(),
+                    imageIcon, // ImageIcon object instead of string path
+                    sanPham.getTenSP(),
+                    sanPham.getMaLSP(),
+                    String.valueOf(sanPham.getGiaBan()),
+                    String.valueOf(sanPham.getTonKho())
+            };
+            model.addRow(rowData);
         }
     }
+
+
 
     // Helper methods
     private JPanel createTitledPanel(String title, int width, int height) {
@@ -472,7 +478,7 @@ public class DanhMucPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new DanhMucPanel());
+            frame.add(new SanPhamPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
