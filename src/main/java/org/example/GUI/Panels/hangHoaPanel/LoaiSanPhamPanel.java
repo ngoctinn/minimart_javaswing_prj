@@ -108,6 +108,25 @@ public class LoaiSanPhamPanel extends JPanel {
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         searchPanel.add(searchField);
         searchPanel.add(Box.createHorizontalStrut(5));
+        // hành động tìm kiếm
+        searchField.addActionListener(e -> {
+            String searchText = searchField.getText();
+            if (!searchText.isEmpty()) {
+                ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.timKiemLoaiSanPham(searchText);
+                DefaultTableModel model = (DefaultTableModel) loaiSanPhamTable.getModel();
+                model.setRowCount(0); // Clear existing rows
+                for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
+                    Object[] rowData = new Object[]{
+                            loaiSanPham.getMaLSP(),
+                            loaiSanPham.getTenLSP(),
+                            loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+                    };
+                    model.addRow(rowData);
+                }
+            } else {
+                refreshLoaiSanPhamTable();
+            }
+        });
 
         // Search button
         searchButton = new CustomButton("Tìm");
@@ -115,6 +134,25 @@ public class LoaiSanPhamPanel extends JPanel {
         searchButton.setMaximumSize(new Dimension(70, 30));
         searchPanel.add(searchButton);
         searchPanel.add(Box.createHorizontalStrut(5));
+        // hành động tìm kiếm
+        searchButton.addActionListener(e -> {
+            String searchText = searchField.getText();
+            if (!searchText.isEmpty()) {
+                ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.timKiemLoaiSanPham(searchText);
+                DefaultTableModel model = (DefaultTableModel) loaiSanPhamTable.getModel();
+                model.setRowCount(0); // Clear existing rows
+                for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
+                    Object[] rowData = new Object[]{
+                            loaiSanPham.getMaLSP(),
+                            loaiSanPham.getTenLSP(),
+                            loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+                    };
+                    model.addRow(rowData);
+                }
+            } else {
+                refreshLoaiSanPhamTable();
+            }
+        });
 
         // Refresh button
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
@@ -124,6 +162,11 @@ public class LoaiSanPhamPanel extends JPanel {
         refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         searchPanel.add(refreshButton);
         searchPanel.add(Box.createHorizontalStrut(5));
+        // hành động làm mới
+        refreshButton.addActionListener(e -> {
+            searchField.setText("");
+            refreshLoaiSanPhamTable();
+        });
 
         // Add components to the top panel
         topPanel.add(titlePanel, BorderLayout.WEST);
@@ -163,6 +206,20 @@ public class LoaiSanPhamPanel extends JPanel {
         editButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         mainButtonsPanel.add(editButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
+        // hành động sửa
+        editButton.addActionListener(e -> {
+            int selectedRow = loaiSanPhamTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String maLSP = loaiSanPhamTable.getValueAt(selectedRow, 0).toString();
+                String tenLSP = loaiSanPhamTable.getValueAt(selectedRow, 1).toString();
+                LoaiSanPhamDTO selectedLoaiSanPham = new LoaiSanPhamDTO();
+                selectedLoaiSanPham.setMaLSP(maLSP);
+                selectedLoaiSanPham.setTenLSP(tenLSP);
+                new ThemLoaiSanPhamDialog(this, selectedLoaiSanPham);
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn loại sản phẩm để sửa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
         // Delete button
         FlatSVGIcon deleteIcon = new FlatSVGIcon("Icons/delete.svg", 20, 20);
@@ -200,6 +257,15 @@ public class LoaiSanPhamPanel extends JPanel {
         exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
         importExportPanel.add(exportButton);
         importExportPanel.add(Box.createHorizontalStrut(5));
+        // hành động xuất excel
+        exportButton.addActionListener(e -> {
+            boolean success = LoaiSanPhamBUS.xuatExcel();
+            if (success) {
+                javax.swing.JOptionPane.showMessageDialog(null, "Xuất file Excel thành công!");
+            } else {
+                // Người dùng có thể đã hủy việc chọn file, nên không cần hiển thị thông báo lỗi
+            }
+        });
 
         // Import button
         FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg", 16, 16);

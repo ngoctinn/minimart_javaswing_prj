@@ -45,6 +45,24 @@ public class JDBCUtil {
         return resultSet;
     }
 
+    // Thực thi câu lệnh SQL (SELECT) với PreparedStatement
+    public static ResultSet executePreparedQuery(String sql, Object... params) {
+        ResultSet resultSet = null;
+        try {
+            Connection connection = getConnection();
+            if (connection != null) {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setObject(i + 1, params[i]);
+                }
+                resultSet = preparedStatement.executeQuery();
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi thực thi câu lệnh SQL: " + e.getMessage());
+        }
+        return resultSet;
+    }
+
     // Thực thi câu lệnh SQL (INSERT, UPDATE, DELETE)
     public static int executeUpdate(String sql) {
         Connection connection = getConnection();

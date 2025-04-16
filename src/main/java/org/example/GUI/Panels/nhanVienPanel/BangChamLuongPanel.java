@@ -4,6 +4,8 @@ import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.RoundedPanel;
 import org.example.GUI.Dialogs.ThemNCCDialog;
+import org.example.GUI.Panels.hangHoaPanel.SanPhamPanel;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -220,7 +222,7 @@ public class BangChamLuongPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.DanhMucPanel());
+            frame.add(new SanPhamPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {

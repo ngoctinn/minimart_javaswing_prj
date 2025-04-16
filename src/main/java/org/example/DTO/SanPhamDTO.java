@@ -1,26 +1,40 @@
 package org.example.DTO;
 
-public class sanPhamDTO {
+public class SanPhamDTO {
     private String maSP;
     private String tenSP;
-    private int trangThai;
-    private int soLuong;
+    private boolean trangThai;
+    private int tonKho;
     private String hinhAnh;
     private String donVi;
     private String maLSP;
+    private double giaBan;
 
-    public sanPhamDTO() {
+    public SanPhamDTO() {
 
     }
-    public sanPhamDTO(String maSP, String tenSP, int trangThai, int soLuong, String hinhAnh, String donVi, String maLSP) {
+    public SanPhamDTO(String maSP, String tenSP, boolean trangThai, int tonKho, String hinhAnh, String donVi, String maLSP, double giaBan) {
         this.maSP = maSP;
         this.tenSP = tenSP;
         this.trangThai = trangThai;
-        this.soLuong = soLuong;
+        this.tonKho = tonKho;
         this.hinhAnh = hinhAnh;
         this.donVi = donVi;
         this.maLSP = maLSP;
+        this.giaBan = giaBan;
     }
+
+    public SanPhamDTO(String maSP, String tenSP, boolean trangThai, String hinhAnh, String donVi, String maLSP, double giaBan) {
+        this.maSP = maSP;
+        this.tenSP = tenSP;
+        this.trangThai = trangThai;
+        this.hinhAnh = hinhAnh;
+        this.donVi = donVi;
+        this.maLSP = maLSP;
+        this.giaBan = giaBan;
+    }
+
+
 
     public String getMaSP() {
         return maSP;
@@ -38,20 +52,20 @@ public class sanPhamDTO {
         this.tenSP = tenSP;
     }
 
-    public int getTrangThai() {
+    public boolean getTrangThai() {
         return trangThai;
     }
 
-    public void setTrangThai(int trangThai) {
+    public void setTrangThai(boolean trangThai) {
         this.trangThai = trangThai;
     }
 
-    public int getSoLuong() {
-        return soLuong;
+    public int getTonKho() {
+        return tonKho;
     }
 
-    public void setSoLuong(int soLuong) {
-        this.soLuong = soLuong;
+    public void setTonKho(int tonKho) {
+        this.tonKho = tonKho;
     }
 
     public String getHinhAnh() {
@@ -77,4 +91,14 @@ public class sanPhamDTO {
     public void setMaLSP(String maLSP) {
         this.maLSP = maLSP;
     }
+
+    public double getGiaBan() {
+        return giaBan;
+    }
+
+    public void setGiaBan(double giaBan) {
+        this.giaBan = giaBan;
+    }
+
+
 }

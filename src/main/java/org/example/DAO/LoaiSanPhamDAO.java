@@ -20,7 +20,12 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
 
     @Override
     public int update(LoaiSanPhamDTO loaiSanPhamDTO) {
-        return 0;
+        // Bước 1: Tạo kết nối đến CSDL
+        Connection connection = JDBCUtil.getConnection();
+        // Bước 2: Tạo ra đối tượng statement từ connection
+        String sql = "UPDATE LOAISP SET tenLSP = ? WHERE maLSP = ?";
+        int result = JDBCUtil.executePreparedUpdate(sql, loaiSanPhamDTO.getTenLSP(), loaiSanPhamDTO.getMaLSP());
+        return result;
     }
 
     @Override
@@ -51,6 +56,7 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
             }
             //Bước 3: Đóng kết nối
             JDBCUtil.closeConnection();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,12 +89,73 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
 
     @Override
     public LoaiSanPhamDTO selectById(LoaiSanPhamDTO loaiSanPhamDTO) {
-        return null;
+        LoaiSanPhamDTO loaiSanPham = null;
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT * FROM LOAISP WHERE maLSP = ?";
+            ResultSet resultSet = JDBCUtil.executePreparedQuery(sql, loaiSanPhamDTO.getMaLSP());
+            if (resultSet.next()) {
+                loaiSanPham = new LoaiSanPhamDTO();
+                loaiSanPham.setMaLSP(resultSet.getString("maLSP"));
+                loaiSanPham.setTenLSP(resultSet.getString("tenLSP"));
+                loaiSanPham.setTrangThai(resultSet.getBoolean("trangThai"));
+            }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return loaiSanPham;
     }
 
     @Override
     public ArrayList<LoaiSanPhamDTO> selectByCondition(String condition) {
-        return null;
+        ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = new ArrayList<>();
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT * FROM LOAISP WHERE " + condition;
+            ResultSet resultSet = JDBCUtil.executeQuery(sql);
+            while (resultSet.next()) {
+                LoaiSanPhamDTO loaiSanPhamDTO = new LoaiSanPhamDTO();
+                loaiSanPhamDTO.setMaLSP(resultSet.getString("maLSP"));
+                loaiSanPhamDTO.setTenLSP(resultSet.getString("tenLSP"));
+                loaiSanPhamDTO.setTrangThai(resultSet.getBoolean("trangThai"));
+                dsLoaiSanPham.add(loaiSanPhamDTO);
+            }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dsLoaiSanPham;
+    }
+
+    // Tìm kiếm loại sản phẩm theo tên
+    public ArrayList<LoaiSanPhamDTO> timKiemLoaiSanPham(String tenLSP) {
+        ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = new ArrayList<>();
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT * FROM LOAISP WHERE tenLSP LIKE ?";
+            ResultSet resultSet = JDBCUtil.executePreparedQuery(sql, "%" + tenLSP + "%");
+            while (resultSet.next()) {
+                LoaiSanPhamDTO loaiSanPhamDTO = new LoaiSanPhamDTO();
+                loaiSanPhamDTO.setMaLSP(resultSet.getString("maLSP"));
+                loaiSanPhamDTO.setTenLSP(resultSet.getString("tenLSP"));
+                loaiSanPhamDTO.setTrangThai(resultSet.getBoolean("trangThai"));
+                dsLoaiSanPham.add(loaiSanPhamDTO);
+            }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dsLoaiSanPham;
     }
 
     // Main để test

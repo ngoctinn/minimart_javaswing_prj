@@ -5,7 +5,7 @@ import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.ThemHangHoaDialog;
+import org.example.GUI.Dialogs.ThemSanPhamDialog;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -117,7 +117,6 @@ public class ThietLapGiaPanel extends JPanel {
         addButton = new CustomButton("", addIcon);
         addButton.setBounds(960, 12, 50, 30);
         addButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        addButton.addActionListener(e -> new ThemHangHoaDialog());
         topPanel.add(addButton);
 
         // Edit button
@@ -275,7 +274,7 @@ public class ThietLapGiaPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new org.example.GUI.Panels.hangHoaPanel.DanhMucPanel());
+            frame.add(new SanPhamPanel());
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
