@@ -36,10 +36,10 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenu tongQuanMenu, hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
 
     // Các JMenuItem cho JMenu giaoDich
-    private JMenuItem banHangItem ,hoaDonItem, traHangItem, nhapHangItem, traHangNhapItem;
+    private JMenuItem banHangItem ,hoaDonItem, nhapHangItem;
 
     // Các JMenuItem cho JMenu hangHoa
-    private JMenuItem danhMucItem, loaiSanPhamItem, thietLapGiaItem, kiemKhoItem;
+    private JMenuItem danhMucItem, loaiSanPhamItem;
 
     // Các JMenuItem cho JMenu doiTac
     private JMenuItem khachHangItem, nhaCungCapItem;
@@ -120,15 +120,11 @@ public class MenuFrame extends JFrame implements ActionListener {
         // Tạo JMenuItem cho giao dịch
         banHangItem = createMenuItem("Bán hàng", "banhang", 16);
         hoaDonItem = createMenuItem("Hoá đơn", "hoadon", 16);
-        traHangItem = createMenuItem("Trả hàng", "trahang", 16);
         nhapHangItem = createMenuItem("Nhập hàng", "nhaphang", 16);
-        traHangNhapItem = createMenuItem("Trả hàng nhập", "trahangnhap", 16);
 
         // Tạo JMenuItem cho hàng hóa
         danhMucItem = createMenuItem("Danh mục", "danhmuc", 16);
         loaiSanPhamItem = createMenuItem("Loại sản phẩm", "loaisanpham", 16);
-        thietLapGiaItem = createMenuItem("Thiết lập giá", "thietlapgia", 16);
-        kiemKhoItem = createMenuItem("Kiểm kho", "kiemkho", 16);
 
         // Tạo JMenuItem cho đối tác
         khachHangItem = createMenuItem("Khách hàng", "khachhang", 16);
@@ -160,13 +156,10 @@ public class MenuFrame extends JFrame implements ActionListener {
         giaoDichMenu.add(banHangItem);
         giaoDichMenu.add(hoaDonItem);
         giaoDichMenu.add(nhapHangItem);
-        giaoDichMenu.add(traHangNhapItem);
 
         // Thêm JMenuItem vào hàng hóa
         hangHoaMenu.add(danhMucItem);
         hangHoaMenu.add(loaiSanPhamItem);
-        hangHoaMenu.add(thietLapGiaItem);
-        hangHoaMenu.add(kiemKhoItem);
 
         // Thêm JMenuItem vào đối tác
         doiTacMenu.add(khachHangItem);
@@ -221,15 +214,14 @@ public class MenuFrame extends JFrame implements ActionListener {
         // Thêm ActionListener cho các JMenuItem giao dịch
         banHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
-        traHangItem.addActionListener(this);
         nhapHangItem.addActionListener(this);
-        traHangNhapItem.addActionListener(this);
+
 
         // Thêm ActionListener cho các JMenuItem hàng hóa
         danhMucItem.addActionListener(this);
         loaiSanPhamItem.addActionListener(this);
-        thietLapGiaItem.addActionListener(this);
-        kiemKhoItem.addActionListener(this);
+
+
 
         // Thêm ActionListener cho các JMenuItem đối tác
         khachHangItem.addActionListener(this);
@@ -306,10 +298,6 @@ public class MenuFrame extends JFrame implements ActionListener {
             showPanel("danhMuc");
         } else if (source == loaiSanPhamItem) {
             showPanel("loaiSanPham");
-        } else if (source == thietLapGiaItem) {
-            showPanel("thietLapGia");
-        } else if (source == kiemKhoItem) {
-            showPanel("kiemKho");
         }
         // Giao dịch
         else if (source == banHangItem) {
@@ -319,8 +307,6 @@ public class MenuFrame extends JFrame implements ActionListener {
             showPanel("hoaDon");
         } else if (source == nhapHangItem) {
             showPanel("nhapHang");
-        } else if (source == traHangNhapItem) {
-            showPanel("traHang");
         }
         // Đối tác
         else if (source == khachHangItem) {

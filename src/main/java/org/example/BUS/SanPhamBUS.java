@@ -1,12 +1,12 @@
 package org.example.BUS;
 
 import org.example.DAO.SanPhamDAO;
-import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
 
 import java.util.ArrayList;
 
 public class SanPhamBUS {
+
     public static ArrayList<SanPhamDTO> layDanhSachSanPham() {
         ArrayList<SanPhamDTO> dsSanPham = new ArrayList<>();
         SanPhamDAO sanPhamDAO = new SanPhamDAO();
@@ -24,6 +24,24 @@ public class SanPhamBUS {
     public static int themSanPham(SanPhamDTO sanPhamDTO) {
         SanPhamDAO sanPhamDAO = new SanPhamDAO();
         return sanPhamDAO.insert(sanPhamDTO);
+    }
+
+    // Cập nhật sản phẩm
+    public static int capNhatSanPham(SanPhamDTO sanPhamDTO) {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.update(sanPhamDTO);
+    }
+
+    // Xóa sản phẩm
+    public static int xoaSanPham(SanPhamDTO sanPhamDTO) {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.delete(sanPhamDTO);
+    }
+
+    //lấy danh sách sản phẩm theo mã
+    public static SanPhamDTO layDanhSachSanPhamTheoMa(String maSP) {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.selectById(maSP);
     }
 
     // Sinh mã sản phẩm
