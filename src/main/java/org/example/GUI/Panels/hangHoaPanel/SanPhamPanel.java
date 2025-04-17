@@ -17,6 +17,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static org.example.Components.CustomToastMessage.showSuccessToast;
+
 
 public class SanPhamPanel extends JPanel {
     // UI Components
@@ -57,6 +59,7 @@ public class SanPhamPanel extends JPanel {
         setupTopPanel();
         setupBottomPanelLeft();
         setupBottomPanelRight();
+        setupEventHandlers();
 
         // Add panels to main panel with proper constraints
         this.add(topPanel, BorderLayout.NORTH);
@@ -65,6 +68,114 @@ public class SanPhamPanel extends JPanel {
         bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
+    //====================== XỬ LÝ SỰ KIỆN=================================
+    private void setupEventHandlers() {
+        // Thiết lập tất cả các sự kiện ở đây
+        addButton.addActionListener(e -> handleAddButton());
+        editButton.addActionListener(e -> handleEditButton());
+        deleteButton.addActionListener(e -> handleDeleteButton());
+        refreshButton.addActionListener(e -> handleRefreshButton());
+        searchButton.addActionListener(e -> handleSearchButton());
+        importButton.addActionListener(e -> handleImportButton());
+        exportButton.addActionListener(e -> handleExportButton());
+        themLoaiSanPhamButton.addActionListener(e -> handleThemLoaiSanPhamButton());
+
+        // Thiết lập sự kiện cho các radio button
+        radioTatCa.addActionListener(e -> handleFilterRadioButton());
+        radioHangDangKinhDoanh.addActionListener(e -> handleFilterRadioButton());
+        radioHangNgungKinhDoanh.addActionListener(e -> handleFilterRadioButton());
+        radioGiaTangDan.addActionListener(e -> handleSortRadioButton());
+        radioGiaGiamDan.addActionListener(e -> handleSortRadioButton());
+
+        // Thiết lập sự kiện cho danh sách loại sản phẩm
+        loaiSanPhamList.addListSelectionListener(e -> handleLoaiSanPhamSelection());
+    }
+    // CÁC PHƯƠNG THỨC XỬ LÝ SỰ KIỆN
+    private void handleAddButton() {
+        // Xử lý thêm sản phẩm
+        new ThemSanPhamDialog(this);
+    }
+
+    private void handleEditButton() {
+        // Xử lý sửa sản phẩm
+        int selectedRow = hangHoaTable.getSelectedRow();
+        if (selectedRow != -1) {
+            String maSP = (String) hangHoaTable.getValueAt(selectedRow, 0);
+            SanPhamDTO selectedSanPham = new SanPhamBUS().layDanhSachSanPhamTheoMa(maSP);
+            new ThemSanPhamDialog(this, selectedSanPham);
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để sửa.");
+        }
+    }
+
+    private void handleDeleteButton() {
+        // Xử lý xóa sản phẩm
+        int selectedRow = hangHoaTable.getSelectedRow();
+        if (selectedRow != -1) {
+            String maSP = (String) hangHoaTable.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa sản phẩm này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                SanPhamDTO sanPhamToDelete = new SanPhamBUS().layDanhSachSanPhamTheoMa(maSP);
+                new SanPhamBUS().xoaSanPham(sanPhamToDelete);
+                // hiển thị thông báo thành công
+                showSuccessToast(this,"Xóa sản phẩm thành công");
+                refreshSanPhamTable();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để xóa.");
+        }
+    }
+
+    private void handleRefreshButton() {
+        // Xử lý làm mới bảng sản phẩm
+        refreshSanPhamTable();
+    }
+
+    private void handleSearchButton() {
+        // Xử lý tìm kiếm sản phẩm
+        String searchText = searchField.getText().trim();
+        // Thực hiện tìm kiếm trong danh sách sản phẩm
+    }
+
+    private void handleImportButton() {
+        // Xử lý nhập sản phẩm từ file
+    }
+
+    private void handleExportButton() {
+        // Xử lý xuất sản phẩm ra file
+    }
+
+    private void handleThemLoaiSanPhamButton() {
+        // Xử lý thêm loại sản phẩm
+        new ThemSanPhamDialog(this);
+    }
+
+    private void handleLoaiSanPhamSelection() {
+        // Xử lý khi chọn loại sản phẩm
+        String selectedLoaiSP = loaiSanPhamList.getSelectedValue();
+        // Thực hiện lọc sản phẩm theo loại đã chọn
+    }
+
+    private void handleFilterRadioButton() {
+        // Xử lý lọc sản phẩm theo trạng thái
+        if (radioTatCa.isSelected()) {
+            // Hiển thị tất cả sản phẩm
+        } else if (radioHangDangKinhDoanh.isSelected()) {
+            // Hiển thị sản phẩm đang kinh doanh
+        } else if (radioHangNgungKinhDoanh.isSelected()) {
+            // Hiển thị sản phẩm ngừng kinh doanh
+        }
+    }
+
+    private void handleSortRadioButton() {
+        // Xử lý sắp xếp sản phẩm theo giá
+        if (radioGiaTangDan.isSelected()) {
+            // Sắp xếp tăng dần
+        } else if (radioGiaGiamDan.isSelected()) {
+            // Sắp xếp giảm dần
+        }
+    }
+    //======================CÀI ĐẶT PANEL CHÍNH=================================
     private void setupMainPanel() {
         // Set up layout and background for main panel
         this.setLayout(new BorderLayout(10, 10));
@@ -72,6 +183,7 @@ public class SanPhamPanel extends JPanel {
         this.setVisible(true);
     }
 
+    //======================CÀI ĐẶT CÁC PANEL CON=================================
     private void createPanels() {
         // Create sub-panels
         topPanel = new RoundedPanel(20);
@@ -96,6 +208,7 @@ public class SanPhamPanel extends JPanel {
         bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
     }
 
+    //======================CÀI ĐẶT PANEL TRÊN=================================
     private void setupTopPanel() {
         // Add padding to the top panel
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -153,6 +266,7 @@ public class SanPhamPanel extends JPanel {
         setupActionButtons(actionPanel);
     }
 
+    //======================CÀI ĐẶT CÁC NÚT HÀNH ĐỘNG=================================
     private void setupActionButtons(JPanel actionPanel) {
         
         // Create a panel for the main action buttons
@@ -171,10 +285,6 @@ public class SanPhamPanel extends JPanel {
         addButton.setPreferredSize(new Dimension(100, 30));
         addButton.setMaximumSize(new Dimension(100, 30));
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        addButton.addActionListener(e ->
-        {
-            new ThemSanPhamDialog(this);
-        });
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
         
@@ -220,13 +330,14 @@ public class SanPhamPanel extends JPanel {
         actionPanel.add(importExportPanel);
     }
 
+    //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
     private void setupBottomPanelLeft() {
-        setupNhomHangPanel();
+        setupLoaiSanPhamPanel();
         setupSapXepTheoGiaPanel(); // Add new panel for price sorting
         setupLuaChonHienThiPanel();
     }
 
-    private void setupNhomHangPanel() {
+    private void setupLoaiSanPhamPanel() {
         // Nhóm hàng panel - reduced height from 210 to 180
         JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 250);
 
@@ -257,8 +368,6 @@ public class SanPhamPanel extends JPanel {
 
         loaiSanPhamPanel.add(buttonPanel);
     }
-
-
 
     private void setupLuaChonHienThiPanel() {
         // Lựa chọn hiển thị panel
@@ -303,6 +412,8 @@ public class SanPhamPanel extends JPanel {
         sapXepPanel.add(radioGiaGiamDan);
     }
 
+
+    //======================CÀI ĐẶT PANEL DƯỚI PHẢI=================================
     private void setupBottomPanelRight() {
         // Change layout to BorderLayout
         bottomPanelRight.setLayout(new BorderLayout(0, 10));
@@ -329,46 +440,7 @@ public class SanPhamPanel extends JPanel {
         };
 
         // Add data to the model
-        for (SanPhamDTO sanPham : danhSachSanPham) {
-            // Load and scale the image
-            ImageIcon imageIcon = null;
-            try {
-                String imagePath = sanPham.getHinhAnh();
-                if (imagePath != null && !imagePath.isEmpty()) {
-                    // Try to load from resources first
-                    URL imageUrl = getClass().getClassLoader().getResource("Images/Products/" + imagePath);
-
-                    if (imageUrl != null) {
-                        // Load and scale the image from resources
-                        ImageIcon originalIcon = new ImageIcon(imageUrl);
-                        Image image = originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                        imageIcon = new ImageIcon(image);
-                    } else {
-                        // Fallback to file system if not found in resources
-                        File imageFile = new File("d:\\Projects\\minimart_javaswing_prj\\src\\main\\resources\\Images\\Products", imagePath);
-                        if (imageFile.exists()) {
-                            ImageIcon originalIcon = new ImageIcon(imageFile.getAbsolutePath());
-                            Image image = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                            imageIcon = new ImageIcon(image);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // Create row data with the image
-            Object[] rowData = {
-                    sanPham.getMaSP(),
-                    imageIcon, // ImageIcon object instead of string path
-                    sanPham.getTenSP(),
-                    sanPham.getMaLSP(),
-                    String.valueOf(sanPham.getGiaBan()),
-                    String.valueOf(sanPham.getTonKho())
-            };
-            model.addRow(rowData);
-        }
-
+        loadSanPhamData(model, danhSachSanPham);
 
         // Create table
         hangHoaTable = new CustomTable(model);
@@ -376,7 +448,6 @@ public class SanPhamPanel extends JPanel {
         JScrollPane tableScrollPane = new JScrollPane(hangHoaTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
-
 
         // Add panels to bottomPanelRight
         bottomPanelRight.add(tablePanel, BorderLayout.CENTER);
@@ -392,38 +463,20 @@ public class SanPhamPanel extends JPanel {
         ArrayList<SanPhamDTO> danhSachSanPham = new SanPhamBUS().layDanhSachSanPham();
 
         // Add the updated data to the table
+        loadSanPhamData(model, danhSachSanPham);
+    }
+
+
+    // Phương thức mới để tải dữ liệu sản phẩm vào model
+    private void loadSanPhamData(DefaultTableModel model, ArrayList<SanPhamDTO> danhSachSanPham) {
         for (SanPhamDTO sanPham : danhSachSanPham) {
             // Load and scale the image
-            ImageIcon imageIcon = null;
-            try {
-                String imagePath = sanPham.getHinhAnh();
-                if (imagePath != null && !imagePath.isEmpty()) {
-                    // Try to load from resources first
-                    URL imageUrl = getClass().getClassLoader().getResource("Images/Products/" + imagePath);
-
-                    if (imageUrl != null) {
-                        // Load and scale the image from resources
-                        ImageIcon originalIcon = new ImageIcon(imageUrl);
-                        Image image = originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                        imageIcon = new ImageIcon(image);
-                    } else {
-                        // Fallback to file system if not found in resources
-                        File imageFile = new File("d:\\Projects\\minimart_javaswing_prj\\src\\main\\resources\\Images\\Products", imagePath);
-                        if (imageFile.exists()) {
-                            ImageIcon originalIcon = new ImageIcon(imageFile.getAbsolutePath());
-                            Image image = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                            imageIcon = new ImageIcon(image);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ImageIcon imageIcon = loadAndScaleImage(sanPham.getHinhAnh());
 
             // Create row data with the image
             Object[] rowData = {
                     sanPham.getMaSP(),
-                    imageIcon, // ImageIcon object instead of string path
+                    imageIcon,
                     sanPham.getTenSP(),
                     sanPham.getMaLSP(),
                     String.valueOf(sanPham.getGiaBan()),
@@ -433,6 +486,50 @@ public class SanPhamPanel extends JPanel {
         }
     }
 
+    // Thêm phương thức loadAndScaleImage mới
+    private ImageIcon loadAndScaleImage(String imagePath) {
+        try {
+            // Nếu đường dẫn rỗng hoặc null, sử dụng ảnh mặc định
+            if (imagePath == null || imagePath.isEmpty()) {
+                return loadDefaultImage();
+            }
+
+            // Tải từ resources
+            URL imageUrl = getClass().getClassLoader().getResource("Images/Products/" + imagePath);
+
+            if (imageUrl != null) {
+                // Tải và điều chỉnh kích thước ảnh từ resources
+                ImageIcon originalIcon = new ImageIcon(imageUrl);
+                Image image = originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                return new ImageIcon(image);
+            } else {
+                // Nếu không tìm thấy ảnh, sử dụng ảnh mặc định
+                return loadDefaultImage();
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải hình ảnh: " + imagePath);
+            e.printStackTrace();
+            return loadDefaultImage();
+        }
+    }
+
+    // Thêm phương thức tải ảnh mặc định
+    private ImageIcon loadDefaultImage() {
+        try {
+            URL defaultImageUrl = getClass().getClassLoader().getResource("Images/Products/sample.png");
+            if (defaultImageUrl != null) {
+                ImageIcon originalIcon = new ImageIcon(defaultImageUrl);
+                Image image = originalIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                return new ImageIcon(image);
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải hình ảnh mặc định");
+            e.printStackTrace();
+        }
+
+        // Nếu không thể tải ảnh mặc định, trả về null
+        return null;
+    }
 
 
     // Helper methods

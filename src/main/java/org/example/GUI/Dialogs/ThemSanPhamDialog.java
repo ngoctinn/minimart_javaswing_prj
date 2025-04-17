@@ -20,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
+import static org.example.Components.CustomToastMessage.showSuccessToast;
+
 public class ThemSanPhamDialog extends JDialog {
     private CustomTexField maHangHoaField, tenHangHoaField, donViTinhField, giaBanField;
     private JComboBox<String> loaiHangHoaComboBox, trangThaiComboBox;
@@ -130,6 +132,7 @@ public class ThemSanPhamDialog extends JDialog {
             addFormRow(panel, "Giá bán", giaBanField = new CustomTexField(""), 4, gbc);
             giaBanField.setText(String.valueOf(sanPhamEdit.getGiaBan()));
 
+
         } else {
             // Tạo mã sản phẩm tự động
             String maSanPham = SanPhamBUS.generateNextMaSP();
@@ -142,6 +145,8 @@ public class ThemSanPhamDialog extends JDialog {
             for (int i = 0; i < dsLoaiSP.size(); i++) {
                 loaiSPNames[i] = dsLoaiSP.get(i).getTenLSP();
             }
+
+
             loaiHangHoaComboBox = new JComboBox<>(loaiSPNames);
 
             addFormRow(panel, "Loại hàng hóa", loaiHangHoaComboBox, 2, gbc);
@@ -153,8 +158,9 @@ public class ThemSanPhamDialog extends JDialog {
 
         // Image panel
         hinhAnhPanel = new JPanel();
-        hinhAnhPanel.setBackground(new Color(225, 225, 225));
-        hinhAnhPanel.setPreferredSize(new Dimension(200, 100));
+        hinhAnhPanel.setBackground(new Color(255, 255, 255));
+        hinhAnhPanel.setPreferredSize(new Dimension(150, 150));
+        hinhAnhPanel.setLayout(new BorderLayout());
         addFormRow(panel, "Hình ảnh", hinhAnhPanel, 6, gbc);
 
         chonHinhAnhButton = new CustomButton("Chọn hình ảnh");
@@ -162,6 +168,26 @@ public class ThemSanPhamDialog extends JDialog {
         gbc.gridy = 7;
         gbc.gridx = 1;
         panel.add(chonHinhAnhButton, gbc);
+
+        // Hiển thị hình ảnh nếu đang ở chế độ sửa
+        if (isEditMode && sanPhamEdit.getHinhAnh() != null && !sanPhamEdit.getHinhAnh().isEmpty()) {
+            String imagePath = "src/main/resources/Images/Products/" + sanPhamEdit.getHinhAnh();
+            File imageFile = new File(imagePath);
+            if (imageFile.exists()) {
+                selectedFile = imageFile;
+                displayImageOnPanel(imageFile);
+            }
+        }
+
+        // Hiển thị hình ảnh mặc định nếu ở chế độ thêm mới
+        if (!isEditMode) {
+            String defaultImagePath = "src/main/resources/Images/Products/sample.png";
+            File defaultImageFile = new File(defaultImagePath);
+            if (defaultImageFile.exists()) {
+                displayImageOnPanel(defaultImageFile);
+            }
+        }
+
 
         return panel;
     }
@@ -212,7 +238,8 @@ public class ThemSanPhamDialog extends JDialog {
             String donViTinh = donViTinhField.getText().trim();
             String tenLSP = loaiHangHoaComboBox.getSelectedItem().toString();
             String maLSP = "";
-            String hinhAnh = selectedFile.getName();
+            // Check if selectedFile is null and handle it
+            String hinhAnh = selectedFile != null ? selectedFile.getName() : "sample.png";
             ArrayList<LoaiSanPhamDTO> dsLoaiSP = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
             for (LoaiSanPhamDTO lsp : dsLoaiSP) {
                 if (lsp.getTenLSP().equals(tenLSP)) {
@@ -228,18 +255,33 @@ public class ThemSanPhamDialog extends JDialog {
                 return;
             }
             int result = 0;
+
+
+
             if (isEditMode) {
                 // Cập nhật sản phẩm
-                // Cần bổ sung phương thức cập nhật sản phẩm trong SanPhamBUS
-                // result = SanPhamBUS.capNhatSanPham(sanPhamDTO);
+
+                SanPhamDTO sanPhamDTO = new SanPhamDTO(maSanPham, tenSanPham, true, 0, hinhAnh, donViTinh, maLSP, giaBan);
+
+                result = SanPhamBUS.capNhatSanPham(sanPhamDTO);
+                if (result > 0) {
+                    showSuccessToast(parentPanel, "Cập nhật sản phẩm thành công");
+                    if (parentPanel != null) {
+                        parentPanel.refreshSanPhamTable();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thất bại", "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
                 dispose();
             } else {
                 // Thêm mới sản phẩm
                 SanPhamDTO sanPhamDTO = new SanPhamDTO(maSanPham, tenSanPham, true, 0, hinhAnh, donViTinh, maLSP, giaBan);
                 result = SanPhamBUS.themSanPham(sanPhamDTO);
+
                 if (result > 0) {
-                    JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công", "Thành công",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    showSuccessToast(parentPanel, "Thêm sản phẩm thành công");
                     if (parentPanel != null) {
                         parentPanel.refreshSanPhamTable();
                     }
@@ -247,6 +289,7 @@ public class ThemSanPhamDialog extends JDialog {
                     JOptionPane.showMessageDialog(this, "Thêm sản phẩm thất bại", "Lỗi",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
 
                 dispose();
             }
@@ -287,19 +330,29 @@ public class ThemSanPhamDialog extends JDialog {
                 Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                 // Hiển thị hình ảnh lên panel
-                ImageIcon imageIcon = new ImageIcon(destinationFile.getAbsolutePath());
-                Image image = imageIcon.getImage().getScaledInstance(hinhAnhPanel.getWidth(), hinhAnhPanel.getHeight(), Image.SCALE_SMOOTH);
-                JLabel imageLabel = new JLabel(new ImageIcon(image));
-
-                hinhAnhPanel.removeAll();
-                hinhAnhPanel.add(imageLabel);
-                hinhAnhPanel.revalidate();
-                hinhAnhPanel.repaint();
+                displayImageOnPanel(destinationFile);
 
                 JOptionPane.showMessageDialog(this, "Đã chọn và sao chép hình ảnh: " + destinationFile.getName());
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Lỗi khi sao chép hình ảnh: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    // Phương thức mới để hiển thị hình ảnh lên panel
+    // Phương thức mới để hiển thị hình ảnh lên panel
+    private void displayImageOnPanel(File imageFile) {
+        if (imageFile != null && imageFile.exists()) {
+            ImageIcon imageIcon = new ImageIcon(imageFile.getAbsolutePath());
+            // Sử dụng kích thước cố định thay vì kích thước của panel
+            int width = 150;
+            int height = 150;
+            Image image = imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            JLabel imageLabel = new JLabel(new ImageIcon(image));
+            hinhAnhPanel.removeAll();
+            hinhAnhPanel.add(imageLabel, BorderLayout.CENTER);
+            hinhAnhPanel.revalidate();
+            hinhAnhPanel.repaint();
         }
     }
 
