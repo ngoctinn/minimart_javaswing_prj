@@ -12,7 +12,6 @@ import org.example.GUI.Panels.hangHoaPanel.SanPhamPanel;
 import org.example.GUI.Panels.hangHoaPanel.KiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
 import org.example.GUI.Panels.hangHoaPanel.ThietLapGiaPanel;
-import org.example.GUI.Panels.nhanVienPanel.BangChamLuongPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChucVuPanel;
 import org.example.GUI.Panels.nhanVienPanel.NhanVienPanel;
@@ -45,7 +44,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenuItem khachHangItem, nhaCungCapItem;
 
     // Các JMenuItem cho JMenu nhanVien
-    private JMenuItem nhanVienItem, chucVuItem, chamCongItem, bangTinhLuongItem;
+    private JMenuItem nhanVienItem, chucVuItem, chamCongItem;
 
     // Các JMenuItem cho JMenu người dùng
     private JMenuItem profileItem, logoutItem;
@@ -134,7 +133,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         nhanVienItem = createMenuItem("Nhân viên", "nhanvien", 16);
         chucVuItem = createMenuItem("Chức vụ", "chucvu", 16);
         chamCongItem = createMenuItem("Chấm công", "chamcong", 16);
-        bangTinhLuongItem = createMenuItem("Bảng tính lương", "luong", 16);
 
         // Tạo JMenuItem cho người dùng
         profileItem = createMenuItem("Thông tin", "profile", 16);
@@ -169,7 +167,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         nhanVienMenu.add(nhanVienItem);
         nhanVienMenu.add(chucVuItem);
         nhanVienMenu.add(chamCongItem);
-        nhanVienMenu.add(bangTinhLuongItem);
+
 
         // Thêm JMenuItem vào người dùng
         userMenu.add(profileItem);
@@ -231,7 +229,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         nhanVienItem.addActionListener(this);
         chucVuItem.addActionListener(this);
         chamCongItem.addActionListener(this);
-        bangTinhLuongItem.addActionListener(this);
 
         // Thêm ActionListener cho các JMenuItem người dùng
         profileItem.addActionListener(this);
@@ -283,7 +280,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("nhanVien", new NhanVienPanel());
         panelMap.put("chucVu", new ChucVuPanel());
         panelMap.put("chamCong", new ChamCongPanel());
-        panelMap.put("bangTinhLuong", new BangChamLuongPanel());
 
         // Báo cáo panel
         panelMap.put("baoCao", new baoCaoPanel());
@@ -321,8 +317,6 @@ public class MenuFrame extends JFrame implements ActionListener {
             showPanel("chucVu");
         } else if (source == chamCongItem) {
             showPanel("chamCong");
-        } else if (source == bangTinhLuongItem) {
-            showPanel("bangTinhLuong");
         }
         // Báo cáo
         else if (source == baoCaoMenu) {

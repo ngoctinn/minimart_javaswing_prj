@@ -1,14 +1,18 @@
 package org.example.GUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.SanPhamBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Dialogs.ThanhToanDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -79,7 +83,6 @@ public class BanHangPanel extends JPanel {
         bottomPanelRight.setBackground(Color.WHITE);
 
         bottomPanelRight.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.4), 0));
-
 
         // Set layouts
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
@@ -171,7 +174,6 @@ public class BanHangPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-
         // Tạo panel chứa giỏ hàng với layout dạng BorderLayout
         JPanel cartPanel = new JPanel(new BorderLayout());
         cartPanel.setBackground(Color.WHITE);
@@ -247,49 +249,24 @@ public class BanHangPanel extends JPanel {
         return panel;
     }
 
-    // Lớp đại diện cho một sản phẩm
-    private static class Product {
-        private String name;
-        private double price;
-        private ImageIcon image;
-
-        public Product(String name, double price, ImageIcon image) {
-            this.name = name;
-            this.price = price;
-            this.image = image;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public ImageIcon getImage() {
-            return image;
-        }
-    }
-
     // Lớp đại diện cho một mục trong giỏ hàng
     private static class CartItem {
-        private Product product;
+        private SanPhamDTO sanPham;
         private int quantity;
         private JPanel panel;
         private JTextField qtyField;
         private JLabel totalItemLabel;
 
-        public CartItem(Product product, int quantity, JPanel panel, JTextField qtyField, JLabel totalItemLabel) {
-            this.product = product;
+        public CartItem(SanPhamDTO sanPham, int quantity, JPanel panel, JTextField qtyField, JLabel totalItemLabel) {
+            this.sanPham = sanPham;
             this.quantity = quantity;
             this.panel = panel;
             this.qtyField = qtyField;
             this.totalItemLabel = totalItemLabel;
         }
 
-        public Product getProduct() {
-            return product;
+        public SanPhamDTO getSanPham() {
+            return sanPham;
         }
 
         public int getQuantity() {
@@ -302,9 +279,8 @@ public class BanHangPanel extends JPanel {
             this.totalItemLabel.setText(NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(getTotalPrice()));
         }
 
-
         public double getTotalPrice() {
-            return product.getPrice() * quantity;
+            return sanPham.getGiaBan() * quantity;
         }
     }
 
@@ -317,25 +293,49 @@ public class BanHangPanel extends JPanel {
         searchPanel.setBackground(Color.WHITE);
 
         // Ô nhập tìm kiếm
-        PlaceholderTextField searchField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
-        searchField.setPreferredSize(new Dimension(200, 30));
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        PlaceholderTextField searchProductField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
+        searchProductField.setPreferredSize(new Dimension(200, 30));
+        searchProductField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 
-        searchPanel.add(searchField, BorderLayout.CENTER);
+        // Thêm event cho ô tìm kiếm
+        searchProductField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String searchText = searchProductField.getText().trim();
+                if (!searchText.isEmpty()) {
+                    loadFilteredProducts(searchText);
+                } else {
+                    loadAllProducts();
+                }
+            }
+        });
+
+        searchPanel.add(searchProductField, BorderLayout.CENTER);
         bottomPanelRight.add(searchPanel, BorderLayout.NORTH);
 
         // Panel chứa danh sách sản phẩm
-        productsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.setBackground(Color.WHITE);
+        
+        productsPanel = new JPanel(new GridBagLayout());
         productsPanel.setBackground(Color.WHITE);
         productsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Thêm sản phẩm vào danh sách
-        addSampleProducts();
+        // Thêm sản phẩm vào danh sách từ database
+        loadAllProducts();
 
-        // Bọc productsPanel trong JScrollPane
-        JScrollPane scrollPane = new JScrollPane(productsPanel);
+        // Đặt productsPanel vào một panel trung gian để nó không bị kéo giãn
+        JPanel centeringPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        centeringPanel.setBackground(Color.WHITE);
+        centeringPanel.add(productsPanel);
+        
+        containerPanel.add(centeringPanel, BorderLayout.CENTER);
+
+        // Bọc containerPanel trong JScrollPane
+        JScrollPane scrollPane = new JScrollPane(containerPanel);
         scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         bottomPanelRight.add(scrollPane, BorderLayout.CENTER);
 
         // Thêm nút thanh toán ở dưới cùng
@@ -363,38 +363,94 @@ public class BanHangPanel extends JPanel {
         bottomPanelRight.add(thanhToanPanel, BorderLayout.SOUTH);
     }
 
-    private void addSampleProducts() {
-        List<Product> products = new ArrayList<>();
+    // Phương thức load tất cả sản phẩm từ database
+    private void loadAllProducts() {
+        productsPanel.removeAll();
         
-        // Path to the product image
-        String imagePath = "Images/Products/sample.png";
-        ImageIcon productImage = loadProductImage(imagePath);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.NONE;
 
-        // Tạo danh sách sản phẩm mẫu với ảnh thực tế
-        products.add(new Product("Cà phê sữa", 25000, productImage));
-        products.add(new Product("Cà phê đen", 20000, productImage));
-        products.add(new Product("Trà sữa trân châu", 35000, productImage));
-        products.add(new Product("Nước ép cam", 30000, productImage));
-        products.add(new Product("Bánh mì thịt", 25000, productImage));
-        products.add(new Product("Sandwich gà", 45000, productImage));
-        products.add(new Product("Bánh ngọt chocolate", 50000, productImage));
-        products.add(new Product("Snack khoai tây", 20000, productImage));
-        products.add(new Product("Kem vanilla", 35000, productImage));
-        products.add(new Product("Sữa chua dâu", 30000, productImage));
-        products.add(new Product("Trà đào", 35000, productImage));
-        products.add(new Product("Nước suối", 10000, productImage));
-        products.add(new Product("Bia Heineken", 25000, productImage));
-        products.add(new Product("Sinh tố bơ", 40000, productImage));
-        products.add(new Product("Nước ngọt Coca", 15000, productImage));
-        products.add(new Product("Matcha đá xay", 45000, productImage));
+        ArrayList<SanPhamDTO> danhSachSanPham = SanPhamBUS.layDanhSachSanPham();
 
-        // Thêm từng sản phẩm vào giao diện
-        for (Product product : products) {
-            productsPanel.add(createProductPanel(product));
+        int row = 0;
+        int col = 0;
+        
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+            
+            // Đặt kích thước cố định cho panel sản phẩm
+            productPanel.setPreferredSize(new Dimension(150, 200));
+            
+            gbc.gridx = col;
+            gbc.gridy = row;
+            productsPanel.add(productPanel, gbc);
+            
+            col++;
+            if (col >= 3) {
+                col = 0;
+                row++;
+            }
+        }
+
+        productsPanel.revalidate();
+        productsPanel.repaint();
+    }
+
+    // Phương thức load sản phẩm theo điều kiện tìm kiếm
+    private void loadFilteredProducts(String searchText) {
+        productsPanel.removeAll();
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.NONE;
+
+        ArrayList<SanPhamDTO> danhSachSanPham = SanPhamBUS.timKiemSanPham(searchText);
+
+        int row = 0;
+        int col = 0;
+        
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+            
+            // Đặt kích thước cố định cho panel sản phẩm
+            productPanel.setPreferredSize(new Dimension(150, 200));
+            
+            gbc.gridx = col;
+            gbc.gridy = row;
+            productsPanel.add(productPanel, gbc);
+            
+            col++;
+            if (col >= 3) {
+                col = 0;
+                row++;
+            }
+        }
+
+        productsPanel.revalidate();
+        productsPanel.repaint();
+    }
+
+    // Load image from file path
+    private ImageIcon loadProductImage(String imagePath) {
+        try {
+            String path = "Images/Products/" + imagePath;
+            // Load the image file
+            ImageIcon originalIcon = new ImageIcon(getClass().getClassLoader().getResource(path));
+
+            // Resize the image to fit the product panel (100x100 pixels)
+            Image originalImage = originalIcon.getImage();
+            Image resizedImage = originalImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+            return new ImageIcon(resizedImage);
+        } catch (Exception e) {
+            System.err.println("Error loading image from " + imagePath + ": " + e.getMessage());
+            // Return a dummy image as fallback
+            return createDummyImage("Image Error", Color.RED);
         }
     }
 
-    // Tạo hình ảnh mẫu cho sản phẩm
+    // Tạo hình ảnh mẫu cho sản phẩm (dự phòng)
     private ImageIcon createDummyImage(String text, Color color) {
         BufferedImage img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
@@ -417,45 +473,32 @@ public class BanHangPanel extends JPanel {
         g2d.dispose();
         return new ImageIcon(img);
     }
-    
-    // Load image from file path
-    private ImageIcon loadProductImage(String imagePath) {
-        try {
-            // Load the image file
-            ImageIcon originalIcon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
-            
-            // Resize the image to fit the product panel (100x100 pixels)
-            Image originalImage = originalIcon.getImage();
-            Image resizedImage = originalImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            
-            return new ImageIcon(resizedImage);
-        } catch (Exception e) {
-            System.err.println("Error loading image from " + imagePath + ": " + e.getMessage());
-            // Return a dummy image as fallback
-            return createDummyImage("Image Error", Color.RED);
-        }
-    }
 
     // Tạo panel hiển thị sản phẩm
-    private JPanel createProductPanel(Product product) {
+    private JPanel createProductPanel(SanPhamDTO sanPham) {
         // Tạo panel cho sản phẩm với layout dạng BoxLayout
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true));
         panel.setBackground(Color.WHITE);
+        panel.setPreferredSize(new Dimension(150, 200));
+        panel.setMaximumSize(new Dimension(150, 200));
+        panel.setMinimumSize(new Dimension(150, 200));
 
         // Thêm hình ảnh
-        JLabel imageLabel = new JLabel(product.getImage());
+        ImageIcon productImage = loadProductImage(sanPham.getHinhAnh());
+        JLabel imageLabel = new JLabel(productImage);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Thêm tên sản phẩm
-        JLabel nameLabel = new JLabel(product.getName());
+        JLabel nameLabel = new JLabel(sanPham.getTenSP());
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Thêm giá sản phẩm
-        JLabel priceLabel = new JLabel(currencyFormat.format(product.getPrice()));
+        JLabel priceLabel = new JLabel(currencyFormat.format(sanPham.getGiaBan()));
         priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         priceLabel.setFont(new Font("Arial", Font.PLAIN, 13));
         priceLabel.setForeground(priceColor);
@@ -465,7 +508,7 @@ public class BanHangPanel extends JPanel {
         addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         addButton.setFocusPainted(false);
         addButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        addButton.addActionListener(e -> addToCart(product));
+        addButton.addActionListener(e -> addToCart(sanPham));
 
         // Thêm các thành phần vào panel
         panel.add(Box.createVerticalStrut(5));
@@ -482,7 +525,7 @@ public class BanHangPanel extends JPanel {
     }
 
     // Thêm sản phẩm vào giỏ hàng
-    private void addToCart(Product product) {
+    private void addToCart(SanPhamDTO sanPham) {
         int currentTab = tabbedPane.getSelectedIndex();
         JPanel invoicePanel = (JPanel) tabbedPane.getComponentAt(currentTab);
         JPanel cartItemsPanel = (JPanel) invoicePanel.getClientProperty("cartItemsPanel");
@@ -491,7 +534,7 @@ public class BanHangPanel extends JPanel {
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         List<CartItem> cartItems = cartItemsByTab.get(currentTab);
         for (CartItem item : cartItems) {
-            if (item.getProduct().getName().equals(product.getName())) {
+            if (item.getSanPham().getMaSP().equals(sanPham.getMaSP())) {
                 // Nếu đã có, tăng số lượng lên 1
                 item.setQuantity(item.getQuantity() + 1);
                 updateTotalAmount(currentTab, totalLabel);
@@ -509,7 +552,7 @@ public class BanHangPanel extends JPanel {
         cartItemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
 
         // Thêm tên sản phẩm
-        JLabel nameLabel = new JLabel(product.getName(), SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(sanPham.getTenSP(), SwingConstants.CENTER);
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         nameLabel.setForeground(new Color(50, 50, 50));
         cartItemPanel.add(nameLabel);
@@ -546,7 +589,7 @@ public class BanHangPanel extends JPanel {
         cartItemPanel.add(qtyPanel);
 
         // Thêm thành tiền
-        JLabel totalItemLabel = new JLabel(currencyFormat.format(product.getPrice()), SwingConstants.CENTER);
+        JLabel totalItemLabel = new JLabel(currencyFormat.format(sanPham.getGiaBan()), SwingConstants.CENTER);
         totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         totalItemLabel.setForeground(priceColor);
         cartItemPanel.add(totalItemLabel);
@@ -568,7 +611,7 @@ public class BanHangPanel extends JPanel {
         cartItemPanel.add(actionPanel);
 
         // Tạo đối tượng CartItem
-        CartItem cartItem = new CartItem(product, 1, cartItemPanel, qtyField, totalItemLabel);
+        CartItem cartItem = new CartItem(sanPham, 1, cartItemPanel, qtyField, totalItemLabel);
         cartItems.add(cartItem);
 
         // Thêm sự kiện cho các nút
@@ -614,6 +657,94 @@ public class BanHangPanel extends JPanel {
 
         totalAmountByTab[tabIndex] = total;
         totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(total));
+    }
+
+    // WrapLayout class để hiển thị sản phẩm tự động xuống dòng
+    private class WrapLayout extends FlowLayout {
+        private Dimension preferredLayoutSize;
+
+        public WrapLayout() {
+            super();
+        }
+
+        public WrapLayout(int align) {
+            super(align);
+        }
+
+        public WrapLayout(int align, int hgap, int vgap) {
+            super(align, hgap, vgap);
+        }
+
+        @Override
+        public Dimension preferredLayoutSize(Container target) {
+            return layoutSize(target, true);
+        }
+
+        @Override
+        public Dimension minimumLayoutSize(Container target) {
+            Dimension minimum = layoutSize(target, false);
+            minimum.width -= (getHgap() + 1);
+            return minimum;
+        }
+
+        private Dimension layoutSize(Container target, boolean preferred) {
+            synchronized (target.getTreeLock()) {
+                int targetWidth = target.getWidth();
+                
+                if (targetWidth == 0)
+                    targetWidth = Integer.MAX_VALUE;
+
+                int hgap = getHgap();
+                int vgap = getVgap();
+                Insets insets = target.getInsets();
+                int horizontalInsetsAndGap = insets.left + insets.right + (hgap * 2);
+                int maxWidth = targetWidth - horizontalInsetsAndGap;
+
+                Dimension dim = new Dimension(0, 0);
+                int rowWidth = 0;
+                int rowHeight = 0;
+
+                int nmembers = target.getComponentCount();
+
+                for (int i = 0; i < nmembers; i++) {
+                    Component m = target.getComponent(i);
+
+                    if (m.isVisible()) {
+                        Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
+
+                        if (rowWidth + d.width > maxWidth) {
+                            addRow(dim, rowWidth, rowHeight);
+                            rowWidth = 0;
+                            rowHeight = 0;
+                        }
+
+                        if (rowWidth != 0) {
+                            rowWidth += hgap;
+                        }
+
+                        rowWidth += d.width;
+                        rowHeight = Math.max(rowHeight, d.height);
+                    }
+                }
+
+                addRow(dim, rowWidth, rowHeight);
+
+                dim.width += horizontalInsetsAndGap;
+                dim.height += insets.top + insets.bottom + vgap * 2;
+
+                return dim;
+            }
+        }
+
+        private void addRow(Dimension dim, int rowWidth, int rowHeight) {
+            dim.width = Math.max(dim.width, rowWidth);
+
+            if (dim.height > 0) {
+                dim.height += getVgap();
+            }
+
+            dim.height += rowHeight;
+        }
     }
 
     // Hàm main để test giao diện
