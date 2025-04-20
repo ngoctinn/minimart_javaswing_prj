@@ -5,6 +5,7 @@ import org.example.Components.CustomTexField;
 import org.example.Components.CustomPasswordField;
 import org.example.Components.RoundedPanel;
 import org.example.Utils.diaChiPanelAPI;
+import org.example.DTO.nhanVienDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +20,25 @@ public class ThemNhanVienDialog extends JDialog {
     private JSpinner ngaySinhSpinner;
     private diaChiPanelAPI diaChiPanel;
     private CustomButton luuButton, huyButton;
+    private boolean isEditMode = false;
+    private nhanVienDTO nhanVienEdit;
 
     public ThemNhanVienDialog() {
+        this.isEditMode = false;
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.put("ComboBox.buttonStyle", "icon-only");
+            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            initGUI();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public ThemNhanVienDialog(nhanVienDTO nhanVien) {
+        this.isEditMode = true;
+        this.nhanVienEdit = nhanVien;
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
@@ -33,6 +51,10 @@ public class ThemNhanVienDialog extends JDialog {
     }
 
     private void initGUI() {
+        // Nếu đang ở chế độ sửa, cần điền thông tin nhân viên vào form
+        if (isEditMode && nhanVienEdit != null) {
+            fillFormWithEmployeeData();
+        }
         setSize(800, 500);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLocationRelativeTo(null);
@@ -41,7 +63,7 @@ public class ThemNhanVienDialog extends JDialog {
         setLayout(new BorderLayout(10, 10));
 
         // Tiêu đề
-        JLabel title = new JLabel("THÊM NHÂN VIÊN", SwingConstants.CENTER);
+        JLabel title = new JLabel(isEditMode ? "SỬA NHÂN VIÊN" : "THÊM NHÂN VIÊN", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setForeground(new Color(0,102,204));
         title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
@@ -93,8 +115,12 @@ public class ThemNhanVienDialog extends JDialog {
         leftGbc.weightx = 1.0;
 
         // Thêm các thành phần bên trái
-        addFormRow(leftPanel, "Mã nhân viên", maNVField = new CustomTexField("Mã tự động (vd: NV001)"), 0, leftGbc);
-        addFormRow(leftPanel, "Tên nhân viên", tenNVField = new CustomTexField("Nhập tên nhân viên"), 1, leftGbc);
+        maNVField = new CustomTexField("Mã tự động (vd: NV001)");
+        addFormRow(leftPanel, "Mã nhân viên", maNVField, 0, leftGbc);
+        maNVField.setEnabled(!isEditMode); // Không cho phép sửa mã nhân viên khi ở chế độ sửa
+        
+        tenNVField = new CustomTexField("Nhập tên nhân viên");
+        addFormRow(leftPanel, "Tên nhân viên", tenNVField, 1, leftGbc);
         
         // Ngày sinh
         SpinnerDateModel dateModel = new SpinnerDateModel();
@@ -200,7 +226,7 @@ public class ThemNhanVienDialog extends JDialog {
         huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
         
-        luuButton = new CustomButton("Lưu");
+        luuButton = new CustomButton(isEditMode ? "Cập nhật" : "Lưu");
         luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
 
         buttonPanel.add(huyButton);
@@ -222,6 +248,49 @@ public class ThemNhanVienDialog extends JDialog {
         huyButton.addActionListener(e -> handleCancel());
     }
 
+    /**
+     * Điền thông tin nhân viên vào form khi ở chế độ sửa
+     */
+    private void fillFormWithEmployeeData() {
+        if (nhanVienEdit != null) {
+            // Điền thông tin từ đối tượng nhanVienEdit vào các trường nhập liệu
+            maNVField.setText(nhanVienEdit.getMaNV());
+            tenNVField.setText(nhanVienEdit.getTenNV());
+            
+            // Thiết lập ngày sinh
+            if (nhanVienEdit.getNgaySinh() != null) {
+                java.util.Date date = java.util.Date.from(nhanVienEdit.getNgaySinh().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+                ngaySinhSpinner.setValue(date);
+            }
+            
+            // Thiết lập giới tính
+            if ("Nam".equals(nhanVienEdit.getGioiTinh())) {
+                gioiTinhNam.setSelected(true);
+            } else {
+                gioiTinhNu.setSelected(true);
+            }
+            
+            // Thiết lập số điện thoại
+            soDTField.setText(String.valueOf(nhanVienEdit.getSoDT()));
+            
+            // Thiết lập email
+            emailField.setText(nhanVienEdit.getEmail());
+            
+            // Thiết lập mật khẩu
+            matKhauField.setText(nhanVienEdit.getMatKhau());
+            
+            // Thiết lập trạng thái
+            trangThaiComboBox.setSelectedIndex(nhanVienEdit.getTrangThai());
+            
+            // Thiết lập mã chức vụ và mã hợp đồng
+            maCVField.setText(nhanVienEdit.getMaCV());
+            maHDField.setText(nhanVienEdit.getMaHD());
+            
+            // TODO: Thiết lập địa chỉ cho diaChiPanel
+            // diaChiPanel.setDiaChi(nhanVienEdit.getDiaChi());
+        }
+    }
+    
     private void handleSave() {
         // Code xử lý lưu dữ liệu nhân viên
         // Lấy giá trị từ các trường nhập liệu
@@ -230,7 +299,17 @@ public class ThemNhanVienDialog extends JDialog {
         java.util.Date date = (java.util.Date) ngaySinhSpinner.getValue();
         LocalDate ngaySinh = LocalDate.ofInstant(date.toInstant(), java.time.ZoneId.systemDefault());
         String gioiTinh = gioiTinhNam.isSelected() ? "Nam" : "Nữ";
-        String diaChi = "Địa chỉ từ diaChiPanel"; // Cần xử lý lấy địa chỉ từ diaChiPanel
+        
+        // Lấy địa chỉ từ diaChiPanel
+        String diaChi = "";
+        if (diaChiPanel.getSelectedProvince() != null && diaChiPanel.getSelectedDistrict() != null && diaChiPanel.getSelectedWard() != null) {
+            diaChi = diaChiPanel.getSelectedWard().getName() + ", " + 
+                    diaChiPanel.getSelectedDistrict().getName() + ", " + 
+                    diaChiPanel.getSelectedProvince().getName();
+        } else {
+            diaChi = "Chưa chọn địa chỉ";
+        }
+        
         String email = emailField.getText();
         int trangThai = trangThaiComboBox.getSelectedIndex();
         double soDT = 0;
@@ -250,10 +329,34 @@ public class ThemNhanVienDialog extends JDialog {
             return;
         }
         
-        // Thực hiện lưu dữ liệu
-        // TODO: Thêm code lưu dữ liệu vào cơ sở dữ liệu
+        // Tạo đối tượng nhanVienDTO từ dữ liệu form
+        nhanVienDTO nhanVienDTO = new nhanVienDTO();
+        nhanVienDTO.setMaNV(maNV);
+        nhanVienDTO.setTenNV(tenNV);
+        nhanVienDTO.setNgaySinh(ngaySinh);
+        nhanVienDTO.setGioiTinh(gioiTinh);
+        nhanVienDTO.setDiaChi(diaChi);
+        nhanVienDTO.setEmail(email);
+        nhanVienDTO.setTrangThai(trangThai);
+        nhanVienDTO.setSoDT(soDT);
+        nhanVienDTO.setMatKhau(matKhau);
+        nhanVienDTO.setMaCV(maCV);
+        nhanVienDTO.setMaHD(maHD);
         
-        JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        // Thực hiện lưu hoặc cập nhật dữ liệu
+        int result = 0;
+        if (isEditMode) {
+            // TODO: Thêm code cập nhật dữ liệu vào cơ sở dữ liệu
+            // result = NhanVienBUS.capNhatNhanVien(nhanVienDTO);
+            
+            JOptionPane.showMessageDialog(this, "Cập nhật nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // TODO: Thêm code lưu dữ liệu vào cơ sở dữ liệu
+            // result = NhanVienBUS.themNhanVien(nhanVienDTO);
+            
+            JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+        
         this.dispose();
     }
 

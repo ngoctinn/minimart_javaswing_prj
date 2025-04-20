@@ -38,6 +38,30 @@ public class SanPhamBUS {
         return sanPhamDAO.delete(sanPhamDTO);
     }
 
+    //Lấy danh sách sản phẩm theo loại
+    public static ArrayList<SanPhamDTO> layDanhSachSanPhamTheoLoai(String maLSP) {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.selectByCondition(" and maLSP = '" + maLSP + "'");
+    }
+
+    // Tìm kiếm sản phẩm theo tên và mã
+    public static ArrayList<SanPhamDTO> timKiemSanPham(String giaTri){
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.selectByCondition(" and ( tenSP LIKE '%" + giaTri + "%' OR maSP LIKE '%" + giaTri + "%' )");
+    }
+
+    // sắp xếp tăng dần
+    public static ArrayList<SanPhamDTO> sapXepTangDan() {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.selectByCondition("ORDER BY giaBan ASC");
+    }
+
+    // sắp xếp giảm dần
+    public static ArrayList<SanPhamDTO> sapXepGiamDan() {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.selectByCondition("ORDER BY giaBan DESC");
+    }
+
     //lấy danh sách sản phẩm theo mã
     public static SanPhamDTO layDanhSachSanPhamTheoMa(String maSP) {
         SanPhamDAO sanPhamDAO = new SanPhamDAO();

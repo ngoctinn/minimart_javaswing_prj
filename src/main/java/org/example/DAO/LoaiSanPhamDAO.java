@@ -141,7 +141,7 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
             //Bước 1: Tạo kết nối đến CSDL
             Connection connection = JDBCUtil.getConnection();
             //Bước 2: Tạo ra đối tượng statement từ connection
-            String sql = "SELECT * FROM LOAISP WHERE tenLSP LIKE ?";
+            String sql = "SELECT * FROM LOAISP WHERE trangThai = 1 AND tenLSP LIKE ?";
             ResultSet resultSet = JDBCUtil.executePreparedQuery(sql, "%" + tenLSP + "%");
             while (resultSet.next()) {
                 LoaiSanPhamDTO loaiSanPhamDTO = new LoaiSanPhamDTO();

@@ -386,7 +386,8 @@ public class MenuFrame extends JFrame implements ActionListener {
         try {
             UIManager.setLookAndFeel(new FlatMacLightLaf());
             setupUIManagerProperties();
-            new MenuFrame();
+            MenuFrame menuFrame = new MenuFrame();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

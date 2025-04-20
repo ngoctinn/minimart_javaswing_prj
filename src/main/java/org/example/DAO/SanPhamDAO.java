@@ -214,6 +214,59 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     //===============Lấy sản phẩm theo điều kiện=========================
     @Override
     public ArrayList<SanPhamDTO> selectByCondition(String condition) {
-        return null;
+        ArrayList<SanPhamDTO> dsSanPham = new ArrayList<>();
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT * FROM SANPHAM WHERE trangThai = 1 " + condition ;
+            ResultSet resultSet = JDBCUtil.executeQuery(sql);
+            while (resultSet.next()) {
+                SanPhamDTO sanPhamDTO = new SanPhamDTO();
+                sanPhamDTO.setMaSP(resultSet.getString("maSP"));
+                sanPhamDTO.setTenSP(resultSet.getString("tenSP"));
+                sanPhamDTO.setTrangThai(resultSet.getBoolean("trangThai"));
+                sanPhamDTO.setTonKho(resultSet.getInt("tonKho"));
+                sanPhamDTO.setHinhAnh(resultSet.getString("hinhAnh"));
+                sanPhamDTO.setDonVi(resultSet.getString("donVi"));
+                sanPhamDTO.setMaLSP(resultSet.getString("maLSP"));
+                sanPhamDTO.setGiaBan(resultSet.getDouble("giaBan"));
+                dsSanPham.add(sanPhamDTO);
+            }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return dsSanPham;
+    }
+
+    //===============Tìm kiếm sản phẩm theo tên và mã=========================
+    public ArrayList<SanPhamDTO> timKiemSanPham(String tenSP, String maSP) {
+        ArrayList<SanPhamDTO> dsSanPham = new ArrayList<>();
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT * FROM SANPHAM WHERE tenSP LIKE ? AND maSP LIKE ?";
+            ResultSet resultSet = JDBCUtil.executePreparedQuery(sql, "%" + tenSP + "%", "%" + maSP + "%");
+            while (resultSet.next()) {
+                SanPhamDTO sanPhamDTO = new SanPhamDTO();
+                sanPhamDTO.setMaSP(resultSet.getString("maSP"));
+                sanPhamDTO.setTenSP(resultSet.getString("tenSP"));
+                sanPhamDTO.setTrangThai(resultSet.getBoolean("trangThai"));
+                sanPhamDTO.setTonKho(resultSet.getInt("tonKho"));
+                sanPhamDTO.setHinhAnh(resultSet.getString("hinhAnh"));
+                sanPhamDTO.setDonVi(resultSet.getString("donVi"));
+                sanPhamDTO.setMaLSP(resultSet.getString("maLSP"));
+                sanPhamDTO.setGiaBan(resultSet.getDouble("giaBan"));
+                dsSanPham.add(sanPhamDTO);
+            }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return dsSanPham;
     }
 }
