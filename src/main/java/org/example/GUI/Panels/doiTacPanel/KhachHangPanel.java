@@ -11,16 +11,14 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Calendar;
-import java.util.Date;
-
 
 public class KhachHangPanel extends JPanel {
     // UI Components
     private RoundedPanel topPanel;
     private RoundedPanel bottomPanel;
-    
+
     // Top panel components
     private PlaceholderTextField searchField;
     private CustomButton searchButton;
@@ -30,18 +28,12 @@ public class KhachHangPanel extends JPanel {
     private CustomButton deleteButton;
     private CustomButton importButton;
     private CustomButton exportButton;
-    
+
     // Bottom panel components
     private JPanel leftPanel;
     private JPanel rightPanel;
-    private JSpinner startDateSpinner, endDateSpinner;
-    private JList<String> nguoiTaoList;
     private CustomTable khachHangTable;
     private CustomTable hoaDonTable;
-    private CustomButton filterDateButton;
-    private JRadioButton radioTatCa;
-    private JRadioButton radioActive;
-    private JRadioButton radioInactive;
 
     public KhachHangPanel() {
         initGUI();
@@ -82,56 +74,65 @@ public class KhachHangPanel extends JPanel {
     private void setupTopPanel() {
         // Add padding to the top panel
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Create sub-panels for organizing components
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
         titlePanel.setBackground(Color.WHITE);
-        
+
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
         searchPanel.setBackground(Color.WHITE);
-        
+
         JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
         actionPanel.setBackground(Color.WHITE);
-        
+
         // Title label
         JLabel title = new JLabel("Quản lý khách hàng");
         title.setFont(new Font("Roboto", Font.BOLD, 23));
         title.setForeground(new Color(0, 0, 0));
         titlePanel.add(title);
         titlePanel.add(Box.createHorizontalStrut(40));
-        
+
         // Search field
         searchField = new PlaceholderTextField("Nhập khách hàng cần tìm");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setMaximumSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        searchField.addActionListener(e -> {
+            // TODO: Implement search action on Enter key press
+        });
         searchPanel.add(searchField);
         searchPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Search button
         searchButton = new CustomButton("Tìm");
         searchButton.setPreferredSize(new Dimension(70, 30));
         searchButton.setMaximumSize(new Dimension(70, 30));
+        searchButton.addActionListener(e -> {
+            // TODO: Implement search action on button click
+        });
         searchPanel.add(searchButton);
         searchPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Refresh button
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
         refreshButton = new CustomButton("", refreshIcon);
         refreshButton.setPreferredSize(new Dimension(50, 30));
         refreshButton.setMaximumSize(new Dimension(50, 30));
         refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+        refreshButton.addActionListener(e -> {
+            // TODO: Implement refresh action
+        });
         searchPanel.add(refreshButton);
         searchPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Add components to the top panel
         topPanel.add(titlePanel, BorderLayout.WEST);
         topPanel.add(searchPanel, BorderLayout.CENTER);
         topPanel.add(actionPanel, BorderLayout.EAST);
-        
+
         // Action buttons will be added to actionPanel
         setupActionButtons(actionPanel);
     }
@@ -141,12 +142,12 @@ public class KhachHangPanel extends JPanel {
         JPanel mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
-        
+
         // Create a panel for the import/export buttons
         JPanel importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
-        
+
         // Add button
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addButton = new CustomButton("Thêm", addIcon);
@@ -154,46 +155,59 @@ public class KhachHangPanel extends JPanel {
         addButton.setMaximumSize(new Dimension(100, 30));
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         addButton.addActionListener(e -> {
-            ThemKhachHangDialog themKhachHangDialog = new ThemKhachHangDialog();
+             // TODO: Implement add customer action
+             // ThemKhachHangDialog themKhachHangDialog = new ThemKhachHangDialog();
         });
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Edit button
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
         editButton = new CustomButton("Sửa", editIcon);
         editButton.setPreferredSize(new Dimension(100, 30));
         editButton.setMaximumSize(new Dimension(100, 30));
         editButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        editButton.addActionListener(e -> {
+            // TODO: Implement edit customer action
+        });
         mainButtonsPanel.add(editButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Delete button
         FlatSVGIcon deleteIcon = new FlatSVGIcon("Icons/delete.svg", 20, 20);
         deleteButton = new CustomButton("Xóa", deleteIcon);
         deleteButton.setPreferredSize(new Dimension(100, 30));
         deleteButton.setMaximumSize(new Dimension(100, 30));
         deleteButton.setButtonColors(CustomButton.ButtonColors.RED);
+        deleteButton.addActionListener(e -> {
+            // TODO: Implement delete customer action
+        });
         mainButtonsPanel.add(deleteButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Export button
         FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg", 16, 16);
         exportButton = new CustomButton("", exportIcon);
         exportButton.setPreferredSize(new Dimension(50, 30));
         exportButton.setMaximumSize(new Dimension(50, 30));
         exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        exportButton.addActionListener(e -> {
+            // TODO: Implement export action
+        });
         importExportPanel.add(exportButton);
         importExportPanel.add(Box.createHorizontalStrut(5));
-        
+
         // Import button
         FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg", 16, 16);
         importButton = new CustomButton("", importIcon);
         importButton.setPreferredSize(new Dimension(50, 30));
         importButton.setMaximumSize(new Dimension(50, 30));
         importButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        importButton.addActionListener(e -> {
+            // TODO: Implement import action
+        });
         importExportPanel.add(importButton);
-        
+
         // Add all button panels to the action panel
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(mainButtonsPanel);
@@ -234,22 +248,10 @@ public class KhachHangPanel extends JPanel {
     }
 
     private void setupLeftCustomerPanel() {
-        // Add filter panel at the top of left panel
-        JPanel topLeftPanel = new JPanel(new BorderLayout());
-        topLeftPanel.setBackground(Color.WHITE);
-
-        // Setup filter panels
-        JPanel filterPanel = createFilterPanel();
-        JPanel dateFilterPanel = createDateFilterPanel();
-
-        topLeftPanel.add(filterPanel, BorderLayout.NORTH);
-        topLeftPanel.add(dateFilterPanel, BorderLayout.CENTER);
-
         // Create customer table panel
         JPanel customerTablePanel = createCustomerTablePanel();
 
         // Add to left panel
-        leftPanel.add(topLeftPanel, BorderLayout.NORTH);
         leftPanel.add(customerTablePanel, BorderLayout.CENTER);
     }
 
@@ -258,8 +260,8 @@ public class KhachHangPanel extends JPanel {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBackground(Color.WHITE);
         JLabel titleLabel = new JLabel("Lịch sử mua hàng");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18)); // Match LoaiSanPhamPanel font size
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0)); // Match LoaiSanPhamPanel border
         titlePanel.add(titleLabel, BorderLayout.WEST);
 
         // Create invoice table panel
@@ -268,70 +270,6 @@ public class KhachHangPanel extends JPanel {
         // Add to right panel
         rightPanel.add(titlePanel, BorderLayout.NORTH);
         rightPanel.add(invoiceTablePanel, BorderLayout.CENTER);
-    }
-
-    private JPanel createFilterPanel() {
-        JPanel filterPanel = createTitledPanel("Lựa chọn hiển thị", 0, 80);
-        filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
-
-        // Radio buttons
-        radioTatCa = createRadioButton("Tất cả");
-        radioActive = createRadioButton("Đang hoạt động");
-        radioInactive = createRadioButton("Không hoạt động");
-
-        // Group radio buttons
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioTatCa);
-        buttonGroup.add(radioActive);
-        buttonGroup.add(radioInactive);
-
-        // Set default selection
-        radioTatCa.setSelected(true);
-
-        // Add to panel
-        filterPanel.add(radioTatCa);
-        filterPanel.add(radioActive);
-        filterPanel.add(radioInactive);
-
-        return filterPanel;
-    }
-
-    private JPanel createDateFilterPanel() {
-        // Date filter panel
-        JPanel datePanel = createTitledPanel("Ngày Tạo", 0, 170);
-        datePanel.setLayout(null);
-        
-        // Start date components
-        JLabel startLabel = new JLabel("Ngày bắt đầu:");
-        startLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        startLabel.setBounds(15, 25, 200, 20);
-        datePanel.add(startLabel);
-        
-        SpinnerDateModel startModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        startDateSpinner = new JSpinner(startModel);
-        startDateSpinner.setEditor(new JSpinner.DateEditor(startDateSpinner, "dd/MM/yyyy"));
-        startDateSpinner.setBounds(15, 45, 200, 25);
-        datePanel.add(startDateSpinner);
-        
-        // End date components
-        JLabel endLabel = new JLabel("Ngày kết thúc:");
-        endLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        endLabel.setBounds(15, 75, 200, 20);
-        datePanel.add(endLabel);
-        
-        SpinnerDateModel endModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        endDateSpinner = new JSpinner(endModel);
-        endDateSpinner.setEditor(new JSpinner.DateEditor(endDateSpinner, "dd/MM/yyyy"));
-        endDateSpinner.setBounds(15, 95, 200, 25);
-        datePanel.add(endDateSpinner);
-        
-        // Filter button
-        filterDateButton = new CustomButton("Lọc");
-        filterDateButton.setBounds(15, 130, 200, 25);
-        filterDateButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        datePanel.add(filterDateButton);
-        
-        return datePanel;
     }
 
     private JPanel createCustomerTablePanel() {
@@ -349,6 +287,7 @@ public class KhachHangPanel extends JPanel {
         // Table data
         String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số Điện Thoại", "Tổng Bán"};
         Object[][] data = {
+                // TODO: Load actual customer data here
                 {"KH000005", "Anh Giang - Kim Mã", "0123456789", 1858000},
                 {"KH000004", "Anh Hoàng - Sài Gòn", "0987654321", 1286000},
                 {"KH000003", "Tuấn - Hà Nội", "0123123123", 1243000},
@@ -366,7 +305,10 @@ public class KhachHangPanel extends JPanel {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting() && khachHangTable.getSelectedRow() != -1) {
-                    updateInvoiceTable(khachHangTable.getValueAt(khachHangTable.getSelectedRow(), 0).toString());
+                    // TODO: Implement action when customer selection changes
+                    // String customerId = khachHangTable.getValueAt(khachHangTable.getSelectedRow(), 0).toString();
+                    // updateInvoiceTable(customerId);
+                    updateInvoiceTable(""); // Clear or show placeholder
                 }
             }
         });
@@ -393,54 +335,23 @@ public class KhachHangPanel extends JPanel {
     }
 
     private void updateInvoiceTable(String customerId) {
-        // This method is called when a customer is selected
-        // For demonstration, we'll populate with example data based on the selected customer
+        // TODO: Implement logic to fetch and display invoices for the selected customerId
+        // For now, just clear the table or show a placeholder message
 
-        Object[][] invoiceData;
-
-        // Example data based on customer ID
-        switch (customerId) {
-            case "KH000001":
-                invoiceData = new Object[][] {
-                        {"HD000001", "12/05/2023", "Nguyễn Văn A", 256000, "Đã thanh toán"},
-                        {"HD000002", "18/06/2023", "Trần Thị B", 400000, "Đã thanh toán"}
-                };
-                break;
-            case "KH000002":
-                invoiceData = new Object[][] {
-                        {"HD000003", "05/03/2023", "Nguyễn Văn A", 358000, "Đã thanh toán"},
-                        {"HD000004", "27/04/2023", "Lê Văn C", 500000, "Đã thanh toán"},
-                        {"HD000005", "14/07/2023", "Trần Thị B", 500000, "Đã thanh toán"}
-                };
-                break;
-            case "KH000003":
-                invoiceData = new Object[][] {
-                        {"HD000006", "10/01/2023", "Lê Văn C", 843000, "Đã thanh toán"},
-                        {"HD000007", "22/02/2023", "Nguyễn Văn A", 400000, "Đã thanh toán"}
-                };
-                break;
-            case "KH000004":
-                invoiceData = new Object[][] {
-                        {"HD000008", "15/04/2023", "Trần Thị B", 586000, "Đã thanh toán"},
-                        {"HD000009", "28/05/2023", "Lê Văn C", 700000, "Đã thanh toán"}
-                };
-                break;
-            case "KH000005":
-                invoiceData = new Object[][] {
-                        {"HD000010", "03/02/2023", "Nguyễn Văn A", 458000, "Đã thanh toán"},
-                        {"HD000011", "19/03/2023", "Trần Thị B", 700000, "Đã thanh toán"},
-                        {"HD000012", "30/06/2023", "Lê Văn C", 700000, "Đã thanh toán"}
-                };
-                break;
-            default:
-                invoiceData = new Object[][] {
-                        {"", "Chọn khách hàng để xem lịch sử mua hàng", "", "", ""}
-                };
+        Object[][] emptyData;
+        if (customerId == null || customerId.isEmpty()) {
+            emptyData = new Object[][] {}; // Empty table
+        } else {
+            // Placeholder while actual data loading isn't implemented
+            emptyData = new Object[][] {
+                    {"", "Đang tải dữ liệu...", "", "", ""}
+            };
+            // In a real implementation, you would fetch data based on customerId here
         }
 
         // Update the invoice table with new data
-        hoaDonTable.setModel(new javax.swing.table.DefaultTableModel(
-                invoiceData,
+        hoaDonTable.setModel(new DefaultTableModel(
+                emptyData,
                 new String[] {"Mã hóa đơn", "Ngày tạo", "Nhân viên bán", "Tổng tiền", "Trạng thái"}
         ));
     }
@@ -457,20 +368,17 @@ public class KhachHangPanel extends JPanel {
                 new Font("Segoe UI", Font.BOLD, 15),
                 Color.BLACK
         ));
-        
+
+        // Use preferred size only if width and height are specified
+        // Let layout managers handle sizing otherwise
         if (width > 0 && height > 0) {
             panel.setPreferredSize(new Dimension(width, height));
         }
-        
+
         return panel;
     }
 
-    private JRadioButton createRadioButton(String text) {
-        JRadioButton radioButton = new JRadioButton(text);
-        radioButton.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        radioButton.setBackground(Color.WHITE);
-        return radioButton;
-    }
+    // Removed createRadioButton as it's no longer needed
 
     private JList<String> createScrollableList(String[] data) {
         JList<String> list = new JList<>(data);
@@ -490,11 +398,12 @@ public class KhachHangPanel extends JPanel {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
-            JFrame frame = new JFrame();
+            JFrame frame = new JFrame("Test KhachHangPanel");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 400);
+            frame.setSize(1300, 800); // Adjusted size for better view
+            frame.setLocationRelativeTo(null);
             frame.add(new KhachHangPanel());
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            // frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Optional: maximize frame
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
