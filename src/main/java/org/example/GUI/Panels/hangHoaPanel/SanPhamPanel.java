@@ -1,11 +1,13 @@
 package org.example.GUI.Panels.hangHoaPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.LoaiSanPhamBUS;
 import org.example.BUS.SanPhamBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Dialogs.ThemSanPhamDialog;
 
@@ -17,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static org.example.Components.CustomToastMessage.showErrorToast;
 import static org.example.Components.CustomToastMessage.showSuccessToast;
 
 
@@ -79,11 +82,9 @@ public class SanPhamPanel extends JPanel {
         importButton.addActionListener(e -> handleImportButton());
         exportButton.addActionListener(e -> handleExportButton());
         themLoaiSanPhamButton.addActionListener(e -> handleThemLoaiSanPhamButton());
+        searchField.addActionListener(e -> handleSearchButton());
 
         // Thiết lập sự kiện cho các radio button
-        radioTatCa.addActionListener(e -> handleFilterRadioButton());
-        radioHangDangKinhDoanh.addActionListener(e -> handleFilterRadioButton());
-        radioHangNgungKinhDoanh.addActionListener(e -> handleFilterRadioButton());
         radioGiaTangDan.addActionListener(e -> handleSortRadioButton());
         radioGiaGiamDan.addActionListener(e -> handleSortRadioButton());
 
@@ -134,7 +135,14 @@ public class SanPhamPanel extends JPanel {
     private void handleSearchButton() {
         // Xử lý tìm kiếm sản phẩm
         String searchText = searchField.getText().trim();
-        // Thực hiện tìm kiếm trong danh sách sản phẩm
+        if (!searchText.isEmpty()) {
+            ArrayList<SanPhamDTO> searchResults = new SanPhamBUS().timKiemSanPham(searchText);
+            DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
+            model.setRowCount(0); // Clear existing rows
+            loadSanPhamData(model, searchResults);
+        } else {
+            refreshSanPhamTable(); // If search text is empty, refresh the table
+        }
     }
 
     private void handleImportButton() {
@@ -152,27 +160,42 @@ public class SanPhamPanel extends JPanel {
 
     private void handleLoaiSanPhamSelection() {
         // Xử lý khi chọn loại sản phẩm
+        String maLSP = null;
         String selectedLoaiSP = loaiSanPhamList.getSelectedValue();
-        // Thực hiện lọc sản phẩm theo loại đã chọn
-    }
-
-    private void handleFilterRadioButton() {
-        // Xử lý lọc sản phẩm theo trạng thái
-        if (radioTatCa.isSelected()) {
-            // Hiển thị tất cả sản phẩm
-        } else if (radioHangDangKinhDoanh.isSelected()) {
-            // Hiển thị sản phẩm đang kinh doanh
-        } else if (radioHangNgungKinhDoanh.isSelected()) {
-            // Hiển thị sản phẩm ngừng kinh doanh
+        ArrayList<LoaiSanPhamDTO> dsLoaiSP = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
+        for (LoaiSanPhamDTO lsp : dsLoaiSP) {
+            if (lsp.getTenLSP().equals(selectedLoaiSP)) {
+                maLSP = lsp.getMaLSP();
+                break;
+            }
+        }
+        if (selectedLoaiSP != null) {
+            // Lọc sản phẩm theo loại sản phẩm đã chọn
+            ArrayList<SanPhamDTO> filteredList = new SanPhamBUS().layDanhSachSanPhamTheoLoai(maLSP);
+            DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
+            model.setRowCount(0); // Clear existing rows
+            loadSanPhamData(model, filteredList);
+        } else {
+            refreshSanPhamTable(); // Nếu không có loại nào được chọn, làm mới bảng
         }
     }
+
+
 
     private void handleSortRadioButton() {
         // Xử lý sắp xếp sản phẩm theo giá
         if (radioGiaTangDan.isSelected()) {
-            // Sắp xếp tăng dần
+            ArrayList<SanPhamDTO> sortedList = new SanPhamBUS().sapXepTangDan();
+            DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
+            model.setRowCount(0); // Clear existing rows
+            loadSanPhamData(model, sortedList);
+
         } else if (radioGiaGiamDan.isSelected()) {
             // Sắp xếp giảm dần
+            ArrayList<SanPhamDTO> sortedList = new SanPhamBUS().sapXepGiamDan();
+            DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
+            model.setRowCount(0); // Clear existing rows
+            loadSanPhamData(model, sortedList);
         }
     }
     //======================CÀI ĐẶT PANEL CHÍNH=================================
@@ -334,7 +357,6 @@ public class SanPhamPanel extends JPanel {
     private void setupBottomPanelLeft() {
         setupLoaiSanPhamPanel();
         setupSapXepTheoGiaPanel(); // Add new panel for price sorting
-        setupLuaChonHienThiPanel();
     }
 
     private void setupLoaiSanPhamPanel() {
@@ -346,7 +368,12 @@ public class SanPhamPanel extends JPanel {
         bottomPanelLeft.add(loaiSanPhamPanel);
 
         // Nhóm hàng list
-        String[] loaiSanPhamData = {"Bánh kẹo", "Thực phẩm khô", "Thực phẩm tươi", "Đồ uống","Bia","Đồ gia dụng", "Hàng hóa khác", "Thực phẩm chức năng", "Thực phẩm bổ sung", "Thực phẩm dinh dưỡng"};
+        ArrayList<LoaiSanPhamDTO> loaiSanPhamDTOArrayList = new LoaiSanPhamBUS().layDanhSachLoaiSanPham();
+        String[] loaiSanPhamData = new String[loaiSanPhamDTOArrayList.size()];
+        for (int i = 0; i < loaiSanPhamDTOArrayList.size(); i++) {
+            loaiSanPhamData[i] = loaiSanPhamDTOArrayList.get(i).getTenLSP();
+        }
+
         loaiSanPhamList = createScrollableList(loaiSanPhamData);
         JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 180);
         scrollPane.setBounds(15, 25, 200, 180);
@@ -369,28 +396,7 @@ public class SanPhamPanel extends JPanel {
         loaiSanPhamPanel.add(buttonPanel);
     }
 
-    private void setupLuaChonHienThiPanel() {
-        // Lựa chọn hiển thị panel
-        JPanel luaChonPanel = createTitledPanel("Lựa chọn hiển thị", 230, 110);
-        luaChonPanel.setLayout(new BoxLayout(luaChonPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(luaChonPanel);
 
-        // Radio buttons
-        radioTatCa = createRadioButton("Tất cả");
-        radioHangDangKinhDoanh = createRadioButton("Hàng đang kinh doanh");
-        radioHangNgungKinhDoanh = createRadioButton("Hàng ngừng kinh doanh");
-
-        // Group radio buttons
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioTatCa);
-        buttonGroup.add(radioHangDangKinhDoanh);
-        buttonGroup.add(radioHangNgungKinhDoanh);
-
-        // Add to panel
-        luaChonPanel.add(radioTatCa);
-        luaChonPanel.add(radioHangDangKinhDoanh);
-        luaChonPanel.add(radioHangNgungKinhDoanh);
-    }
     
     private void setupSapXepTheoGiaPanel() {
         // Sắp xếp theo giá panel

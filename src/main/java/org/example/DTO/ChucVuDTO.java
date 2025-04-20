@@ -1,13 +1,13 @@
 package org.example.DTO;
 
-public class chucVuDTO {
+public class ChucVuDTO {
     private String tenCV;
     private String maCV;
 
-    public chucVuDTO() {
+    public ChucVuDTO() {
 
     }
-    public chucVuDTO( String tenCV, String maCV) {
+    public ChucVuDTO(String tenCV, String maCV) {
         this.tenCV = tenCV;
         this.maCV = maCV;
     }
