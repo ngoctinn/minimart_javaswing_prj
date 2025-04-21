@@ -38,7 +38,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenuItem banHangItem ,hoaDonItem, nhapHangItem;
 
     // Các JMenuItem cho JMenu hangHoa
-    private JMenuItem danhMucItem, loaiSanPhamItem;
+    private JMenuItem sanPhamItem, loaiSanPhamItem;
 
     // Các JMenuItem cho JMenu doiTac
     private JMenuItem khachHangItem, nhaCungCapItem;
@@ -122,7 +122,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         nhapHangItem = createMenuItem("Nhập hàng", "nhaphang", 16);
 
         // Tạo JMenuItem cho hàng hóa
-        danhMucItem = createMenuItem("Danh mục", "danhmuc", 16);
+        sanPhamItem = createMenuItem("Sản phẩm", "danhmuc", 16);
         loaiSanPhamItem = createMenuItem("Loại sản phẩm", "loaisanpham", 16);
 
         // Tạo JMenuItem cho đối tác
@@ -156,7 +156,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         giaoDichMenu.add(nhapHangItem);
 
         // Thêm JMenuItem vào hàng hóa
-        hangHoaMenu.add(danhMucItem);
+        hangHoaMenu.add(sanPhamItem);
         hangHoaMenu.add(loaiSanPhamItem);
 
         // Thêm JMenuItem vào đối tác
@@ -216,7 +216,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
 
         // Thêm ActionListener cho các JMenuItem hàng hóa
-        danhMucItem.addActionListener(this);
+        sanPhamItem.addActionListener(this);
         loaiSanPhamItem.addActionListener(this);
 
 
@@ -261,7 +261,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("tongQuan", new tongQuanPanel());
 
         // Hàng hóa panels
-        panelMap.put("danhMuc", new SanPhamPanel());
+        panelMap.put("sanPham", new SanPhamPanel());
         panelMap.put("loaiSanPham", new LoaiSanPhamPanel());
         panelMap.put("kiemKho", new KiemKhoPanel());
         panelMap.put("thietLapGia", new ThietLapGiaPanel());
@@ -290,8 +290,8 @@ public class MenuFrame extends JFrame implements ActionListener {
         Object source = e.getSource();
 
         // Hàng hóa
-        if (source == danhMucItem) {
-            showPanel("danhMuc");
+        if (source == sanPhamItem) {
+            showPanel("sanPham");
         } else if (source == loaiSanPhamItem) {
             showPanel("loaiSanPham");
         }

@@ -10,7 +10,7 @@ public class khachHangDTO {
     private String email;
     private LocalDate ngaySinh;
     private int trangThai;
-    public khachHangDTO() {}
+
 
     public khachHangDTO(String maKH, String hoTen, String diaChi, int SDT, String gioiTinh, String email, LocalDate ngaySinh, int trangThai) {
         this.maKH = maKH;

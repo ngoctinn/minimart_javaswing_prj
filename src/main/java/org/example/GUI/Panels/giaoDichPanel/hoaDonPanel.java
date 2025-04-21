@@ -9,6 +9,7 @@ import org.example.GUI.MenuFrame;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Calendar;
@@ -16,8 +17,16 @@ import java.util.Date;
 
 public class hoaDonPanel extends JPanel {
     // UI Components
+    private RoundedPanel topPanel;
+    private RoundedPanel bottomPanel;
+    private RoundedPanel bottomPanelLeft;
+    private RoundedPanel bottomPanelRight;
+    
+    // Top panel components
     private PlaceholderTextField searchField;
     private CustomButton searchButton, refreshButton, addButton, editButton, deleteButton, importButton, exportButton;
+    
+    // Bottom panel components
     private JSpinner startDateSpinner, endDateSpinner;
     private JRadioButton processingRadioButton, completedRadioButton;
     private JList<String> userList;
@@ -30,70 +39,126 @@ public class hoaDonPanel extends JPanel {
 
     public void initGUI() {
         setupMainPanel();
-
-        // Create sub-panels
-        RoundedPanel topPanel = createTopPanel();
-        RoundedPanel bottomPanel = createBottomPanel();
-
-        // Add panels to main panel
-        this.add(topPanel);
-        this.add(bottomPanel);
+        createPanels();
+        setupTopPanel();
+        setupBottomPanelLeft();
+        setupBottomPanelRight();
+        
+        // Add panels to main panel with proper constraints
+        this.add(topPanel, BorderLayout.NORTH);
+        this.add(bottomPanel, BorderLayout.CENTER);
+        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
+        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
+    //======================CÀI ĐẶT PANEL CHÍNH=================================
     private void setupMainPanel() {
-        this.setLayout(new FlowLayout());
+        // Set up layout and background for main panel
+        this.setLayout(new BorderLayout(10, 10));
         this.setBackground(new Color(225, 225, 225));
         this.setVisible(true);
     }
 
-    private RoundedPanel createTopPanel() {
-        RoundedPanel topPanel = new RoundedPanel(20);
+    //======================CÀI ĐẶT CÁC PANEL CON=================================
+    private void createPanels() {
+        // Create sub-panels
+        topPanel = new RoundedPanel(20);
+        bottomPanel = new RoundedPanel(20);
+        bottomPanelLeft = new RoundedPanel(20);
+        bottomPanelRight = new RoundedPanel(20);
+
+        // Set background colors
         topPanel.setBackground(Color.WHITE);
-        topPanel.setPreferredSize(new Dimension(1270, 50));
-        topPanel.setLayout(null);
+        bottomPanel.setBackground(new Color(225, 225, 225));
+        bottomPanelLeft.setBackground(Color.WHITE);
+        bottomPanelRight.setBackground(Color.WHITE);
 
-        // Add components to top panel
-        addTitleToPanel(topPanel);
-        addSearchComponentsToPanel(topPanel);
-        addActionButtonsToPanel(topPanel);
+        // Set panel sizes
+        bottomPanelLeft.setPreferredSize(new Dimension(250, 0)); // Fixed width for left panel
 
-        return topPanel;
+        // Set layouts
+        topPanel.setLayout(new BorderLayout());
+        bottomPanel.setLayout(new BorderLayout(5, 0));
+        bottomPanelLeft.setLayout(new FlowLayout());
+        bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
     }
 
-    private void addTitleToPanel(RoundedPanel panel) {
+    //======================CÀI ĐẶT PANEL TRÊN=================================
+    private void setupTopPanel() {
+        // Add padding to the top panel
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Create sub-panels for organizing components
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
+        titlePanel.setBackground(Color.WHITE);
+        
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
+        searchPanel.setBackground(Color.WHITE);
+        
+        JPanel actionPanel = new JPanel();
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
+        actionPanel.setBackground(Color.WHITE);
+        
+        // Title label
         JLabel title = new JLabel("Hoá Đơn");
         title.setFont(new Font("Roboto", Font.BOLD, 23));
         title.setForeground(new Color(0, 0, 0));
-        title.setBounds(10, 10, 220, 30);
-        panel.add(title);
-    }
-
-    private void addSearchComponentsToPanel(RoundedPanel panel) {
+        titlePanel.add(title);
+        titlePanel.add(Box.createHorizontalStrut(40));
+        
+        // Search field
         searchField = new PlaceholderTextField("Nhập mã hoá đơn cần tìm");
-        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setPreferredSize(new Dimension(300, 30));
+        searchField.setMaximumSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        searchField.setBounds(270, 12, 300, 30);
-        panel.add(searchField);
-
+        searchPanel.add(searchField);
+        searchPanel.add(Box.createHorizontalStrut(5));
+        
+        // Search button
         searchButton = new CustomButton("Tìm");
-        searchButton.setBounds(580, 12, 70, 30);
-        panel.add(searchButton);
-    }
-
-    private void addActionButtonsToPanel(RoundedPanel panel) {
+        searchButton.setPreferredSize(new Dimension(70, 30));
+        searchButton.setMaximumSize(new Dimension(70, 30));
+        searchPanel.add(searchButton);
+        searchPanel.add(Box.createHorizontalStrut(5));
+        
         // Refresh button
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 20, 20);
         refreshButton = new CustomButton("", refreshIcon);
-        refreshButton.setBounds(660, 12, 50, 30);
+        refreshButton.setPreferredSize(new Dimension(50, 30));
+        refreshButton.setMaximumSize(new Dimension(50, 30));
         refreshButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        panel.add(refreshButton);
+        searchPanel.add(refreshButton);
+        searchPanel.add(Box.createHorizontalStrut(5));
+        
+        // Add components to the top panel
+        topPanel.add(titlePanel, BorderLayout.WEST);
+        topPanel.add(searchPanel, BorderLayout.CENTER);
+        topPanel.add(actionPanel, BorderLayout.EAST);
+        
+        // Action buttons will be added to actionPanel
+        setupActionButtons(actionPanel);
+    }
 
-        // Add button - Adjusted to match DanhMucPanel layout
+    //======================CÀI ĐẶT CÁC NÚT HÀNH ĐỘNG=================================
+    private void setupActionButtons(JPanel actionPanel) {
+        // Create a panel for the main action buttons
+        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
+        mainButtonsPanel.setBackground(Color.WHITE);
+        
+        // Create a panel for the import/export buttons
+        JPanel importExportPanel = new JPanel();
+        importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
+        importExportPanel.setBackground(Color.WHITE);
+        
+        // Add button
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addButton = new CustomButton("Thêm", addIcon);
-        addButton.setBounds(820, 12, 100, 30);
+        addButton.setPreferredSize(new Dimension(100, 30));
+        addButton.setMaximumSize(new Dimension(100, 30));
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        //MenuFrame hiển thị panel bán hàng
         addButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,189 +166,142 @@ public class hoaDonPanel extends JPanel {
                 menuFrame.showPanel("banHang");
             }
         });
-        panel.add(addButton);
-
-        // Edit button - Adjusted position
+        mainButtonsPanel.add(addButton);
+        mainButtonsPanel.add(Box.createHorizontalStrut(5));
+        
+        // Edit button
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
         editButton = new CustomButton("Sửa", editIcon);
-        editButton.setBounds(930, 12, 100, 30);
+        editButton.setPreferredSize(new Dimension(100, 30));
+        editButton.setMaximumSize(new Dimension(100, 30));
         editButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        panel.add(editButton);
+        mainButtonsPanel.add(editButton);
+        mainButtonsPanel.add(Box.createHorizontalStrut(5));
 
-        // Delete button - Adjusted position
+        // Delete button
         FlatSVGIcon deleteIcon = new FlatSVGIcon("Icons/delete.svg", 20, 20);
-        deleteButton = new CustomButton("Xóa", deleteIcon);
-        deleteButton.setBounds(1040, 12, 100, 30);
+        deleteButton = new CustomButton("Hủy", deleteIcon);
+        deleteButton.setPreferredSize(new Dimension(100, 30));
+        deleteButton.setMaximumSize(new Dimension(100, 30));
         deleteButton.setButtonColors(CustomButton.ButtonColors.RED);
-        panel.add(deleteButton);
-
-        // Export button - Adjusted position
+        mainButtonsPanel.add(deleteButton);
+        mainButtonsPanel.add(Box.createHorizontalStrut(5));
+        
+        // Export button
         FlatSVGIcon exportIcon = new FlatSVGIcon("Icons/excel.svg", 16, 16);
         exportButton = new CustomButton("", exportIcon);
-        exportButton.setBounds(1150, 12, 50, 30);
+        exportButton.setPreferredSize(new Dimension(50, 30));
+        exportButton.setMaximumSize(new Dimension(50, 30));
         exportButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        panel.add(exportButton);
-
-        // Import button - Adjusted position
+        importExportPanel.add(exportButton);
+        importExportPanel.add(Box.createHorizontalStrut(5));
+        
+        // Import button
         FlatSVGIcon importIcon = new FlatSVGIcon("Icons/import.svg", 16, 16);
         importButton = new CustomButton("", importIcon);
-        importButton.setBounds(1210, 12, 50, 30);
+        importButton.setPreferredSize(new Dimension(50, 30));
+        importButton.setMaximumSize(new Dimension(50, 30));
         importButton.setButtonColors(CustomButton.ButtonColors.GRAY);
-        panel.add(importButton);
+        importExportPanel.add(importButton);
+        
+        // Add all button panels to the action panel
+        actionPanel.add(Box.createHorizontalStrut(10));
+        actionPanel.add(mainButtonsPanel);
+        actionPanel.add(Box.createHorizontalStrut(10));
+        actionPanel.add(importExportPanel);
     }
 
-    private RoundedPanel createBottomPanel() {
-        RoundedPanel bottomPanel = new RoundedPanel(20);
-        bottomPanel.setBackground(new Color(225, 225, 225));
-        bottomPanel.setPreferredSize(new Dimension(1270, 900));
-        bottomPanel.setLayout(new BorderLayout(5, 0));
-
-        RoundedPanel bottomPanelLeft = createFilterPanel();
-        RoundedPanel bottomPanelRight = createTablePanel();
-
-        bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
-        bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
-
-        return bottomPanel;
+    //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
+    private void setupBottomPanelLeft() {
+        setupDateFilterPanel();
+        setupStatusFilterPanel();
+        setupUserFilterPanel();
     }
 
-    private RoundedPanel createFilterPanel() {
-        RoundedPanel filterPanel = new RoundedPanel(20);
-        filterPanel.setBackground(Color.WHITE);
-        filterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        filterPanel.setPreferredSize(new Dimension(1270 * 20 / 100, 900));
+    private void setupDateFilterPanel() {
+        JPanel datePanel = createTitledPanel("Thời Gian", 230, 180);
+        datePanel.setLayout(new BoxLayout(datePanel, BoxLayout.Y_AXIS));
+        bottomPanelLeft.add(datePanel);
 
-        // Add filter components
-        filterPanel.add(createDateFilterPanel());
-        filterPanel.add(createStatusFilterPanel());
-        filterPanel.add(createUserFilterPanel());
+        // Date picker for start and end dates
+        startDateSpinner = new JSpinner(new SpinnerDateModel());
+        endDateSpinner = new JSpinner(new SpinnerDateModel());
 
-        return filterPanel;
-    }
+        // Set date format
+        JSpinner.DateEditor startEditor = new JSpinner.DateEditor(startDateSpinner, "dd/MM/yyyy");
+        JSpinner.DateEditor endEditor = new JSpinner.DateEditor(endDateSpinner, "dd/MM/yyyy");
+        startDateSpinner.setEditor(startEditor);
+        endDateSpinner.setEditor(endEditor);
 
-    private JPanel createDateFilterPanel() {
-        JPanel datePanel = new JPanel();
-        datePanel.setBackground(Color.WHITE);
-        datePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                "Thời Gian",
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
-        datePanel.setPreferredSize(new Dimension(220, 180));
-        datePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        // Set preferred size
+        startDateSpinner.setPreferredSize(new Dimension(200, 30));
+        endDateSpinner.setPreferredSize(new Dimension(200, 30));
 
-        // Start date components
-        JLabel startLabel = new JLabel("Ngày bắt đầu:");
-        startLabel.setPreferredSize(new Dimension(200, 20));
-        startLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-        SpinnerDateModel startModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        startDateSpinner = new JSpinner(startModel);
-        startDateSpinner.setEditor(new JSpinner.DateEditor(startDateSpinner, "dd/MM/yyyy"));
-        startDateSpinner.setPreferredSize(new Dimension(200, 25));
-
-        // End date components
-        JLabel endLabel = new JLabel("Ngày kết thúc:");
-        endLabel.setPreferredSize(new Dimension(200, 20));
-        endLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-        SpinnerDateModel endModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        endDateSpinner = new JSpinner(endModel);
-        endDateSpinner.setEditor(new JSpinner.DateEditor(endDateSpinner, "dd/MM/yyyy"));
-        endDateSpinner.setPreferredSize(new Dimension(200, 25));
+        // Add components to the date panel
+        datePanel.add(Box.createVerticalStrut(1));
+        datePanel.add(startDateSpinner);
+        datePanel.add(Box.createVerticalStrut(1));
+        datePanel.add(endDateSpinner);
 
         // Filter button
-        filterDateButton = new CustomButton("Lọc hoá đơn");
-        filterDateButton.setPreferredSize(new Dimension(195, 25));
-        filterDateButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        filterDateButton = new CustomButton("Lọc");
+        filterDateButton.setPreferredSize(new Dimension(100, 30));
+        filterDateButton.setMaximumSize(new Dimension(100, 30));
+        filterDateButton.setButtonColors(CustomButton.ButtonColors.BLUE);
 
-        datePanel.add(startLabel);
-        datePanel.add(startDateSpinner);
-        datePanel.add(endLabel);
-        datePanel.add(endDateSpinner);
+        datePanel.add(Box.createVerticalStrut(5));
         datePanel.add(filterDateButton);
-
-        return datePanel;
     }
 
-    private JPanel createStatusFilterPanel() {
-        JPanel statusPanel = new JPanel();
-        statusPanel.setBackground(Color.WHITE);
-        statusPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                "Trạng Thái",
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
+    private void setupStatusFilterPanel() {
+        JPanel statusPanel = createTitledPanel("Trạng Thái", 230, 100);
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
-        statusPanel.setPreferredSize(new Dimension(220, 100));
+        bottomPanelLeft.add(statusPanel);
 
-        processingRadioButton = new JRadioButton("Đang Xử Lý");
-        processingRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        processingRadioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        processingRadioButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
-
-        completedRadioButton = new JRadioButton("Hoàn Thành");
-        completedRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        completedRadioButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        completedRadioButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 0));
-
+        processingRadioButton = createRadioButton("Đang Xử Lý");
+        completedRadioButton = createRadioButton("Hoàn Thành");
+        
         ButtonGroup statusGroup = new ButtonGroup();
         statusGroup.add(processingRadioButton);
         statusGroup.add(completedRadioButton);
-
+        
         JPanel radioPanel = new JPanel();
         radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
         radioPanel.setBackground(Color.WHITE);
         radioPanel.add(processingRadioButton);
         radioPanel.add(completedRadioButton);
-
+        
         statusPanel.add(Box.createVerticalStrut(5));
         statusPanel.add(radioPanel);
         statusPanel.add(Box.createVerticalStrut(5));
-
-        return statusPanel;
     }
 
-    private JPanel createUserFilterPanel() {
-        JPanel userPanel = new JPanel();
-        userPanel.setBackground(Color.WHITE);
-        userPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                "Người Tạo",
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
+    private void setupUserFilterPanel() {
+        JPanel userPanel = createTitledPanel("Người Tạo", 230, 180);
         userPanel.setLayout(new BorderLayout(5, 5));
-        userPanel.setPreferredSize(new Dimension(220, 180));
+        bottomPanelLeft.add(userPanel);
 
-        userList = new JList<>(new String[]{"Nguyễn Đức Tây", "Nguyễn Ngọc Tín", "Nguyễn Thị Tuyết Thư", "An Má Bé Sol", "HURRYKHANG", "Jack Bỏ Con"});
+        userList = new JList<>(new String[]{"Nguyễn Đức Tây", "Nguyễn Ngọc Tín", "Nguyễn Thị Tuyết Thư","Đinh Hữu An","Ngô Gia Khang","Nguyễn Văn A","Nguyễn Văn B","Nguyễn Văn C"});
         userList.setLayoutOrientation(JList.VERTICAL);
         userList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         userList.setVisibleRowCount(6);
 
         JScrollPane listScroller = new JScrollPane(userList);
         listScroller.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
+        
         userPanel.add(listScroller, BorderLayout.CENTER);
-
-        return userPanel;
     }
 
-    private RoundedPanel createTablePanel() {
-        RoundedPanel tablePanel = new RoundedPanel(20);
-        tablePanel.setBackground(Color.WHITE);
-        tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
-        tablePanel.setPreferredSize(new Dimension(1270 * 80 / 100, 900));
+    //======================CÀI ĐẶT PANEL DƯỚI PHẢI=================================
+    private void setupBottomPanelRight() {
+        // Change layout to BorderLayout
+        bottomPanelRight.setLayout(new BorderLayout(0, 10));
 
-        // Create table with data
+        // Upper part - Table panel
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBackground(Color.WHITE);
+
+        // Table data
         String[] columnNames = {"Mã hóa đơn", "Thời gian", "Khách hàng", "Tổng tiền hàng", "Giảm giá", "Khách đã trả"};
         Object[][] data = {
                 {"HD000046", "17/02/2025 23:36", "Tuấn - Hà Nội", 2580000, 0, 2580000},
@@ -301,13 +319,37 @@ public class hoaDonPanel extends JPanel {
                 {"HD000034", "05/02/2025 23:24", "Phạm Thu Hương", 110000, 0, 110000},
         };
 
-        hoaDonTable = new CustomTable(data, columnNames);
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        hoaDonTable = new CustomTable(model);
         JScrollPane tableScrollPane = new JScrollPane(hoaDonTable);
         tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
 
-        tablePanel.add(tableScrollPane);
+        // Add panels to bottomPanelRight
+        bottomPanelRight.add(tablePanel, BorderLayout.CENTER);
+    }
 
-        return tablePanel;
+    // Helper methods
+    private JPanel createTitledPanel(String title, int width, int height) {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                title,
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                new Font("Segoe UI", Font.BOLD, 15),
+                Color.BLACK
+        ));
+        panel.setPreferredSize(new Dimension(width, height));
+        return panel;
+    }
+
+    private JRadioButton createRadioButton(String text) {
+        JRadioButton radioButton = new JRadioButton(text);
+        radioButton.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        radioButton.setBackground(Color.WHITE);
+        return radioButton;
     }
 
     // Hàm main để test giao diện

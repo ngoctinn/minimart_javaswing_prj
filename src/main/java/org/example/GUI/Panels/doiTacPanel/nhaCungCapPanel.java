@@ -31,8 +31,6 @@ public class nhaCungCapPanel extends JPanel {
     private CustomButton exportButton;
 
     // Bottom panel components
-    private JSpinner startSpinner;
-    private JSpinner endSpinner;
     private JRadioButton radioButtonshow1;
     private JRadioButton radioButtonshow2;
     private JRadioButton radioButtonshow3;
@@ -162,35 +160,7 @@ public class nhaCungCapPanel extends JPanel {
     }
 
     private void setupBottomPanelLeft() {
-        setupThoiGianPanel();
         setupTrangThaiPanel();
-    }
-
-    private void setupThoiGianPanel() {
-        // Thời gian panel
-        JPanel thoiGianPanel = createTitledPanel("Thời Gian", 230, 100);
-        thoiGianPanel.setLayout(new FlowLayout());
-        bottomPanelLeft.add(thoiGianPanel);
-
-        // Ngày bắt đầu
-        JLabel startLabel = new JLabel("Ngày bắt đầu:");
-        startLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        SpinnerDateModel startModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        startSpinner = new JSpinner(startModel);
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "dd/MM/yyyy"));
-
-        // Ngày kết thúc
-        JLabel endLabel = new JLabel("Ngày kết thúc:");
-        endLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        SpinnerDateModel endModel = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        endSpinner = new JSpinner(endModel);
-        endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "dd/MM/yyyy"));
-
-        // Add to panel
-        thoiGianPanel.add(startLabel);
-        thoiGianPanel.add(startSpinner);
-        thoiGianPanel.add(endLabel);
-        thoiGianPanel.add(endSpinner);
     }
 
     private void setupTrangThaiPanel() {
