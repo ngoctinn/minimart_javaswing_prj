@@ -40,6 +40,7 @@ public class LoaiSanPhamBUS {
         return loaiSanPhamDAO.timKiemLoaiSanPham(tenLSP);
     }
 
+
     public static boolean xuatExcel() {
         try {
             // Hiển thị hộp thoại chọn nơi lưu file

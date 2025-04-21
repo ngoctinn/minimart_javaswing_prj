@@ -273,14 +273,33 @@ public class diaChiPanelAPI extends JPanel {
         }
     }
 
+    // ToString để hển thị cả 3 biến thành 1 biến diaChi
+    public String toString() {
+        String diaChi = "";
+        if (getSelectedProvince() != null) {
+            diaChi += getSelectedProvince().getName();
+        }
+        if (getSelectedDistrict() != null) {
+            diaChi += ", " + getSelectedDistrict().getName();
+        }
+        if (getSelectedWard() != null) {
+            diaChi += ", " + getSelectedWard().getName();
+        }
+        return diaChi;
+    }
+
     // Cách sử dụng:
     // diaChiPanelAPI diaChiPanel = new diaChiPanelAPI();
     // frame.add(diaChiPanel);
     // frame.setVisible(true);
 
     // Sau khi người dùng chọn địa chỉ, bạn có thể lấy dữ liệu bằng cách:
-    // Province selectedProvince = diaChiPanel.getSelectedProvince();
-    // District selectedDistrict = diaChiPanel.getSelectedDistrict();
-    // Ward selectedWard = diaChiPanel.getSelectedWard();
+//     Province selectedProvince = diaChiPanel.getSelectedProvince();
+//     District selectedDistrict = diaChiPanel.getSelectedDistrict();
+//     Ward selectedWard = diaChiPanel.getSelectedWard();
+
+    // lấy địa chỉ
+//     String diaChi = diaChiPanel.toString();
+
 
 }

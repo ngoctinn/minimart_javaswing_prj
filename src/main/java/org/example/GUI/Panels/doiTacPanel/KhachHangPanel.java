@@ -156,7 +156,7 @@ public class KhachHangPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         addButton.addActionListener(e -> {
              // TODO: Implement add customer action
-             // ThemKhachHangDialog themKhachHangDialog = new ThemKhachHangDialog();
+              ThemKhachHangDialog themKhachHangDialog = new ThemKhachHangDialog();
         });
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
