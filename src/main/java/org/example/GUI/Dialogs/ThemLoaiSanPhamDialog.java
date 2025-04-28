@@ -13,12 +13,13 @@ import java.awt.*;
 public class ThemLoaiSanPhamDialog extends JDialog {
     private CustomTexField maLoaiField, tenLoaiField;
     private CustomButton luuButton, huyButton;
-    private LoaiSanPhamPanel parentPanel;
     private boolean isEditMode = false;
     private LoaiSanPhamDTO loaiSanPhamEdit;
 
-    public ThemLoaiSanPhamDialog(LoaiSanPhamPanel parentPanel) {
-        this.parentPanel = parentPanel;
+    // biến kiểm tra dialog đóng hay không
+    private boolean isClosed = false;
+
+    public ThemLoaiSanPhamDialog() {
         this.isEditMode = false;
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
@@ -33,7 +34,6 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     }
     
     public ThemLoaiSanPhamDialog(LoaiSanPhamPanel parentPanel, LoaiSanPhamDTO loaiSanPham) {
-        this.parentPanel = parentPanel;
         this.isEditMode = true;
         this.loaiSanPhamEdit = loaiSanPham;
         try {
@@ -171,9 +171,8 @@ public class ThemLoaiSanPhamDialog extends JDialog {
                 if (result > 0) {
                     JOptionPane.showMessageDialog(this, "Cập nhật loại sản phẩm thành công", "Thành công",
                             JOptionPane.INFORMATION_MESSAGE);
-                    if (parentPanel != null) {
-                        parentPanel.refreshLoaiSanPhamTable();
-                    }
+
+                    isClosed = true;
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Cập nhật loại sản phẩm thất bại", "Lỗi",
@@ -188,9 +187,8 @@ public class ThemLoaiSanPhamDialog extends JDialog {
                 if (result > 0) {
                     JOptionPane.showMessageDialog(this, "Thêm loại sản phẩm thành công", "Thành công",
                             JOptionPane.INFORMATION_MESSAGE);
-                    if (parentPanel != null) {
-                        parentPanel.refreshLoaiSanPhamTable();
-                    }
+
+                    isClosed = true;
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Thêm loại sản phẩm thất bại", "Lỗi",
@@ -213,8 +211,12 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         dispose();
     }
 
+    public boolean isClosed() {
+        return isClosed;
+    }
+
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ThemLoaiSanPhamDialog(null));
+        SwingUtilities.invokeLater(() -> new ThemLoaiSanPhamDialog());
     }
 }

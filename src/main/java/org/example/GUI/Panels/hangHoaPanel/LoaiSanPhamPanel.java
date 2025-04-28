@@ -196,7 +196,16 @@ public class LoaiSanPhamPanel extends JPanel {
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
-        addButton.addActionListener(e -> new ThemLoaiSanPhamDialog(this));
+        addButton.addActionListener(e -> {
+            // Open the dialog to add a new product type
+            ThemLoaiSanPhamDialog dialog = new ThemLoaiSanPhamDialog();
+
+            if (dialog.isClosed()) {
+                // Refresh the table after adding a new product type
+                refreshLoaiSanPhamTable();
+            }
+        }
+        );
 
         // Edit button
         FlatSVGIcon editIcon = new FlatSVGIcon("Icons/edit.svg", 20, 20);
