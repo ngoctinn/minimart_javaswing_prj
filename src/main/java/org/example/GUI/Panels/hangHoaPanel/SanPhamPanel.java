@@ -9,6 +9,7 @@ import org.example.Components.PlaceholderTextField;
 import org.example.Components.RoundedPanel;
 import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
+import org.example.GUI.Dialogs.ThemLoaiSanPhamDialog;
 import org.example.GUI.Dialogs.ThemSanPhamDialog;
 
 import javax.swing.*;
@@ -155,7 +156,7 @@ public class SanPhamPanel extends JPanel {
 
     private void handleThemLoaiSanPhamButton() {
         // Xử lý thêm loại sản phẩm
-        new ThemSanPhamDialog(this);
+        new ThemLoaiSanPhamDialog();
     }
 
     private void handleLoaiSanPhamSelection() {

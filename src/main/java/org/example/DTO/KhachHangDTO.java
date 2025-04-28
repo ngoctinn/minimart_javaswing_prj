@@ -1,21 +1,26 @@
 package org.example.DTO;
 import java.time.LocalDate;
 
-public class khachHangDTO {
+public class KhachHangDTO {
     private String maKH;
     private String hoTen;
     private String diaChi;
-    private int SDT;
+    private int diemTichLuy;
+    private String SDT;
     private String gioiTinh;
     private String email;
     private LocalDate ngaySinh;
-    private int trangThai;
+    private boolean trangThai;
 
+    // Constructors
+    public KhachHangDTO() {
+    }
 
-    public khachHangDTO(String maKH, String hoTen, String diaChi, int SDT, String gioiTinh, String email, LocalDate ngaySinh, int trangThai) {
+    public KhachHangDTO(String maKH, String hoTen, String diaChi, int diemTichLuy, String SDT, String gioiTinh, String email, LocalDate ngaySinh, boolean trangThai) {
         this.maKH = maKH;
         this.hoTen = hoTen;
         this.diaChi = diaChi;
+        this.diemTichLuy = diemTichLuy;
         this.SDT = SDT;
         this.gioiTinh = gioiTinh;
         this.email = email;
@@ -43,11 +48,17 @@ public class khachHangDTO {
     public void setDiaChi(String diaChi) {
         this.diaChi = diaChi;
     }
+    public int getDiemTichLuy() {
+        return diemTichLuy;
+    }
+    public void setDiemTichLuy(int diemTichLuy) {
+        this.diemTichLuy = diemTichLuy;
+    }
 
-    public int getSDT() {
+    public String getSDT() {
         return SDT;
     }
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
 
@@ -72,10 +83,10 @@ public class khachHangDTO {
         this.ngaySinh = ngaySinh;
     }
 
-    public int getTrangThai() {
+    public boolean getTrangThai() {
         return trangThai;
     }
-    public void setTrangThai(int trangThai) {
+    public void setTrangThai(boolean trangThai) {
         this.trangThai = trangThai;
     }
 }
