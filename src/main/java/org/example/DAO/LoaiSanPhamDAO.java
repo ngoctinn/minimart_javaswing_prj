@@ -158,6 +158,26 @@ public class LoaiSanPhamDAO implements DAOInterface<LoaiSanPhamDTO> {
         return dsLoaiSanPham;
     }
 
+    // lấy mã theo tên
+    public String layMaLSPTheoTen(String tenLSP) {
+        String maLSP = null;
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT maLSP FROM LOAISP WHERE tenLSP = ?";
+            ResultSet resultSet = JDBCUtil.executePreparedQuery(sql, tenLSP);
+            if (resultSet.next()) {
+                maLSP = resultSet.getString("maLSP");
+            }
+            //Bước 3: Đóng kết nối
+            JDBCUtil.closeConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return maLSP;
+    }
+
     // Main để test
     public static void main(String[] args) {
         LoaiSanPhamDAO loaiSanPhamDAO = new LoaiSanPhamDAO();

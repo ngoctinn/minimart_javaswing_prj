@@ -1,10 +1,7 @@
 package org.example.GUI.Panels.doiTacPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.example.Components.CustomButton;
-import org.example.Components.CustomTable;
-import org.example.Components.PlaceholderTextField;
-import org.example.Components.RoundedPanel;
+import org.example.Components.*;
 import org.example.GUI.Dialogs.ThemNCCDialog;
 
 import javax.swing.*;
@@ -21,7 +18,7 @@ public class nhaCungCapPanel extends JPanel {
     private RoundedPanel bottomPanelRight;
 
     // Top panel components
-    private PlaceholderTextField searchField;
+    private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
     private CustomButton addButton;
@@ -97,7 +94,7 @@ public class nhaCungCapPanel extends JPanel {
         topPanel.add(title);
 
         // Search field
-        searchField = new PlaceholderTextField("Nhập tên nhà cung cấp cần tìm");
+        searchField = new CustomTextField("Nhập tên nhà cung cấp cần tìm");
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         searchField.setBounds(270, 12, 300, 30);

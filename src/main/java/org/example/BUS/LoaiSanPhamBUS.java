@@ -40,6 +40,12 @@ public class LoaiSanPhamBUS {
         return loaiSanPhamDAO.timKiemLoaiSanPham(tenLSP);
     }
 
+    //lấy mã loại sản phẩm theo tên
+    public static String layMaLSPTheoTen(String tenLSP) {
+        LoaiSanPhamDAO loaiSanPhamDAO = new LoaiSanPhamDAO();
+        return loaiSanPhamDAO.layMaLSPTheoTen(tenLSP);
+    }
+
 
     public static boolean xuatExcel() {
         try {

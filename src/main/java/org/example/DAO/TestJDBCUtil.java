@@ -13,7 +13,12 @@ public class TestJDBCUtil {
             //Bước 2: Tạo statement
             Statement statement = connection.createStatement();
 
-            //Bước 3: Thực thi câu lệnh ( truy vấn các bảng)
+            // thông bá kết nối thành công
+            if (connection != null) {
+                System.out.println("Kết nối thành công");
+            } else {
+                System.out.println("Kết nối thất bại");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

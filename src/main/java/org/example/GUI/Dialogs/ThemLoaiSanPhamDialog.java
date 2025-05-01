@@ -2,7 +2,7 @@ package org.example.GUI.Dialogs;
 
 import org.example.BUS.LoaiSanPhamBUS;
 import org.example.Components.CustomButton;
-import org.example.Components.CustomTexField;
+import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
 import org.example.DTO.LoaiSanPhamDTO;
 import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ThemLoaiSanPhamDialog extends JDialog {
-    private CustomTexField maLoaiField, tenLoaiField;
+    private CustomTextField maLoaiField, tenLoaiField;
     private CustomButton luuButton, huyButton;
     private boolean isEditMode = false;
     private LoaiSanPhamDTO loaiSanPhamEdit;
@@ -49,8 +49,8 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     }
 
     private void initGUI() {
-        setSize(400, 250);
-        getContentPane().setBackground(new Color(245, 245, 245));
+        setSize(380, 300);
+        getContentPane().setBackground(new Color(250, 250, 250));
         setLocationRelativeTo(null);
         setResizable(true);
         setModal(true);
@@ -80,7 +80,6 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         // Add event listeners
         addEventListeners();
 
-        pack();
         setVisible(true);
     }
 
@@ -93,17 +92,23 @@ public class ThemLoaiSanPhamDialog extends JDialog {
         gbc.weightx = 1.0;
 
         // Add form components
-        addFormRow(panel, "Mã loại", maLoaiField = new CustomTexField(""), 0, gbc);
+        maLoaiField = new CustomTextField("");
         maLoaiField.setEnabled(false);
+        addFormRow(panel, "Mã loại", maLoaiField.getContainer(), 0, gbc);
         
         if (isEditMode) {
             maLoaiField.setText(loaiSanPhamEdit.getMaLSP());
-            addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField(""), 1, gbc);
+            maLoaiField.setState(CustomTextField.State.DISABLED);
+            tenLoaiField = new CustomTextField("Nhập tên loại (vd: Đồ uống)");
+            addFormRow(panel, "Tên loại", tenLoaiField.getContainer(), 1, gbc);
             tenLoaiField.setText(loaiSanPhamEdit.getTenLSP());
         } else {
             String maLoai = LoaiSanPhamBUS.generateNextMaLSP();
             maLoaiField.setText(maLoai);
-            addFormRow(panel, "Tên loại", tenLoaiField = new CustomTexField(""), 1, gbc);
+            maLoaiField.setState(CustomTextField.State.DISABLED);
+            tenLoaiField = new CustomTextField("Nhập tên loại (vd: Đồ uống)");
+            tenLoaiField.setState(CustomTextField.State.DEFAULT);
+            addFormRow(panel, "Tên loại", tenLoaiField.getContainer(), 1, gbc);
         }
 
         return panel;
@@ -199,11 +204,12 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     }
 
     private boolean validateInput() {
-        if (tenLoaiField.getText().trim().isEmpty() || tenLoaiField.getText() == "Nhập tên loại (vd: Đồ uống)") {
-            JOptionPane.showMessageDialog(this, "Tên loại sản phẩm không được để trống",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (tenLoaiField.getText().trim().isEmpty() || tenLoaiField.getText().equals("Nhập tên loại (vd: Đồ uống)")) {
+            tenLoaiField.setState(CustomTextField.State.INVALID);
+            tenLoaiField.setErrorMessage("Tên loại sản phẩm không được để trống");
             return false;
         }
+        tenLoaiField.setState(CustomTextField.State.VALID);
         return true;
     }
 
@@ -214,7 +220,6 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     public boolean isClosed() {
         return isClosed;
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ThemLoaiSanPhamDialog());

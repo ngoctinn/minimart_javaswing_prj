@@ -9,9 +9,7 @@ import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.SanPhamPanel;
-import org.example.GUI.Panels.hangHoaPanel.KiemKhoPanel;
 import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
-import org.example.GUI.Panels.hangHoaPanel.ThietLapGiaPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChucVuPanel;
 import org.example.GUI.Panels.nhanVienPanel.NhanVienPanel;
@@ -263,8 +261,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         // Hàng hóa panels
         panelMap.put("sanPham", new SanPhamPanel());
         panelMap.put("loaiSanPham", new LoaiSanPhamPanel());
-        panelMap.put("kiemKho", new KiemKhoPanel());
-        panelMap.put("thietLapGia", new ThietLapGiaPanel());
 
         // Giao dịch panels
         panelMap.put("banHang", new BanHangPanel());

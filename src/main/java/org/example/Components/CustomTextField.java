@@ -3,19 +3,20 @@ package org.example.Components;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.RoundRectangle2D;
-import javax.swing.UIManager;
 
 /**
- * CustomPasswordField là một lớp kế thừa từ JPasswordField với các trạng thái tùy chỉnh
+ * CustomTextField là một lớp kế thừa từ JTextField với các trạng thái tùy chỉnh
  * bao gồm DEFAULT, FOCUS, VALID, INVALID, và DISABLED
- * Sử dụng nút ẩn/hiện mật khẩu mặc định của FlatLaf
  */
-public class CustomPasswordField extends JPasswordField {
+public class CustomTextField extends JTextField {
 
     /**
-     * Enum định nghĩa các trạng thái của PasswordField
+     * Enum định nghĩa các trạng thái của TextField
      */
     public enum State {
         DEFAULT, FOCUS, VALID, INVALID, DISABLED
@@ -26,12 +27,20 @@ public class CustomPasswordField extends JPasswordField {
     private String errorMessage = "";
     private JLabel errorLabel;
     private JPanel container;
+    private Color defaultBorderColor = new Color(200, 200, 200);
+    private Color focusBorderColor = new Color(100, 150, 255);
+    private Color validBorderColor = new Color(50, 200, 50);
+    private Color invalidBorderColor = new Color(255, 80, 80);
+    private Color disabledBorderColor = new Color(220, 220, 220);
+    private Color placeholderColor = new Color(180, 180, 180);
+    private Color errorColor = new Color(255, 80, 80);
+    private Color invalidBackgroundColor = new Color(255, 240, 240);
     private int cornerRadius = 8; // Bán kính bo góc
 
     /**
      * Constructor mặc định
      */
-    public CustomPasswordField() {
+    public CustomTextField() {
         this("");
     }
 
@@ -39,15 +48,12 @@ public class CustomPasswordField extends JPasswordField {
      * Constructor với placeholder
      * @param placeholder Văn bản gợi ý hiển thị khi trường trống
      */
-    public CustomPasswordField(String placeholder) {
+    public CustomTextField(String placeholder) {
         super();
         this.placeholder = placeholder;
         
-        // Thiết lập thuộc tính cho passwordfield
+        // Thiết lập thuộc tính cho textfield
         setOpaque(false);
-        
-        // Bật tính năng hiển thị nút ẩn/hiện mật khẩu của FlatLaf
-        putClientProperty("JPasswordField.showRevealButton", true);
         
         // Thiết lập giao diện ban đầu
         setupUI();
@@ -60,7 +66,7 @@ public class CustomPasswordField extends JPasswordField {
      * Thiết lập giao diện ban đầu
      */
     private void setupUI() {
-        // Tạo container chứa passwordfield và error label
+        // Tạo container chứa textfield và error label
         container = new JPanel(new BorderLayout(0, 2)) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -72,26 +78,30 @@ public class CustomPasswordField extends JPasswordField {
         };
         container.setOpaque(false);
 
-        // Thiết lập kích thước mặc định
-        setPreferredSize(new Dimension(200, 32));
+        //thiết lập kích thước mặc định
+        setPreferredSize(new Dimension(220, 32));
         
         // Tạo label hiển thị lỗi
         errorLabel = new JLabel();
-        errorLabel.setForeground(UIManager.getColor("TextField.errorForeground") != null ? 
-                UIManager.getColor("TextField.errorForeground") : new Color(255, 80, 80));
-        errorLabel.setFont(new Font(getFont().getFamily(), Font.PLAIN, 11));
+        errorLabel.setForeground(errorColor);
+        // in nghiêng
+        errorLabel.setFont(new Font("Arial", Font.ITALIC, 11));
         errorLabel.setVisible(false);
         
         // Thiết lập border và màu nền mặc định
         updateBorderForState(currentState);
         
         // Thêm các thành phần vào container
-        container.add(this, BorderLayout.CENTER);
+        JPanel textFieldPanel = new JPanel(new BorderLayout());
+        textFieldPanel.setOpaque(false);
+        textFieldPanel.add(this, BorderLayout.CENTER);
+        
+        container.add(textFieldPanel, BorderLayout.CENTER);
         container.add(errorLabel, BorderLayout.SOUTH);
     }
 
     /**
-     * Thêm các sự kiện cho passwordfield
+     * Thêm các sự kiện cho textfield
      */
     private void addEventListeners() {
         // Sự kiện focus
@@ -133,29 +143,25 @@ public class CustomPasswordField extends JPasswordField {
         
         switch (state) {
             case FOCUS:
-                setBackground(UIManager.getColor("TextField.focusedBackground") != null ? 
-                        UIManager.getColor("TextField.focusedBackground") : Color.WHITE);
+                setBackground(Color.WHITE);
                 break;
             case VALID:
                 setBackground(Color.WHITE);
                 break;
             case INVALID:
-                setBackground(UIManager.getColor("TextField.errorBackground") != null ? 
-                        UIManager.getColor("TextField.errorBackground") : new Color(255, 240, 240));
+                setBackground(invalidBackgroundColor);
                 break;
             case DISABLED:
-                setBackground(UIManager.getColor("TextField.disabledBackground") != null ? 
-                        UIManager.getColor("TextField.disabledBackground") : new Color(245, 245, 245));
+                setBackground(new Color(245, 245, 245));
                 break;
             default: // DEFAULT
-                setBackground(UIManager.getColor("TextField.background") != null ? 
-                        UIManager.getColor("TextField.background") : Color.WHITE);
+                setBackground(Color.WHITE);
                 break;
         }
     }
 
     /**
-     * Thiết lập trạng thái của passwordfield
+     * Thiết lập trạng thái của textfield
      * @param state Trạng thái mới
      */
     public void setState(State state) {
@@ -184,7 +190,6 @@ public class CustomPasswordField extends JPasswordField {
         }
         
         repaint();
-        container.revalidate();
     }
 
     /**
@@ -204,7 +209,6 @@ public class CustomPasswordField extends JPasswordField {
      */
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;
-        putClientProperty("JTextField.placeholderText", placeholder);
         repaint();
     }
 
@@ -218,7 +222,7 @@ public class CustomPasswordField extends JPasswordField {
     }
 
     /**
-     * Lấy container chứa passwordfield và error label
+     * Lấy container chứa textfield và error label
      * @return JPanel container
      */
     public JPanel getContainer() {
@@ -252,24 +256,19 @@ public class CustomPasswordField extends JPasswordField {
         Color borderColor;
         switch (currentState) {
             case FOCUS:
-                borderColor = UIManager.getColor("TextField.focusedBorderColor") != null ? 
-                        UIManager.getColor("TextField.focusedBorderColor") : new Color(100, 150, 255);
+                borderColor = focusBorderColor;
                 break;
             case VALID:
-                borderColor = UIManager.getColor("TextField.validBorderColor") != null ? 
-                        UIManager.getColor("TextField.validBorderColor") : new Color(50, 200, 50);
+                borderColor = validBorderColor;
                 break;
             case INVALID:
-                borderColor = UIManager.getColor("TextField.errorBorderColor") != null ? 
-                        UIManager.getColor("TextField.errorBorderColor") : new Color(255, 80, 80);
+                borderColor = invalidBorderColor;
                 break;
             case DISABLED:
-                borderColor = UIManager.getColor("TextField.disabledBorderColor") != null ? 
-                        UIManager.getColor("TextField.disabledBorderColor") : new Color(220, 220, 220);
+                borderColor = disabledBorderColor;
                 break;
             default: // DEFAULT
-                borderColor = UIManager.getColor("TextField.borderColor") != null ? 
-                        UIManager.getColor("TextField.borderColor") : new Color(220, 220, 220);
+                borderColor = defaultBorderColor;
                 break;
         }
         g2d.setColor(borderColor);
@@ -278,43 +277,51 @@ public class CustomPasswordField extends JPasswordField {
         g2d.dispose();
         
         super.paintComponent(g);
+        
+        // Vẽ placeholder nếu không có text và không focus
+        if (getText().isEmpty() && !hasFocus() && !placeholder.isEmpty() && isEnabled()) {
+            g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2d.setColor(placeholderColor);
+            
+            FontMetrics fm = g2d.getFontMetrics();
+            int x = getInsets().left;
+            int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+            
+            g2d.drawString(placeholder, x, y);
+            g2d.dispose();
+        }
     }
 
     // hàm main để test
     public static void main(String[] args) {
-        try {
-            // Thiết lập FlatLaf Look and Feel
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
-            
-            // Bật tính năng hiển thị nút ẩn/hiện mật khẩu mặc định
-            UIManager.put("PasswordField.showRevealButton", true);
-            
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize LaF");
-        }
-        
-        // thêm 4 passwordfield vào 1 frame
-        JFrame frame = new JFrame("Test CustomPasswordField");
+       // thêm 4 textfield vào 1 frame
+        JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new FlowLayout());
 
-        CustomPasswordField passwordField1 = new CustomPasswordField("Nhập mật khẩu");
-        frame.add(passwordField1.getContainer());
-        CustomPasswordField passwordField2 = new CustomPasswordField("Mật khẩu hợp lệ");
+        CustomTextField textField1 = new CustomTextField("Placeholder 1");
+        frame.add(textField1.getContainer());
 
-        passwordField2.setState(CustomPasswordField.State.VALID);
-        frame.add(passwordField2.getContainer());
-        CustomPasswordField passwordField3 = new CustomPasswordField("Mật khẩu không hợp lệ");
+        CustomTextField textField2 = new CustomTextField("Placeholder 2");
+        frame.add(textField2.getContainer());
 
-        passwordField3.setErrorMessage("Mật khẩu phải có ít nhất 8 ký tự");
-        passwordField3.setState(CustomPasswordField.State.INVALID);
-        frame.add(passwordField3.getContainer());
-        CustomPasswordField passwordField4 = new CustomPasswordField("Mật khẩu bị vô hiệu hóa");
+        CustomTextField textField3 = new CustomTextField("Placeholder 3");
+        frame.add(textField3.getContainer());
 
-        passwordField4.setState(CustomPasswordField.State.DISABLED);
-        frame.add(passwordField4.getContainer());
+        CustomTextField textField4 = new CustomTextField("Placeholder 4");
+        textField4.setErrorMessage("Error message");
+        textField4.setState(State.DISABLED);
+        frame.add(textField4.getContainer());
+
+        CustomTextField textField5 = new CustomTextField("Placeholder 5");
+        textField5.setErrorMessage("Error message");
+        textField5.setState(State.INVALID);
+        frame.add(textField5.getContainer());
 
         frame.pack();
         frame.setVisible(true);
+
+    
     }
 }
