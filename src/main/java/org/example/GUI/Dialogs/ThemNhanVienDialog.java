@@ -1,9 +1,6 @@
 package org.example.GUI.Dialogs;
 
-import org.example.Components.CustomButton;
-import org.example.Components.CustomTexField;
-import org.example.Components.CustomPasswordField;
-import org.example.Components.RoundedPanel;
+import org.example.Components.*;
 import org.example.Utils.diaChiPanelAPI;
 import org.example.DTO.nhanVienDTO;
 
@@ -13,7 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class ThemNhanVienDialog extends JDialog {
-    private CustomTexField maNVField, tenNVField, emailField, soDTField, maCVField, maHDField;
+    private CustomTextField maNVField, tenNVField, emailField, soDTField, maCVField, maHDField;
     private CustomPasswordField matKhauField;
     private JComboBox<String> trangThaiComboBox;
     private JRadioButton gioiTinhNam, gioiTinhNu;
@@ -115,11 +112,11 @@ public class ThemNhanVienDialog extends JDialog {
         leftGbc.weightx = 1.0;
 
         // Thêm các thành phần bên trái
-        maNVField = new CustomTexField("Mã tự động (vd: NV001)");
+        maNVField = new CustomTextField("Mã tự động (vd: NV001)");
         addFormRow(leftPanel, "Mã nhân viên", maNVField, 0, leftGbc);
         maNVField.setEnabled(!isEditMode); // Không cho phép sửa mã nhân viên khi ở chế độ sửa
         
-        tenNVField = new CustomTexField("Nhập tên nhân viên");
+        tenNVField = new CustomTextField("Nhập tên nhân viên");
         addFormRow(leftPanel, "Tên nhân viên", tenNVField, 1, leftGbc);
         
         // Ngày sinh
@@ -143,10 +140,10 @@ public class ThemNhanVienDialog extends JDialog {
         addFormRow(leftPanel, "Giới tính", gioiTinhPanel, 3, leftGbc);
         
         // Số điện thoại
-        addFormRow(leftPanel, "Số điện thoại", soDTField = new CustomTexField("0123456789"), 4, leftGbc);
+        addFormRow(leftPanel, "Số điện thoại", soDTField = new CustomTextField("0123456789"), 4, leftGbc);
         
         // Email
-        addFormRow(leftPanel, "Email", emailField = new CustomTexField("example@gmail.com"), 5, leftGbc);
+        addFormRow(leftPanel, "Email", emailField = new CustomTextField("example@gmail.com"), 5, leftGbc);
         
         // Mật khẩu
         addFormRow(leftPanel, "Mật khẩu", matKhauField = new CustomPasswordField("Nhập mật khẩu"), 6, leftGbc);
@@ -167,10 +164,10 @@ public class ThemNhanVienDialog extends JDialog {
         addFormRow(rightPanel, "Trạng thái", trangThaiComboBox, 1, rightGbc);
         
         // Mã chức vụ
-        addFormRow(rightPanel, "Mã chức vụ", maCVField = new CustomTexField("Nhập mã chức vụ"), 2, rightGbc);
+        addFormRow(rightPanel, "Mã chức vụ", maCVField = new CustomTextField("Nhập mã chức vụ"), 2, rightGbc);
         
         // Mã hợp đồng
-        addFormRow(rightPanel, "Mã hợp đồng", maHDField = new CustomTexField("Nhập mã hợp đồng"), 3, rightGbc);
+        addFormRow(rightPanel, "Mã hợp đồng", maHDField = new CustomTextField("Nhập mã hợp đồng"), 3, rightGbc);
         
         // Thêm panel địa chỉ
         diaChiPanel = new diaChiPanelAPI();

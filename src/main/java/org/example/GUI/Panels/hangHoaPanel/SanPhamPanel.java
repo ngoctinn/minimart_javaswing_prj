@@ -1,12 +1,10 @@
 package org.example.GUI.Panels.hangHoaPanel;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.LoaiSanPhamBUS;
 import org.example.BUS.SanPhamBUS;
-import org.example.Components.CustomButton;
-import org.example.Components.CustomTable;
-import org.example.Components.PlaceholderTextField;
-import org.example.Components.RoundedPanel;
+import org.example.Components.*;
 import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Dialogs.ThemLoaiSanPhamDialog;
@@ -32,7 +30,7 @@ public class SanPhamPanel extends JPanel {
     private RoundedPanel bottomPanelRight;
 
     // Top panel components
-    private PlaceholderTextField searchField;
+    private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
     private CustomButton addButton;
@@ -42,16 +40,10 @@ public class SanPhamPanel extends JPanel {
     private CustomButton exportButton;
 
     // Bottom panel components
-    private JList<String> loaiSanPhamList;
-    private JList<String> nhaCungCapList;
-    private JRadioButton radioTatCa;
-    private JRadioButton radioHangDangKinhDoanh;
-    private JRadioButton radioHangNgungKinhDoanh;
+    private CustomCombobox<String> loaiSanPhamComboBox;
     private JRadioButton radioGiaTangDan;
     private JRadioButton radioGiaGiamDan;
     private CustomTable hangHoaTable;
-    private CustomButton themLoaiSanPhamButton;
-    private CustomButton themNhaCungCapButton;
 
     public SanPhamPanel() {
         initGUI();
@@ -82,7 +74,6 @@ public class SanPhamPanel extends JPanel {
         searchButton.addActionListener(e -> handleSearchButton());
         importButton.addActionListener(e -> handleImportButton());
         exportButton.addActionListener(e -> handleExportButton());
-        themLoaiSanPhamButton.addActionListener(e -> handleThemLoaiSanPhamButton());
         searchField.addActionListener(e -> handleSearchButton());
 
         // Thiết lập sự kiện cho các radio button
@@ -90,7 +81,7 @@ public class SanPhamPanel extends JPanel {
         radioGiaGiamDan.addActionListener(e -> handleSortRadioButton());
 
         // Thiết lập sự kiện cho danh sách loại sản phẩm
-        loaiSanPhamList.addListSelectionListener(e -> handleLoaiSanPhamSelection());
+        loaiSanPhamComboBox.addItemListener(e -> handleLoaiSanPhamSelection());
     }
     // CÁC PHƯƠNG THỨC XỬ LÝ SỰ KIỆN
     private void handleAddButton() {
@@ -154,31 +145,29 @@ public class SanPhamPanel extends JPanel {
         // Xử lý xuất sản phẩm ra file
     }
 
-    private void handleThemLoaiSanPhamButton() {
-        // Xử lý thêm loại sản phẩm
-        new ThemLoaiSanPhamDialog();
-    }
 
     private void handleLoaiSanPhamSelection() {
         // Xử lý khi chọn loại sản phẩm
         String maLSP = null;
-        String selectedLoaiSP = loaiSanPhamList.getSelectedValue();
-        ArrayList<LoaiSanPhamDTO> dsLoaiSP = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
-        for (LoaiSanPhamDTO lsp : dsLoaiSP) {
-            if (lsp.getTenLSP().equals(selectedLoaiSP)) {
-                maLSP = lsp.getMaLSP();
-                break;
-            }
-        }
-        if (selectedLoaiSP != null) {
+        String selectedLoaiSP = (String) loaiSanPhamComboBox.getSelectedItem();
+
+        if (selectedLoaiSP != null && !selectedLoaiSP.equals("- Chọn loại sản phẩm -")) {
+            // Lấy mã loại sản phẩm từ tên loại sản phẩm đã chọn
+            maLSP = new LoaiSanPhamBUS().layMaLSPTheoTen(selectedLoaiSP);
+
             // Lọc sản phẩm theo loại sản phẩm đã chọn
             ArrayList<SanPhamDTO> filteredList = new SanPhamBUS().layDanhSachSanPhamTheoLoai(maLSP);
             DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
             model.setRowCount(0); // Clear existing rows
             loadSanPhamData(model, filteredList);
         } else {
-            refreshSanPhamTable(); // Nếu không có loại nào được chọn, làm mới bảng
+            // Nếu không có loại sản phẩm nào được chọn, hiển thị tất cả sản phẩm
+            ArrayList<SanPhamDTO> allProducts = new SanPhamBUS().layDanhSachSanPham();
+            DefaultTableModel model = (DefaultTableModel) hangHoaTable.getModel();
+            model.setRowCount(0); // Clear existing rows
+            loadSanPhamData(model, allProducts);
         }
+
     }
 
 
@@ -258,7 +247,7 @@ public class SanPhamPanel extends JPanel {
         titlePanel.add(Box.createHorizontalStrut(40));
         
         // Search field
-        searchField = new PlaceholderTextField("Nhập tên sản phẩm cần tìm");
+        searchField = new CustomTextField("Nhập tên sản phẩm");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setMaximumSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -356,69 +345,76 @@ public class SanPhamPanel extends JPanel {
 
     //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
     private void setupBottomPanelLeft() {
-        setupLoaiSanPhamPanel();
-        setupSapXepTheoGiaPanel(); // Add new panel for price sorting
-    }
+        // Set layout for bottomPanelLeft using FlowLayout
+        bottomPanelLeft.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        bottomPanelLeft.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    private void setupLoaiSanPhamPanel() {
-        // Nhóm hàng panel - reduced height from 210 to 180
-        JPanel loaiSanPhamPanel = createTitledPanel("Loại sản phẩm", 230, 250);
+        // Create panels for each section
+        JPanel loaiSanPhamPanel = new JPanel();
+        loaiSanPhamPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 5));
+        loaiSanPhamPanel.setBackground(Color.WHITE);
+        loaiSanPhamPanel.setPreferredSize(new Dimension(230,80));
+        loaiSanPhamPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // Change from BorderLayout to a more flexible layout
-        loaiSanPhamPanel.setLayout(new BoxLayout(loaiSanPhamPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(loaiSanPhamPanel);
+        // Title for Loại sản phẩm
+        JLabel loaiSanPhamTitle = new JLabel("Loại sản phẩm");
+        loaiSanPhamTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        loaiSanPhamTitle.setForeground(new Color(60, 60, 60));
+        loaiSanPhamTitle.setPreferredSize(new Dimension(220, 25));
+        loaiSanPhamPanel.add(loaiSanPhamTitle);
 
-        // Nhóm hàng list
+        // Get data for combobox
         ArrayList<LoaiSanPhamDTO> loaiSanPhamDTOArrayList = new LoaiSanPhamBUS().layDanhSachLoaiSanPham();
         String[] loaiSanPhamData = new String[loaiSanPhamDTOArrayList.size()];
         for (int i = 0; i < loaiSanPhamDTOArrayList.size(); i++) {
             loaiSanPhamData[i] = loaiSanPhamDTOArrayList.get(i).getTenLSP();
         }
 
-        loaiSanPhamList = createScrollableList(loaiSanPhamData);
-        JScrollPane scrollPane = createScrollPane(loaiSanPhamList, 200, 180);
-        scrollPane.setBounds(15, 25, 200, 180);
-        loaiSanPhamPanel.add(scrollPane);
+        // Create CustomCombobox
+        loaiSanPhamComboBox = new CustomCombobox<>(loaiSanPhamData);
+        loaiSanPhamComboBox.setPlaceholder("- Chọn loại sản phẩm -");
+        loaiSanPhamComboBox.setPreferredSize(new Dimension(220, 35));
+        loaiSanPhamPanel.add(loaiSanPhamComboBox);
 
-        // Add some vertical space between the list and button
-        loaiSanPhamPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        // Create panel for price sorting
+        JPanel sapXepPanel = new JPanel();
+        sapXepPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 5));
+        sapXepPanel.setBackground(Color.WHITE);
+        sapXepPanel.setPreferredSize(new Dimension(230, 120));
+        sapXepPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // Create a panel to hold the button and center it horizontally
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setMaximumSize(new Dimension(230, 35)); // Control the height
-
-        // Button with smaller size
-        themLoaiSanPhamButton = new CustomButton("Thêm loại sản phẩm");
-        themLoaiSanPhamButton.setPreferredSize(new Dimension(200, 30)); // Smaller button size
-        buttonPanel.add(themLoaiSanPhamButton);
-
-        loaiSanPhamPanel.add(buttonPanel);
-    }
-
-
-    
-    private void setupSapXepTheoGiaPanel() {
-        // Sắp xếp theo giá panel
-        JPanel sapXepPanel = createTitledPanel("Sắp xếp theo giá", 230, 80);
-        sapXepPanel.setLayout(new BoxLayout(sapXepPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(sapXepPanel);
+        // Title for Sắp xếp theo giá
+        JLabel sapXepTitle = new JLabel("Sắp xếp theo giá");
+        sapXepTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        sapXepTitle.setForeground(new Color(60, 60, 60));
+        sapXepTitle.setPreferredSize(new Dimension(220, 25));
+        sapXepPanel.add(sapXepTitle);
 
         // Radio buttons
         radioGiaTangDan = createRadioButton("Giá tăng dần");
         radioGiaGiamDan = createRadioButton("Giá giảm dần");
+        radioGiaTangDan.setPreferredSize(new Dimension(220, 25));
+        radioGiaGiamDan.setPreferredSize(new Dimension(220, 25));
 
-        // Group radio buttons
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioGiaTangDan);
         buttonGroup.add(radioGiaGiamDan);
 
-        // Add to panel
         sapXepPanel.add(radioGiaTangDan);
         sapXepPanel.add(radioGiaGiamDan);
+
+        // Add panels to bottomPanelLeft
+        bottomPanelLeft.add(loaiSanPhamPanel);
+        bottomPanelLeft.add(sapXepPanel);
     }
 
+    private JRadioButton createRadioButton(String text) {
+        JRadioButton radioButton = new JRadioButton(text);
+        radioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        radioButton.setBackground(Color.WHITE);
+        radioButton.setForeground(new Color(60, 60, 60));
+        return radioButton;
+    }
 
     //======================CÀI ĐẶT PANEL DƯỚI PHẢI=================================
     private void setupBottomPanelRight() {
@@ -539,46 +535,13 @@ public class SanPhamPanel extends JPanel {
     }
 
 
-    // Helper methods
-    private JPanel createTitledPanel(String title, int width, int height) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                title,
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 15),
-                Color.BLACK
-        ));
-        panel.setPreferredSize(new Dimension(width, height));
-        return panel;
-    }
 
-    private JList<String> createScrollableList(String[] data) {
-        JList<String> list = new JList<>(data);
-        list.setLayoutOrientation(JList.VERTICAL);
-        list.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        return list;
-    }
 
-    private JScrollPane createScrollPane(JComponent component, int width, int height) {
-        JScrollPane scrollPane = new JScrollPane(component);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setPreferredSize(new Dimension(width, height));
-        return scrollPane;
-    }
-
-    private JRadioButton createRadioButton(String text) {
-        JRadioButton radioButton = new JRadioButton(text);
-        radioButton.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        return radioButton;
-    }
 
     // Hàm main để test giao diện
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.setLookAndFeel(new FlatLightLaf());
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);

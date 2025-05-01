@@ -5,16 +5,16 @@ import java.sql.*;
 public class JDBCUtil {
 
     // Thông tin kết nối máy Tín
-//    private static final String SERVER_NAME = "PDESKTOP-3J3NO7F\\SQLEXRESS"; // Thay đổi nếu cần
-//    private static final String DATABASE_NAME = "QuanLyBanHang"; // Thay đổi nếu cần
-//    private static final String USERNAME = "sa"; // Thay đổi nếu cần
-//    private static final String PASSWORD = "123"; // Thay đổi nếu cần
-
-    // Thông tin kết nối máy Thư
-    private static final String SERVER_NAME = "DESKTOP-QFAM29O\\TIN"; // Thay đổi nếu cần
+    private static final String SERVER_NAME = "DESKTOP-3J3NO7F\\SQLEXPRESS"; // Thay đổi nếu cần
     private static final String DATABASE_NAME = "QuanLyBanHang"; // Thay đổi nếu cần
     private static final String USERNAME = "sa"; // Thay đổi nếu cần
     private static final String PASSWORD = "123"; // Thay đổi nếu cần
+
+//    // Thông tin kết nối máy Thư
+//    private static final String SERVER_NAME = "DESKTOP-QFAM29O\\TIN"; // Thay đổi nếu cần
+//    private static final String DATABASE_NAME = "QuanLyBanHang"; // Thay đổi nếu cần
+//    private static final String USERNAME = "sa"; // Thay đổi nếu cần
+//    private static final String PASSWORD = "123"; // Thay đổi nếu cần
 
     private static final String URL = "jdbc:sqlserver://" + SERVER_NAME + ";" +
             "databaseName=" + DATABASE_NAME + ";" +

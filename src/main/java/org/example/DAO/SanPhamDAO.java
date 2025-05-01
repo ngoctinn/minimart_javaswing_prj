@@ -1,5 +1,6 @@
 package org.example.DAO;
 
+import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
 
 import java.sql.Connection;
@@ -269,4 +270,7 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
         }
         return dsSanPham;
     }
+
+    //lấy danh sách loại sản phẩm theo mã loại sản phẩm
+
 }

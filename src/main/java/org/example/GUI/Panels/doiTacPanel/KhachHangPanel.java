@@ -2,10 +2,7 @@ package org.example.GUI.Panels.doiTacPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.KhachHangBUS;
-import org.example.Components.CustomButton;
-import org.example.Components.CustomTable;
-import org.example.Components.PlaceholderTextField;
-import org.example.Components.RoundedPanel;
+import org.example.Components.*;
 import org.example.DAO.KhachHangDAO;
 import org.example.DTO.KhachHangDTO;
 import org.example.GUI.Dialogs.ThemKhachHangDialog;
@@ -26,7 +23,7 @@ public class KhachHangPanel extends JPanel {
     private RoundedPanel bottomPanel;
 
     // Top panel components
-    private PlaceholderTextField searchField;
+    private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
     private CustomButton addButton;
@@ -219,7 +216,7 @@ public class KhachHangPanel extends JPanel {
         titlePanel.add(Box.createHorizontalStrut(40));
 
         // Search field
-        searchField = new PlaceholderTextField("Nhập khách hàng cần tìm");
+        searchField = new CustomTextField("Nhập khách hàng cần tìm");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setMaximumSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));

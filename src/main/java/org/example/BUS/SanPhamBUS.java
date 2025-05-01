@@ -68,6 +68,8 @@ public class SanPhamBUS {
         return sanPhamDAO.selectById(maSP);
     }
 
+
+
     // Sinh mã sản phẩm
     public static String generateNextMaSP() {
         ArrayList<SanPhamDTO> danhSach = selectAll();

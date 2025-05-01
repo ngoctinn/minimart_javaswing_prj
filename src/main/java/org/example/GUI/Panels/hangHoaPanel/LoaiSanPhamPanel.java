@@ -2,10 +2,7 @@ package org.example.GUI.Panels.hangHoaPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.LoaiSanPhamBUS;
-import org.example.Components.CustomButton;
-import org.example.Components.CustomTable;
-import org.example.Components.PlaceholderTextField;
-import org.example.Components.RoundedPanel;
+import org.example.Components.*;
 import org.example.DTO.LoaiSanPhamDTO;
 import org.example.GUI.Dialogs.ThemLoaiSanPhamDialog;
 
@@ -23,7 +20,7 @@ public class LoaiSanPhamPanel extends JPanel {
     private RoundedPanel bottomPanel;
 
     // Top panel components
-    private PlaceholderTextField searchField;
+    private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
     private CustomButton addButton;
@@ -102,7 +99,7 @@ public class LoaiSanPhamPanel extends JPanel {
         titlePanel.add(Box.createHorizontalStrut(40));
 
         // Search field
-        searchField = new PlaceholderTextField("Nhập tên loại sản phẩm cần tìm");
+        searchField = new CustomTextField("Nhập tên loại sản phẩm cần tìm");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setMaximumSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));

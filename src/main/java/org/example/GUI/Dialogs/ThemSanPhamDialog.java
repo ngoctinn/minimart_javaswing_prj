@@ -3,7 +3,10 @@ package org.example.GUI.Dialogs;
 import org.example.BUS.LoaiSanPhamBUS;
 import org.example.BUS.SanPhamBUS;
 import org.example.Components.CustomButton;
-import org.example.Components.CustomTexField;
+// Thêm import CustomCombobox
+import org.example.Components.CustomCombobox;
+// Sửa import từ CustomTexField thành CustomTextField
+import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
 import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
@@ -23,9 +26,11 @@ import java.util.ArrayList;
 import static org.example.Components.CustomToastMessage.showSuccessToast;
 
 public class ThemSanPhamDialog extends JDialog {
-    private CustomTexField maHangHoaField, tenHangHoaField, donViTinhField, giaBanField;
-    private JComboBox<String> loaiHangHoaComboBox, trangThaiComboBox;
-    private CustomButton chonHinhAnhButton, luuButton, huyButton;
+    // Sửa kiểu dữ liệu từ CustomTexField thành CustomTextField
+    private CustomTextField maHangHoaField, tenHangHoaField, donViTinhField, giaBanField;
+    // Thay đổi kiểu dữ liệu của loaiHangHoaComboBox
+    private CustomCombobox<String> loaiHangHoaComboBox;
+    private CustomButton chonHinhAnhButton, luuButton, huyButton, themLoaiButton;
     private SanPhamPanel parentPanel;
     private boolean isEditMode = false;
     private SanPhamDTO sanPhamEdit;
@@ -36,10 +41,11 @@ public class ThemSanPhamDialog extends JDialog {
         this.parentPanel = parentPanel;
         this.isEditMode = false;
         try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
-            UIManager.put("ComboBox.buttonStyle", "icon-only");
-            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
-            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
+            // Xóa các dòng UIManager.put không cần thiết cho CustomCombobox
+            // UIManager.put("ComboBox.buttonStyle", "icon-only");
+            // UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            // UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
             initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
@@ -52,9 +58,10 @@ public class ThemSanPhamDialog extends JDialog {
         this.sanPhamEdit = sanPham;
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
-            UIManager.put("ComboBox.buttonStyle", "icon-only");
-            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
-            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            // Xóa các dòng UIManager.put không cần thiết cho CustomCombobox
+            // UIManager.put("ComboBox.buttonStyle", "icon-only");
+            // UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            // UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
             initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
@@ -62,8 +69,8 @@ public class ThemSanPhamDialog extends JDialog {
     }
 
     private void initGUI() {
-        setSize(400, 550);
-        getContentPane().setBackground(new Color(245, 245, 245));
+        setSize(400, 620);
+        getContentPane().setBackground(new Color(250, 250, 250));
         setLocationRelativeTo(null);
         setResizable(true);
         setModal(true);
@@ -79,7 +86,7 @@ public class ThemSanPhamDialog extends JDialog {
         // Main panel
         RoundedPanel mainPanel = new RoundedPanel(20);
         mainPanel.setBackground(Color.WHITE);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.setLayout(new GridBagLayout());
         
         // Create form panel with components
@@ -94,7 +101,6 @@ public class ThemSanPhamDialog extends JDialog {
         // Add event listeners
         addEventListeners();
 
-        pack();
         setVisible(true);
     }
 
@@ -107,13 +113,15 @@ public class ThemSanPhamDialog extends JDialog {
         gbc.weightx = 1.0;
 
         // Add form components
-        addFormRow(panel, "Mã hàng hóa", maHangHoaField = new CustomTexField("Mã tự động (vd: HH001)"), 0, gbc);
+        // Sửa khởi tạo từ CustomTexField thành CustomTextField
+        addFormRow(panel, "Mã hàng hóa", maHangHoaField = new CustomTextField("Mã tự động (vd: HH001)"), 0, gbc);
         maHangHoaField.setEnabled(false);
-        
+
         if (isEditMode) {
             // Điền thông tin sản phẩm cần sửa
             maHangHoaField.setText(sanPhamEdit.getMaSP());
-            addFormRow(panel, "Tên hàng hóa", tenHangHoaField = new CustomTexField(""), 1, gbc);
+            // Sửa khởi tạo từ CustomTexField thành CustomTextField
+            addFormRow(panel, "Tên hàng hóa", tenHangHoaField = new CustomTextField(""), 1, gbc);
             tenHangHoaField.setText(sanPhamEdit.getTenSP());
 
             ArrayList<LoaiSanPhamDTO> dsLoaiSP = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
@@ -121,15 +129,40 @@ public class ThemSanPhamDialog extends JDialog {
             for (int i = 0; i < dsLoaiSP.size(); i++) {
                 loaiSPNames[i] = dsLoaiSP.get(i).getTenLSP();
             }
-            loaiHangHoaComboBox = new JComboBox<>(loaiSPNames);
+            // Thay đổi khởi tạo JComboBox thành CustomCombobox
+            loaiHangHoaComboBox = new CustomCombobox<>(loaiSPNames);
+            loaiHangHoaComboBox.setPlaceholder("- Chọn loại hàng hóa -"); // Thêm placeholder
 
             // Cần thiết lập loại hàng hóa dựa trên maLSP
-            addFormRow(panel, "Loại hàng hóa", loaiHangHoaComboBox, 2, gbc);
+            // Tìm và chọn đúng loại sản phẩm cho sản phẩm đang sửa
+            String maLSPCanChon = sanPhamEdit.getMaLSP();
+            for (LoaiSanPhamDTO lsp : dsLoaiSP) {
+                if (lsp.getMaLSP().equals(maLSPCanChon)) {
+                    loaiHangHoaComboBox.setSelectedItem(lsp.getTenLSP());
+                    break;
+                }
+            }
+
+            // Tạo panel chứa combobox và nút thêm mới
+            JPanel loaiHangHoaPanel = new JPanel(new BorderLayout(5, 0));
+            loaiHangHoaPanel.setBackground(Color.WHITE);
+            loaiHangHoaPanel.add(loaiHangHoaComboBox, BorderLayout.CENTER);
             
-            addFormRow(panel, "Đơn vị tính", donViTinhField = new CustomTexField(""), 3, gbc);
+            // Tạo nút thêm mới loại sản phẩm
+            themLoaiButton = new CustomButton("+");
+            themLoaiButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+            themLoaiButton.setPreferredSize(new Dimension(40, 32));
+            themLoaiButton.setToolTipText("Thêm mới loại sản phẩm");
+            loaiHangHoaPanel.add(themLoaiButton, BorderLayout.EAST);
+            
+            addFormRow(panel, "Loại hàng hóa", loaiHangHoaPanel, 2, gbc);
+            
+            // Sửa khởi tạo từ CustomTexField thành CustomTextField
+            addFormRow(panel, "Đơn vị tính", donViTinhField = new CustomTextField(""), 3, gbc);
             donViTinhField.setText(sanPhamEdit.getDonVi());
-            
-            addFormRow(panel, "Giá bán", giaBanField = new CustomTexField(""), 4, gbc);
+
+            // Sửa khởi tạo từ CustomTexField thành CustomTextField
+            addFormRow(panel, "Giá bán", giaBanField = new CustomTextField(""), 4, gbc);
             giaBanField.setText(String.valueOf(sanPhamEdit.getGiaBan()));
 
 
@@ -137,8 +170,11 @@ public class ThemSanPhamDialog extends JDialog {
             // Tạo mã sản phẩm tự động
             String maSanPham = SanPhamBUS.generateNextMaSP();
             maHangHoaField.setText(maSanPham);
-            
-            addFormRow(panel, "Tên hàng hóa", tenHangHoaField = new CustomTexField("Nhập tên (vd: Coca Cola)"), 1, gbc);
+            maHangHoaField.setState(CustomTextField.State.DISABLED);
+
+            // Sửa khởi tạo từ CustomTexField thành CustomTextField
+            tenHangHoaField = new CustomTextField("Nhập tên hàng hóa (vd: Coca Cola)");
+            addFormRow(panel, "Tên hàng hóa", tenHangHoaField.getContainer(), 1, gbc);
 
             ArrayList<LoaiSanPhamDTO> dsLoaiSP = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
             String[] loaiSPNames = new String[dsLoaiSP.size()];
@@ -146,20 +182,38 @@ public class ThemSanPhamDialog extends JDialog {
                 loaiSPNames[i] = dsLoaiSP.get(i).getTenLSP();
             }
 
+            // Thay đổi khởi tạo JComboBox thành CustomCombobox
+            loaiHangHoaComboBox = new CustomCombobox<>(loaiSPNames);
+            loaiHangHoaComboBox.setPlaceholder("- Chọn loại hàng hóa -"); // Thêm placeholder
 
-            loaiHangHoaComboBox = new JComboBox<>(loaiSPNames);
+            // Tạo panel chứa combobox và nút thêm mới
+            JPanel loaiHangHoaPanel = new JPanel(new BorderLayout(5, 0));
+            loaiHangHoaPanel.setBackground(Color.WHITE);
+            loaiHangHoaPanel.add(loaiHangHoaComboBox, BorderLayout.CENTER);
+            
+            // Tạo nút thêm mới loại sản phẩm
+            themLoaiButton = new CustomButton("+");
+            themLoaiButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+            themLoaiButton.setPreferredSize(new Dimension(40, 32));
+            themLoaiButton.setToolTipText("Thêm mới loại sản phẩm");
+            loaiHangHoaPanel.add(themLoaiButton, BorderLayout.EAST);
+            
+            addFormRow(panel, "Loại hàng hóa", loaiHangHoaPanel, 2, gbc);
+            
+            // Sửa khởi tạo từ CustomTexField thành CustomTextField
+            donViTinhField = new CustomTextField("Nhập đơn vị tính (vd: chai)");
+            addFormRow(panel, "Đơn vị tính", donViTinhField.getContainer(), 3, gbc);
 
-            addFormRow(panel, "Loại hàng hóa", loaiHangHoaComboBox, 2, gbc);
-            
-            addFormRow(panel, "Đơn vị tính", donViTinhField = new CustomTexField("Nhập đơn vị tính (vd: chai)"), 3, gbc);
-            
-            addFormRow(panel, "Giá bán", giaBanField = new CustomTexField("Nhập giá bán (vd: 15000)"), 4, gbc);
+            // Sửa khởi tạo từ CustomTexField thành CustomTextField
+            giaBanField = new CustomTextField("Nhập giá bán (vd: 10000)");
+            addFormRow(panel, "Giá bán", giaBanField.getContainer(), 4, gbc);
+
         }
 
         // Image panel
         hinhAnhPanel = new JPanel();
         hinhAnhPanel.setBackground(new Color(255, 255, 255));
-        hinhAnhPanel.setPreferredSize(new Dimension(150, 150));
+        hinhAnhPanel.setPreferredSize(new Dimension(120, 120));
         hinhAnhPanel.setLayout(new BorderLayout());
         addFormRow(panel, "Hình ảnh", hinhAnhPanel, 6, gbc);
 
@@ -229,6 +283,29 @@ public class ThemSanPhamDialog extends JDialog {
         luuButton.addActionListener(e -> handleSave());
         huyButton.addActionListener(e -> handleCancel());
         chonHinhAnhButton.addActionListener(e -> handleChooseImage());
+        themLoaiButton.addActionListener(e -> handleThemLoaiSanPham());
+    }
+    
+    private void handleThemLoaiSanPham() {
+        // Mở dialog thêm mới loại sản phẩm
+        ThemLoaiSanPhamDialog themLoaiDialog = new ThemLoaiSanPhamDialog();
+        themLoaiDialog.setLocationRelativeTo(this);
+        // Sau khi thêm loại sản phẩm mới, cập nhật lại danh sách loại sản phẩm trong combobox
+        refreshLoaiSanPhamComboBox();
+    }
+
+    // Phương thức để cập nhật lại danh sách loại sản phẩm trong combobox
+    public void refreshLoaiSanPhamComboBox() {
+        ArrayList<LoaiSanPhamDTO> dsLoaiSP = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
+        String[] loaiSPNames = new String[dsLoaiSP.size()];
+        for (int i = 0; i < dsLoaiSP.size(); i++) {
+            loaiSPNames[i] = dsLoaiSP.get(i).getTenLSP();
+        }
+        loaiHangHoaComboBox.setModel(new DefaultComboBoxModel<>(loaiSPNames));
+        // Chọn loại sản phẩm mới thêm (thường là phần tử cuối cùng)
+        if (loaiSPNames.length > 0) {
+            loaiHangHoaComboBox.setSelectedIndex(loaiSPNames.length - 1);
+        }
     }
 
     private void handleSave() {
@@ -358,32 +435,50 @@ public class ThemSanPhamDialog extends JDialog {
 
 
     private boolean validateInput() {
+        boolean isValid = true;
+
+        // Kiểm tra tên hàng hóa
         if (tenHangHoaField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Tên hàng hóa không được để trống",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
+            tenHangHoaField.setState(CustomTextField.State.INVALID);
+            tenHangHoaField.setErrorMessage("Tên sản phẩm không được để trống");
+            tenHangHoaField.setPreferredSize(new Dimension(220, 32));
+            isValid = false;
         }
-        
+
+        // Kiểm tra đơn vị tính
         if (donViTinhField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Đơn vị tính không được để trống",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
+            donViTinhField.setState(CustomTextField.State.INVALID);
+            donViTinhField.setErrorMessage("Đơn vị tính không được để trống");
+            isValid = false;
         }
-        
+
+        // Kiểm tra giá bán
         try {
             double giaBan = Double.parseDouble(giaBanField.getText().trim());
             if (giaBan <= 0) {
-                JOptionPane.showMessageDialog(this, "Giá bán phải lớn hơn 0",
-                        "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
+                giaBanField.setState(CustomTextField.State.INVALID);
+                giaBanField.setErrorMessage("Giá bán phải lớn hơn 0");
+                isValid = false;
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Giá bán phải là số",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
+            giaBanField.setState(CustomTextField.State.INVALID);
+            giaBanField.setErrorMessage("Giá bán phải là một số hợp lệ");
+            isValid = false;
         }
-        
-        return true;
+
+        // Kiểm tra loại hàng hóa (vẫn dùng JOptionPane vì CustomCombobox chưa có trạng thái lỗi)
+        if (loaiHangHoaComboBox.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn loại hàng hóa",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            // Có thể thêm hiệu ứng viền đỏ cho combobox nếu muốn
+            // loaiHangHoaComboBox.setBorder(BorderFactory.createLineBorder(Color.RED));
+            isValid = false;
+        } else {
+            // Reset viền nếu trước đó bị lỗi (nếu có áp dụng viền đỏ)
+            // loaiHangHoaComboBox.setBorder(UIManager.getBorder("ComboBox.border"));
+        }
+
+        return isValid;
     }
     
     // main để test
@@ -395,4 +490,3 @@ public class ThemSanPhamDialog extends JDialog {
         });
     }
 }
-
