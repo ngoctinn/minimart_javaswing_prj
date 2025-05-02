@@ -15,8 +15,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class ThemKhachHangDialog extends JDialog {
-    private CustomTexField maKhachHangField, diemField, hoTenField;
-    private CustomTexField soDienThoaiField, emailField, diaChiField;
+    private CustomTextField maKhachHangField, diemField, hoTenField;
+    private CustomTextField soDienThoaiField, emailField, diaChiField;
     // khời tạo giá trị ngày hiện tại;
     private CustomDatePicker ngaySinhDate;
     private JRadioButton gioiTinhNam, gioiTinhNu;
@@ -57,7 +57,7 @@ public class ThemKhachHangDialog extends JDialog {
     // Constructor cho chế độ sửa với tham chiếu đến KhachHangPanel
 
     private void initGUI() {
-        setSize(600, 550);
+        setSize(500, 620);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLocationRelativeTo(null);
         setResizable(true);
@@ -94,7 +94,6 @@ public class ThemKhachHangDialog extends JDialog {
         // Add event listeners
         addEventListeners();
 
-        pack();
         setVisible(true);
     }
 
@@ -112,37 +111,39 @@ public class ThemKhachHangDialog extends JDialog {
         int row = 0;
         
         // Mã khách hàng
-        maKhachHangField = new CustomTexField("Mã tự động (vd: KH001)");
-        maKhachHangField.setEnabled(false);
-        addFormRow(panel, "Mã KH", maKhachHangField, row++, gbc);
+        maKhachHangField = new CustomTextField("Mã tự động (vd: KH001)");
+        maKhachHangField.setState(CustomTextField.State.DISABLED);
+        addFormRow(panel, "Mã KH", maKhachHangField.getContainer(), row++, gbc);
         KhachHangBUS khachHangBUS = new KhachHangBUS();
         String maKhachHang = khachHangBUS.generateNextMaKH();
         maKhachHangField.setText(maKhachHang);
         
         // Điểm tích lũy
-        diemField = new CustomTexField("Điểm tích lũy mặc định là 0");
-        diemField.setEnabled(false);
-        addFormRow(panel, "Điểm tích lũy", diemField, row++, gbc);
+        diemField = new CustomTextField("Điểm tích lũy mặc định là 0");
+        diemField.setState(CustomTextField.State.DISABLED);
+        addFormRow(panel, "Điểm tích lũy", diemField.getContainer(), row++, gbc);
         
         // Họ và tên
-        hoTenField = new CustomTexField("Nguyễn Văn A");
-        addFormRow(panel, "Họ và tên", hoTenField, row++, gbc);
+        hoTenField = new CustomTextField("Nguyễn Văn A");
+        addFormRow(panel, "Họ và tên", hoTenField.getContainer(), row++, gbc);
         
         // Số điện thoại
-        soDienThoaiField = new CustomTexField("0123456789");
-        addFormRow(panel, "Số điện thoại", soDienThoaiField, row++, gbc);
+        soDienThoaiField = new CustomTextField("0123456789");
+        addFormRow(panel, "Số điện thoại", soDienThoaiField.getContainer(), row++, gbc);
         
         // Email
-        emailField = new CustomTexField("example@gmail.com");
-        addFormRow(panel, "Email", emailField, row++, gbc);
+        emailField = new CustomTextField("example@gmail.com");
+        addFormRow(panel, "Email", emailField.getContainer(), row++, gbc);
         
         // Địa chỉ (TextField đơn giản thay thế cho diaChiPanelAPI)
-        diaChiField = new CustomTexField("Nhập địa chỉ đầy đủ");
-        addFormRow(panel, "Địa chỉ", diaChiField, row++, gbc);
+        diaChiField = new CustomTextField("Nhập địa chỉ đầy đủ");
+        addFormRow(panel, "Địa chỉ", diaChiField.getContainer(), row++, gbc);
         
         // Ngày sinh - Khởi tạo trước khi sử dụng
         ngaySinhDate = new CustomDatePicker();
-        String Date = "2023-10-01"; // Ngày hiện tại
+        // đặt kich thước cho ngày sinh
+        ngaySinhDate.setPreferredSize(new Dimension(300, 32));
+        String Date = "2000-01-01"; // Ngày mặc định
         LocalDate currentDate = LocalDate.parse(Date);
         ngaySinhDate.setDate(currentDate); // Thiết lập ngày hiện tại
         addFormRow(panel, "Ngày sinh", ngaySinhDate, row++, gbc);
@@ -162,16 +163,6 @@ public class ThemKhachHangDialog extends JDialog {
         
         // Điền thông tin nếu ở chế độ sửa
         if (isEditMode && khachHangEdit != null) {
-
-            // thiết lập màu chữ cho các trường là màu đen
-            maKhachHangField.setForeground(Color.BLACK);
-            diemField.setForeground(Color.BLACK);
-            hoTenField.setForeground(Color.BLACK);
-            soDienThoaiField.setForeground(Color.BLACK);
-            emailField.setForeground(Color.BLACK);
-            diaChiField.setForeground(Color.BLACK);
-
-
             maKhachHangField.setText(khachHangEdit.getMaKH());
             hoTenField.setText(khachHangEdit.getHoTen());
             soDienThoaiField.setText(String.valueOf(khachHangEdit.getSDT()));
@@ -329,48 +320,78 @@ public class ThemKhachHangDialog extends JDialog {
         }
     }
 
-    
+
     private boolean validateInput() {
+        boolean isValid = true;
+        Component firstInvalidField = null;
+
+        // Reset trạng thái lỗi nếu cần
+        hoTenField.setState(CustomTextField.State.DEFAULT);
+        soDienThoaiField.setState(CustomTextField.State.DEFAULT);
+        emailField.setState(CustomTextField.State.DEFAULT);
+        diaChiField.setState(CustomTextField.State.DEFAULT);
+        ngaySinhDate.setState(CustomDatePicker.State.DEFAULT);
+
         // Kiểm tra họ tên
         if (hoTenField.getText().trim().isEmpty()) {
-            CustomToastMessage.showErrorToast(null, "Họ tên không được để trống");
-            hoTenField.setBorderColor(Color.RED);
-            hoTenField.requestFocus();
-            return false;
+            hoTenField.setState(CustomTextField.State.INVALID);
+            hoTenField.setErrorMessage("Họ tên không được để trống");
+            if (firstInvalidField == null) firstInvalidField = hoTenField;
+            isValid = false;
         }
-        
+
         // Kiểm tra số điện thoại
-        String sdt = soDienThoaiField.getText();
+        String sdt = soDienThoaiField.getText().trim();
         if (sdt.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            soDienThoaiField.requestFocus();
-            return false;
+            soDienThoaiField.setState(CustomTextField.State.INVALID);
+            soDienThoaiField.setErrorMessage("Số điện thoại không được để trống");
+            if (firstInvalidField == null) firstInvalidField = soDienThoaiField;
+            isValid = false;
+        } else {
+            try {
+                Integer.parseInt(sdt);
+            } catch (NumberFormatException e) {
+                soDienThoaiField.setState(CustomTextField.State.INVALID);
+                soDienThoaiField.setErrorMessage("Số điện thoại phải là số");
+                if (firstInvalidField == null) firstInvalidField = soDienThoaiField;
+                isValid = false;
+            }
         }
-        
-        try {
-            Integer.parseInt(sdt);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số điện thoại phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        
+
         // Kiểm tra email
         String email = emailField.getText().trim();
-        if (!email.isEmpty() && email == "example@gmail.com" ) {
-            JOptionPane.showMessageDialog(this, "Email không được để trống ", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            emailField.requestFocus();
-            return false;
+        if (email.isEmpty() || email.equals("example@gmail.com")) {
+            emailField.setState(CustomTextField.State.INVALID);
+            emailField.setErrorMessage("Email không được để trống");
+            if (firstInvalidField == null) firstInvalidField = emailField;
+            isValid = false;
         }
-        
-        // Kiểm tra địa chỉ
-        if (diaChiField.getText().trim().isEmpty() || diaChiField.getText() == "Nhập địa chỉ đầy đủ") {
-            JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
 
-            return false;
+        // Kiểm tra địa chỉ
+        String diaChi = diaChiField.getText().trim();
+        if (diaChi.isEmpty() || diaChi.equals("Nhập địa chỉ đầy đủ")) {
+            diaChiField.setState(CustomTextField.State.INVALID);
+            diaChiField.setErrorMessage("Địa chỉ không được để trống");
+            if (firstInvalidField == null) firstInvalidField = diaChiField;
+            isValid = false;
         }
-        
-        return true;
+
+        // Kiểm tra ngày sinh
+        if (ngaySinhDate.getDate() == null) {
+            ngaySinhDate.setState(CustomDatePicker.State.INVALID);
+            ngaySinhDate.setErrorMessage("Vui lòng chọn ngày sinh");
+            if (firstInvalidField == null) firstInvalidField = ngaySinhDate;
+            isValid = false;
+        }
+
+        // Focus vào ô đầu tiên bị lỗi (nếu có)
+        if (firstInvalidField != null) {
+            firstInvalidField.requestFocus();
+        }
+
+        return isValid;
     }
+
 
     private void handleCancel() {
         // Code xử lý hủy

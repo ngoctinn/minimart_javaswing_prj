@@ -1,60 +1,33 @@
 package org.example.DTO;
 
 public class PhanQuyenDTO {
-    private String maPhanQuyen;
-    private String phanQuyen;
     private String maCV;
-    private String module;
-    private boolean trangThai;
+    private String maChucNang;
+    private int quyen;
 
     public PhanQuyenDTO() {
     }
-
-    public PhanQuyenDTO(String maPhanQuyen, String phanQuyen, String maCV, String module, boolean trangThai) {
-        this.maPhanQuyen = maPhanQuyen;
-        this.phanQuyen = phanQuyen;
+    public PhanQuyenDTO(String maCV, String maChucNang, int quyen) {
         this.maCV = maCV;
-        this.module = module;
-        this.trangThai = trangThai;
+        this.maChucNang = maChucNang;
+        this.quyen = quyen;
     }
-
-    public String getMaPhanQuyen() {
-        return maPhanQuyen;
-    }
-
-    public void setMaPhanQuyen(String maPhanQuyen) {
-        this.maPhanQuyen = maPhanQuyen;
-    }
-
-    public String getPhanQuyen() {
-        return phanQuyen;
-    }
-
-    public void setPhanQuyen(String phanQuyen) {
-        this.phanQuyen = phanQuyen;
-    }
-
     public String getMaCV() {
         return maCV;
     }
-
     public void setMaCV(String maCV) {
         this.maCV = maCV;
     }
-
-    public String getModule() {
-        return module;
+    public String getMaChucNang() {
+        return maChucNang;
     }
-
-    public void setModule(String module) {
-        this.module = module;
+    public void setMaChucNang(String maChucNang) {
+        this.maChucNang = maChucNang;
     }
-
-    public boolean isTrangThai() {
-        return trangThai;
+    public int getQuyen() {
+        return quyen;
     }
-
-    public void setTrangThai(boolean trangThai) {
-        this.trangThai = trangThai;
+    public void setQuyen(int quyen) {
+        this.quyen = quyen;
     }
 }

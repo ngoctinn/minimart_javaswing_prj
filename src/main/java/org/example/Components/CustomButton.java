@@ -64,6 +64,14 @@ public class CustomButton extends JButton {
                 new Color(160, 160, 160), // hover
                 new Color(120, 120, 120, 120)  // disabled
         };
+        
+        // Vô hiệu hóa (Disable)
+        public static final Color[] DISABLE = {
+                new Color(200, 200, 200), // normal
+                new Color(180, 180, 180), // press
+                new Color(210, 210, 210), // hover
+                new Color(200, 200, 200, 120)  // disabled
+        };
     }
 
     // =============== CONSTRUCTORS ===============
@@ -210,6 +218,10 @@ public class CustomButton extends JButton {
         // Button màu xám
         CustomButton grayButton = new CustomButton("Gray Button");
         grayButton.setButtonColors(CustomButton.ButtonColors.GRAY);
+        
+        // Button vô hiệu hóa (Disable)
+        CustomButton disableButton = new CustomButton("Disable Button");
+        disableButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
 
         // 4. Tạo bộ màu tùy chỉnh
         Color[] customColors = {
@@ -239,6 +251,7 @@ public class CustomButton extends JButton {
         frame.add(orangeButton);
         frame.add(redButton);
         frame.add(grayButton);
+        frame.add(disableButton);
         frame.add(customButton);
 
         frame.setVisible(true);

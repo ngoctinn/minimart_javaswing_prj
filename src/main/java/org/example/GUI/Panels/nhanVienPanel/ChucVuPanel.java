@@ -26,7 +26,7 @@ public class ChucVuPanel extends JPanel {
     private RoundedPanel permissionPanel;
 
     // Top panel components
-    private PlaceholderTextField searchField;
+    private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
     private CustomButton addButton;
@@ -36,8 +36,8 @@ public class ChucVuPanel extends JPanel {
     private CustomButton cancelButton;
 
     // Form components
-    private CustomTexField maChucVuField;
-    private CustomTexField tenChucVuField;
+    private CustomTextField maChucVuField;
+    private CustomTextField tenChucVuField;
 
     // Permission components
     private ButtonGroup[] permissionGroups;
@@ -317,6 +317,7 @@ public class ChucVuPanel extends JPanel {
      */
     private void setFormEditable(boolean editable) {
         tenChucVuField.setEditable(editable);
+        tenChucVuField.setState(CustomTextField.State.DEFAULT);
 
         // Kích hoạt/vô hiệu hóa các radio button phân quyền
         if (noAccessButtons != null && viewOnlyButtons != null && editButtons != null) {
@@ -329,10 +330,15 @@ public class ChucVuPanel extends JPanel {
 
         // Kích hoạt/vô hiệu hóa các nút
         saveButton.setEnabled(editable);
+        saveButton.setButtonColors(editable ? CustomButton.ButtonColors.GREEN : CustomButton.ButtonColors.DISABLE);
         cancelButton.setEnabled(editable);
+        cancelButton.setButtonColors(editable ? CustomButton.ButtonColors.RED : CustomButton.ButtonColors.DISABLE);
         addButton.setEnabled(!editable);
+        addButton.setButtonColors(editable ? CustomButton.ButtonColors.DISABLE : CustomButton.ButtonColors.BLUE);
         editButton.setEnabled(!editable);
+        editButton.setButtonColors(editable ? CustomButton.ButtonColors.DISABLE : CustomButton.ButtonColors.GREEN);
         deleteButton.setEnabled(!editable);
+        deleteButton.setButtonColors(editable ? CustomButton.ButtonColors.DISABLE : CustomButton.ButtonColors.RED);
     }
 
     /**
@@ -412,10 +418,9 @@ public class ChucVuPanel extends JPanel {
         titlePanel.add(Box.createHorizontalStrut(40));
 
         // Search field
-        searchField = new PlaceholderTextField("Tìm kiếm theo mã, tên chức vụ");
+        searchField = new CustomTextField("Tìm kiếm theo mã, tên chức vụ");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setMaximumSize(new Dimension(300, 30));
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         searchPanel.add(searchField);
         searchPanel.add(Box.createHorizontalStrut(5));
 
@@ -551,7 +556,8 @@ public class ChucVuPanel extends JPanel {
         gbc.gridy = 0;
         formPanel.add(maChucVuLabel, gbc);
 
-        maChucVuField = new CustomTexField("");
+        maChucVuField = new CustomTextField("Mã chức vụ tự động");
+        maChucVuField.setState(CustomTextField.State.DISABLED);
         maChucVuField.setEditable(false); // Mã chức vụ không cho phép chỉnh sửa
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -565,8 +571,8 @@ public class ChucVuPanel extends JPanel {
         gbc.weightx = 0.0;
         formPanel.add(tenChucVuLabel, gbc);
 
-        tenChucVuField = new CustomTexField("");
-        tenChucVuField.setEditable(false); // Ban đầu không cho phép chỉnh sửa
+        tenChucVuField = new CustomTextField("Nhập tên chức vụ (vd: Quản lý)");
+        tenChucVuField.setState(CustomTextField.State.DISABLED);
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.weightx = 1.0;
@@ -578,14 +584,14 @@ public class ChucVuPanel extends JPanel {
 
         // Nút Lưu
         saveButton = new CustomButton("Lưu");
-        saveButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        saveButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
         saveButton.setEnabled(false); // Ban đầu vô hiệu hóa
         buttonPanel.add(saveButton);
 
         // Nút Hủy
         cancelButton = new CustomButton("Hủy");
-        cancelButton.setButtonColors(CustomButton.ButtonColors.RED);
-        cancelButton.setEnabled(false); // Ban đầu vô hiệu hóa
+        cancelButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
+        cancelButton.setEnabled(false);// Ban đầu vô hiệu hóa
         buttonPanel.add(cancelButton);
 
         gbc.gridx = 0;

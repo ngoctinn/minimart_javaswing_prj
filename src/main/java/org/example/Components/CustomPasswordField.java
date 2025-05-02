@@ -286,9 +286,9 @@ public class CustomPasswordField extends JPasswordField {
             // Thiết lập FlatLaf Look and Feel
             UIManager.setLookAndFeel(new com.formdev.flatlaf.FlatLightLaf());
             
+
             // Bật tính năng hiển thị nút ẩn/hiện mật khẩu mặc định
             UIManager.put("PasswordField.showRevealButton", true);
-            
         } catch (Exception ex) {
             System.err.println("Failed to initialize LaF");
         }

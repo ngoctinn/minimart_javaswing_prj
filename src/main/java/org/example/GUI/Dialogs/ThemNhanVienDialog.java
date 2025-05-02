@@ -1,21 +1,23 @@
 package org.example.GUI.Dialogs;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import org.example.Components.*;
-import org.example.Utils.diaChiPanelAPI;
+// Bỏ import không cần thiết
+// import org.example.Utils.diaChiPanelAPI;
 import org.example.DTO.nhanVienDTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+// Bỏ import không cần thiết
+// import java.time.format.DateTimeFormatter;
 
 public class ThemNhanVienDialog extends JDialog {
-    private CustomTextField maNVField, tenNVField, emailField, soDTField, maCVField, maHDField;
+    // Thay đổi khai báo diaChiPanel và trangThaiComboBox
+    private CustomTextField maNVField, tenNVField, emailField, soDTField, maCVField, maHDField, diaChiField;
     private CustomPasswordField matKhauField;
-    private JComboBox<String> trangThaiComboBox;
     private JRadioButton gioiTinhNam, gioiTinhNu;
     private JSpinner ngaySinhSpinner;
-    private diaChiPanelAPI diaChiPanel;
     private CustomButton luuButton, huyButton;
     private boolean isEditMode = false;
     private nhanVienDTO nhanVienEdit;
@@ -23,10 +25,11 @@ public class ThemNhanVienDialog extends JDialog {
     public ThemNhanVienDialog() {
         this.isEditMode = false;
         try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.setLookAndFeel(new FlatLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
             UIManager.put("ComboBox.buttonBackground", Color.WHITE);
             UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            UIManager.put("PasswordField.showRevealButton", true);
             initGUI();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
@@ -71,7 +74,7 @@ public class ThemNhanVienDialog extends JDialog {
         mainPanel.setBackground(Color.WHITE);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setLayout(new GridBagLayout());
-        
+
         // Create form panel with components
         JPanel formPanel = createFormPanel();
         GridBagConstraints mainGbc = new GridBagConstraints();
@@ -89,7 +92,13 @@ public class ThemNhanVienDialog extends JDialog {
         // Add event listeners
         addEventListeners();
 
-        pack();
+        // Nếu đang ở chế độ sửa, cần điền thông tin nhân viên vào form sau khi các thành phần đã được khởi tạo
+        if (isEditMode && nhanVienEdit != null) {
+            fillFormWithEmployeeData();
+        }
+
+        pack(); // Gọi pack() sau khi đã thêm và điền dữ liệu
+        setLocationRelativeTo(null); // Căn giữa sau khi pack()
         setVisible(true);
     }
 
@@ -102,7 +111,7 @@ public class ThemNhanVienDialog extends JDialog {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
 
-        // Tạo panel bên trái
+        // Tạo panel bên trái (5 trường)
         JPanel leftPanel = new JPanel(new GridBagLayout());
         leftPanel.setBackground(Color.WHITE);
         leftPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
@@ -113,19 +122,19 @@ public class ThemNhanVienDialog extends JDialog {
 
         // Thêm các thành phần bên trái
         maNVField = new CustomTextField("Mã tự động (vd: NV001)");
-        addFormRow(leftPanel, "Mã nhân viên", maNVField, 0, leftGbc);
-        maNVField.setEnabled(!isEditMode); // Không cho phép sửa mã nhân viên khi ở chế độ sửa
-        
+        addFormRow(leftPanel, "Mã nhân viên", maNVField.getContainer(), 0, leftGbc); // Row 0
+        maNVField.setEnabled(!isEditMode);
+
         tenNVField = new CustomTextField("Nhập tên nhân viên");
-        addFormRow(leftPanel, "Tên nhân viên", tenNVField, 1, leftGbc);
-        
+        addFormRow(leftPanel, "Tên nhân viên", tenNVField.getContainer(), 1, leftGbc); // Row 1
+
         // Ngày sinh
         SpinnerDateModel dateModel = new SpinnerDateModel();
         ngaySinhSpinner = new JSpinner(dateModel);
         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(ngaySinhSpinner, "dd/MM/yyyy");
         ngaySinhSpinner.setEditor(dateEditor);
-        addFormRow(leftPanel, "Ngày sinh", ngaySinhSpinner, 2, leftGbc);
-        
+        addFormRow(leftPanel, "Ngày sinh", ngaySinhSpinner, 2, leftGbc); // Row 2
+
         // Giới tính
         JPanel gioiTinhPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         gioiTinhPanel.setBackground(Color.WHITE);
@@ -137,18 +146,14 @@ public class ThemNhanVienDialog extends JDialog {
         gioiTinhNam.setSelected(true); // Default selection
         gioiTinhPanel.add(gioiTinhNam);
         gioiTinhPanel.add(gioiTinhNu);
-        addFormRow(leftPanel, "Giới tính", gioiTinhPanel, 3, leftGbc);
-        
-        // Số điện thoại
-        addFormRow(leftPanel, "Số điện thoại", soDTField = new CustomTextField("0123456789"), 4, leftGbc);
-        
-        // Email
-        addFormRow(leftPanel, "Email", emailField = new CustomTextField("example@gmail.com"), 5, leftGbc);
-        
-        // Mật khẩu
-        addFormRow(leftPanel, "Mật khẩu", matKhauField = new CustomPasswordField("Nhập mật khẩu"), 6, leftGbc);
+        addFormRow(leftPanel, "Giới tính", gioiTinhPanel, 3, leftGbc); // Row 3
 
-        // Tạo panel bên phải
+        // Số điện thoại
+        soDTField = new CustomTextField("0123456789");
+        addFormRow(leftPanel, "Số điện thoại", soDTField.getContainer(), 4, leftGbc); // Row 4
+
+
+        // Tạo panel bên phải (5 trường)
         JPanel rightPanel = new JPanel(new GridBagLayout());
         rightPanel.setBackground(Color.WHITE);
         rightPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
@@ -158,29 +163,22 @@ public class ThemNhanVienDialog extends JDialog {
         rightGbc.weightx = 1.0;
 
         // Thêm các thành phần bên phải
-        
-        // Trạng thái
-        trangThaiComboBox = new JComboBox<>(new String[]{"Đang làm việc", "Đã nghỉ việc"});
-        addFormRow(rightPanel, "Trạng thái", trangThaiComboBox, 1, rightGbc);
-        
+        // Email (Chuyển sang phải)
+        addFormRow(rightPanel, "Email", emailField = new CustomTextField("example@gmail.com"), 0, rightGbc); // Row 0
+
+        // Mật khẩu (Chuyển sang phải)
+        matKhauField = new CustomPasswordField("Nhập mật khẩu");
+        addFormRow(rightPanel, "Mật khẩu", matKhauField.getContainer(), 1, rightGbc); // Row 1
+
+
         // Mã chức vụ
-        addFormRow(rightPanel, "Mã chức vụ", maCVField = new CustomTextField("Nhập mã chức vụ"), 2, rightGbc);
-        
+        addFormRow(rightPanel, "Mã chức vụ", maCVField = new CustomTextField("Nhập mã chức vụ"), 3, rightGbc); // Row 3
+
         // Mã hợp đồng
-        addFormRow(rightPanel, "Mã hợp đồng", maHDField = new CustomTextField("Nhập mã hợp đồng"), 3, rightGbc);
-        
-        // Thêm panel địa chỉ
-        diaChiPanel = new diaChiPanelAPI();
-        rightGbc.gridx = 0;
-        rightGbc.gridy = 4; 
-        rightGbc.gridwidth = 2;
-        rightGbc.gridheight = 3;
-        rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(diaChiPanel, rightGbc);
-        
-        // Reset gridwidth và gridheight cho các thành phần tiếp theo
-        rightGbc.gridwidth = 1;
-        rightGbc.gridheight = 1;
+        addFormRow(rightPanel, "Mã hợp đồng", maHDField = new CustomTextField("Nhập mã hợp đồng"), 4, rightGbc); // Row 4
+
+        // Địa chỉ - Sử dụng CustomTextField
+        addFormRow(rightPanel, "Địa chỉ", diaChiField = new CustomTextField("Nhập địa chỉ"), 5, rightGbc); // Row 5
 
         // Thêm cả hai panel vào panel chính
         gbc.gridx = 0;
@@ -253,41 +251,38 @@ public class ThemNhanVienDialog extends JDialog {
             // Điền thông tin từ đối tượng nhanVienEdit vào các trường nhập liệu
             maNVField.setText(nhanVienEdit.getMaNV());
             tenNVField.setText(nhanVienEdit.getTenNV());
-            
+
             // Thiết lập ngày sinh
             if (nhanVienEdit.getNgaySinh() != null) {
                 java.util.Date date = java.util.Date.from(nhanVienEdit.getNgaySinh().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
                 ngaySinhSpinner.setValue(date);
             }
-            
+
             // Thiết lập giới tính
             if ("Nam".equals(nhanVienEdit.getGioiTinh())) {
                 gioiTinhNam.setSelected(true);
             } else {
                 gioiTinhNu.setSelected(true);
             }
-            
+
             // Thiết lập số điện thoại
             soDTField.setText(String.valueOf(nhanVienEdit.getSoDT()));
-            
-            // Thiết lập email
+
+            // Thiết lập email (đã chuyển sang phải)
             emailField.setText(nhanVienEdit.getEmail());
-            
-            // Thiết lập mật khẩu
+
+            // Thiết lập mật khẩu (đã chuyển sang phải)
             matKhauField.setText(nhanVienEdit.getMatKhau());
-            
-            // Thiết lập trạng thái
-            trangThaiComboBox.setSelectedIndex(nhanVienEdit.getTrangThai());
-            
+
             // Thiết lập mã chức vụ và mã hợp đồng
             maCVField.setText(nhanVienEdit.getMaCV());
             maHDField.setText(nhanVienEdit.getMaHD());
-            
-            // TODO: Thiết lập địa chỉ cho diaChiPanel
-            // diaChiPanel.setDiaChi(nhanVienEdit.getDiaChi());
+
+            // Thiết lập địa chỉ
+            diaChiField.setText(nhanVienEdit.getDiaChi());
         }
     }
-    
+
     private void handleSave() {
         // Code xử lý lưu dữ liệu nhân viên
         // Lấy giá trị từ các trường nhập liệu
@@ -297,18 +292,25 @@ public class ThemNhanVienDialog extends JDialog {
         LocalDate ngaySinh = LocalDate.ofInstant(date.toInstant(), java.time.ZoneId.systemDefault());
         String gioiTinh = gioiTinhNam.isSelected() ? "Nam" : "Nữ";
         
-        // Lấy địa chỉ từ diaChiPanel
-        String diaChi = "";
+        // Lấy địa chỉ từ diaChiField
+        String diaChi = diaChiField.getText();
+        // Bỏ phần lấy địa chỉ từ diaChiPanel
+        /*
         if (diaChiPanel.getSelectedProvince() != null && diaChiPanel.getSelectedDistrict() != null && diaChiPanel.getSelectedWard() != null) {
-            diaChi = diaChiPanel.getSelectedWard().getName() + ", " + 
-                    diaChiPanel.getSelectedDistrict().getName() + ", " + 
+            diaChi = diaChiPanel.getSelectedWard().getName() + ", " +
+                    diaChiPanel.getSelectedDistrict().getName() + ", " +
                     diaChiPanel.getSelectedProvince().getName();
         } else {
-            diaChi = "Chưa chọn địa chỉ";
+            // Lấy địa chỉ từ DTO nếu đang sửa và người dùng chưa chọn lại
+            if (isEditMode && nhanVienEdit != null && nhanVienEdit.getDiaChi() != null && !nhanVienEdit.getDiaChi().isEmpty()) {
+                 diaChi = nhanVienEdit.getDiaChi();
+            } else {
+                 diaChi = ""; // Hoặc giá trị mặc định nếu không có địa chỉ cũ và không chọn mới
+            }
         }
-        
-        String email = emailField.getText();
-        int trangThai = trangThaiComboBox.getSelectedIndex();
+        */
+
+        String email = emailField.getText(); // Lấy email (đã ở panel phải)
         double soDT = 0;
         try {
             soDT = Double.parseDouble(soDTField.getText());
@@ -316,30 +318,29 @@ public class ThemNhanVienDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String matKhau = new String(matKhauField.getPassword());
+        String matKhau = new String(matKhauField.getPassword()); // Lấy mật khẩu (đã ở panel phải)
         String maCV = maCVField.getText();
         String maHD = maHDField.getText();
-        
+
         // Kiểm tra dữ liệu
-        if (tenNV.isEmpty() || email.isEmpty() || matKhau.isEmpty()) {
+        if (tenNV.isEmpty() || email.isEmpty() || matKhau.isEmpty() || diaChi.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         // Tạo đối tượng nhanVienDTO từ dữ liệu form
         nhanVienDTO nhanVienDTO = new nhanVienDTO();
         nhanVienDTO.setMaNV(maNV);
         nhanVienDTO.setTenNV(tenNV);
         nhanVienDTO.setNgaySinh(ngaySinh);
         nhanVienDTO.setGioiTinh(gioiTinh);
-        nhanVienDTO.setDiaChi(diaChi);
+        nhanVienDTO.setDiaChi(diaChi); // Gán địa chỉ từ diaChiField
         nhanVienDTO.setEmail(email);
-        nhanVienDTO.setTrangThai(trangThai);
         nhanVienDTO.setSoDT(soDT);
         nhanVienDTO.setMatKhau(matKhau);
         nhanVienDTO.setMaCV(maCV);
         nhanVienDTO.setMaHD(maHD);
-        
+
         // Thực hiện lưu hoặc cập nhật dữ liệu
         int result = 0;
         if (isEditMode) {

@@ -204,9 +204,13 @@ public class ThemLoaiSanPhamDialog extends JDialog {
     }
 
     private boolean validateInput() {
+
+        // trả về Default nếu hợp lệ
+        maLoaiField.setState(CustomTextField.State.DISABLED);
         if (tenLoaiField.getText().trim().isEmpty() || tenLoaiField.getText().equals("Nhập tên loại (vd: Đồ uống)")) {
             tenLoaiField.setState(CustomTextField.State.INVALID);
             tenLoaiField.setErrorMessage("Tên loại sản phẩm không được để trống");
+            tenLoaiField.requestFocus();
             return false;
         }
         tenLoaiField.setState(CustomTextField.State.VALID);
