@@ -1,19 +1,17 @@
 package org.example.GUI;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.example.GUI.Panels.baoCaoPanel;
 import org.example.GUI.Panels.doiTacPanel.KhachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
-import org.example.GUI.Panels.giaoDichPanel.traHangNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.SanPhamPanel;
 import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChucVuPanel;
 import org.example.GUI.Panels.nhanVienPanel.NhanVienPanel;
-import org.example.GUI.Panels.tongQuanPanel;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -30,7 +28,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JPanel contentPanel;
 
     // Các JMenu
-    private JMenu tongQuanMenu, hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
+    private JMenu hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
 
     // Các JMenuItem cho JMenu giaoDich
     private JMenuItem banHangItem ,hoaDonItem, nhapHangItem;
@@ -79,7 +77,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         addActionListeners();
 
         // Thêm các JMenu vào menuBar
-        menuBar.add(tongQuanMenu);
         menuBar.add(hangHoaMenu);
         menuBar.add(giaoDichMenu);
         menuBar.add(doiTacMenu);
@@ -95,7 +92,6 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void createMenus() {
         // Tạo các JMenu
-        tongQuanMenu = new JMenu("Tổng quan");
         hangHoaMenu = new JMenu("Hàng hóa");
         giaoDichMenu = new JMenu("Giao dịch");
         doiTacMenu = new JMenu("Đối tác");
@@ -104,7 +100,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         userMenu = new JMenu("Người dùng");
 
         // Tạo và thêm Icon cho các JMenu
-        tongQuanMenu.setIcon(createIcon("tongquan", 16));
         hangHoaMenu.setIcon(createIcon("hanghoa", 16));
         giaoDichMenu.setIcon(createIcon("giaodich", 16));
         doiTacMenu.setIcon(createIcon("doitac", 16));
@@ -174,20 +169,6 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void addActionListeners() {
         // Thêm ActionListener cho JMenu
-        tongQuanMenu.addMenuListener(new MenuListener() {
-            @Override
-            public void menuSelected(MenuEvent e) {
-                showPanel("tongQuan");
-            }
-
-            @Override
-            public void menuDeselected(MenuEvent e) {
-
-            }
-
-            @Override
-            public void menuCanceled(MenuEvent e) {}
-        });
 
         baoCaoMenu.addMenuListener(new MenuListener() {
             @Override
@@ -206,17 +187,15 @@ public class MenuFrame extends JFrame implements ActionListener {
             }
         });
 
+        // Thêm ActionListener cho các JMenuItem hàng hóa
+        sanPhamItem.addActionListener(this);
+        loaiSanPhamItem.addActionListener(this);
+
 
         // Thêm ActionListener cho các JMenuItem giao dịch
         banHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
         nhapHangItem.addActionListener(this);
-
-
-        // Thêm ActionListener cho các JMenuItem hàng hóa
-        sanPhamItem.addActionListener(this);
-        loaiSanPhamItem.addActionListener(this);
-
 
 
         // Thêm ActionListener cho các JMenuItem đối tác
@@ -246,8 +225,8 @@ public class MenuFrame extends JFrame implements ActionListener {
             contentPanel.add(entry.getKey(), entry.getValue());
         }
 
-        // Hiển thị panel mặc định
-        cardLayout.show(contentPanel, "danhMuc");
+        // Hiển thị panel sản phẩm mặc định
+        cardLayout.show(contentPanel, "sanPham");
 
         // Thêm contentPanel vào JFrame
         add(contentPanel, BorderLayout.CENTER);
@@ -255,8 +234,6 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void initializePanels() {
         panelMap = new HashMap<>();
-
-        panelMap.put("tongQuan", new tongQuanPanel());
 
         // Hàng hóa panels
         panelMap.put("sanPham", new SanPhamPanel());
@@ -266,7 +243,6 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("banHang", new BanHangPanel());
         panelMap.put("hoaDon", new hoaDonPanel());
         panelMap.put("nhapHang", new nhapHangPanel());
-        panelMap.put("traHang", new traHangNhapPanel());
 
         // Đối tác panels
         panelMap.put("khachHang", new KhachHangPanel());
@@ -360,6 +336,13 @@ public class MenuFrame extends JFrame implements ActionListener {
         UIManager.put("MenuBar.selectionForeground", Color.WHITE);
         UIManager.put("MenuBar.hoverBackground", new Color(0, 90, 195));
         UIManager.put("MenuBar.itemMargins", new Insets(7, 5, 7, 5));
+        
+        // Menu selection color
+        UIManager.put("Menu.selectionBackground", new Color(0, 80, 180));
+        UIManager.put("Menu.selectionForeground", Color.WHITE);
+        UIManager.put("Menu.background", new Color(0, 102, 204));
+        UIManager.put("Menu.foreground", Color.WHITE);
+        UIManager.put("Menu.opaque", true);
 
         // JMenuItem
         UIManager.put("MenuItem.foreground", Color.WHITE);
@@ -374,7 +357,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(new FlatMacLightLaf());
+            UIManager.setLookAndFeel(new FlatLightLaf());
             setupUIManagerProperties();
             MenuFrame menuFrame = new MenuFrame();
 

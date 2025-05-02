@@ -8,7 +8,22 @@ import java.util.ArrayList;
 
 public class ChucVuDAO implements DAOInterface<ChucVuDTO> {
     @Override
-    public int insert(ChucVuDTO chucVuDTO) {
+    public int insert(ChucVuDTO t) {
+        try {
+        //Bước 1: Tạo kết nối đến CSDL
+        Connection connection = JDBCUtil.getConnection();
+        //Bước 2: Tạo ra đối tượng statement từ connection
+        String sql = "INSERT INTO CHUCVU(maCV, tenCV) VALUES(?, ?)";
+        //Bước 3: Thực hiện câu lệnh SQL
+            int result = JDBCUtil.executePreparedUpdate(sql,
+                    t.getMaCV(),
+                    t.getTenCV());
+            //Bước 4: Đóng kết nối
+            return result;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 

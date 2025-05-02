@@ -199,10 +199,70 @@ public class SanPhamPanel extends JPanel {
     //======================CÀI ĐẶT CÁC PANEL CON=================================
     private void createPanels() {
         // Create sub-panels
-        topPanel = new RoundedPanel(20);
+        topPanel = new RoundedPanel(20) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ nền panel
+                g2d.setColor(getBackground());
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                
+                // Vẽ đổ bóng
+                int shadowSize = 5;
+                for (int i = 0; i < shadowSize; i++) {
+                    g2d.setColor(new Color(0, 0, 0, (int)(38 * (1 - (float)i / shadowSize))));
+                    g2d.drawRoundRect(0, i, getWidth() - 1, getHeight() - 1, 20, 20);
+                }
+                g2d.dispose();
+            }
+        };
+        
         bottomPanel = new RoundedPanel(20);
-        bottomPanelLeft = new RoundedPanel(20);
-        bottomPanelRight = new RoundedPanel(20);
+        
+        bottomPanelLeft = new RoundedPanel(20) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ nền panel
+                g2d.setColor(getBackground());
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                
+                // Vẽ đổ bóng
+                int shadowSize = 5;
+                for (int i = 0; i < shadowSize; i++) {
+                    g2d.setColor(new Color(0, 0, 0, (int)(38 * (1 - (float)i / shadowSize))));
+                    g2d.drawRoundRect(0, i, getWidth() - 1, getHeight() - 1, 20, 20);
+                }
+                g2d.dispose();
+            }
+        };
+        
+        bottomPanelRight = new RoundedPanel(20) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ nền panel
+                g2d.setColor(getBackground());
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                
+                // Vẽ đổ bóng
+                int shadowSize = 5;
+                for (int i = 0; i < shadowSize; i++) {
+                    g2d.setColor(new Color(0, 0, 0, (int)(38 * (1 - (float)i / shadowSize))));
+                    g2d.drawRoundRect(0, i, getWidth() - 1, getHeight() - 1, 20, 20);
+                }
+                g2d.dispose();
+            }
+        };
 
         // Set background colors
         topPanel.setBackground(Color.WHITE);
@@ -211,12 +271,11 @@ public class SanPhamPanel extends JPanel {
         bottomPanelRight.setBackground(Color.WHITE);
 
         // Set panel sizes
-        // Set height for top panel
         bottomPanelLeft.setPreferredSize(new Dimension(250, 0)); // Fixed width for left panel
 
         // Set layouts
         topPanel.setLayout(new BorderLayout());
-        bottomPanel.setLayout(new BorderLayout(5, 0));
+        bottomPanel.setLayout(new BorderLayout(10, 0));
         bottomPanelLeft.setLayout(new FlowLayout());
         bottomPanelRight.setLayout(new BoxLayout(bottomPanelRight, BoxLayout.Y_AXIS));
     }
@@ -345,15 +404,34 @@ public class SanPhamPanel extends JPanel {
 
     //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
     private void setupBottomPanelLeft() {
-        // Set layout for bottomPanelLeft using FlowLayout
+        // Set layout for bottomPanelLeft
         bottomPanelLeft.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         bottomPanelLeft.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Create panels for each section
-        JPanel loaiSanPhamPanel = new JPanel();
+        JPanel loaiSanPhamPanel = new RoundedPanel(15) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ nền panel
+                g2d.setColor(getBackground());
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+                
+                // Vẽ đổ bóng
+                int shadowSize = 5;
+                for (int i = 0; i < shadowSize; i++) {
+                    g2d.setColor(new Color(0, 0, 0, (int)(38 * (1 - (float)i / shadowSize))));
+                    g2d.drawRoundRect(0, i, getWidth() - 1, getHeight() - 1, 15, 15);
+                }
+                g2d.dispose();
+            }
+        };
         loaiSanPhamPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 5));
         loaiSanPhamPanel.setBackground(Color.WHITE);
-        loaiSanPhamPanel.setPreferredSize(new Dimension(230,80));
+        loaiSanPhamPanel.setPreferredSize(new Dimension(230, 80));
         loaiSanPhamPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Title for Loại sản phẩm
@@ -377,7 +455,26 @@ public class SanPhamPanel extends JPanel {
         loaiSanPhamPanel.add(loaiSanPhamComboBox);
 
         // Create panel for price sorting
-        JPanel sapXepPanel = new JPanel();
+        JPanel sapXepPanel = new RoundedPanel(15) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ nền panel
+                g2d.setColor(getBackground());
+                g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+                
+                // Vẽ đổ bóng
+                int shadowSize = 5;
+                for (int i = 0; i < shadowSize; i++) {
+                    g2d.setColor(new Color(0, 0, 0, (int)(38 * (1 - (float)i / shadowSize))));
+                    g2d.drawRoundRect(0, i, getWidth() - 1, getHeight() - 1, 15, 15);
+                }
+                g2d.dispose();
+            }
+        };
         sapXepPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 5));
         sapXepPanel.setBackground(Color.WHITE);
         sapXepPanel.setPreferredSize(new Dimension(230, 120));
