@@ -150,21 +150,47 @@ public class KhachHangPanel extends JPanel {
         String searchText = searchField.getText().trim();
         if (!searchText.isEmpty()) {
             // Implement search logic here
-            // ArrayList<KhachHangDTO> searchResults = new KhachHangBUS().timKiemKhachHang(searchText);
-            // DefaultTableModel model = (DefaultTableModel) khachHangTable.getModel();
-            // model.setRowCount(0); // Clear existing rows
-            // loadKhachHangData(model, searchResults);
+             ArrayList<KhachHangDTO> searchResults = new KhachHangBUS().timKiemKhachHang(searchText);
+             DefaultTableModel model = (DefaultTableModel) khachHangTable.getModel();
+             model.setRowCount(0); // Clear existing rows
+             loadKhachHangData(model, searchResults);
         } else {
             refreshKhachHangTable(); // If search text is empty, refresh the table
         }
     }
 
     private void handleImportButton() {
-        // TODO: Implement import action
+        // Hiển thị hộp thoại chọn file
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn file Excel để nhập");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files", "xlsx", "xls"));
+        
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // TODO: Xử lý nhập dữ liệu từ file Excel
+            // File selectedFile = fileChooser.getSelectedFile();
+            // Gọi phương thức nhập dữ liệu từ file Excel
+            JOptionPane.showMessageDialog(this, "Chức năng đang được phát triển", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private void handleExportButton() {
-        // TODO: Implement export action
+        // Hiển thị hộp thoại lưu file
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Lưu danh sách khách hàng");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files", "xlsx"));
+        
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // TODO: Xử lý xuất dữ liệu ra file Excel
+            // File selectedFile = fileChooser.getSelectedFile();
+            // Nếu file không có đuôi .xlsx, thêm vào
+            // if (!selectedFile.getName().toLowerCase().endsWith(".xlsx")) {
+            //     selectedFile = new File(selectedFile.getAbsolutePath() + ".xlsx");
+            // }
+            // Gọi phương thức xuất dữ liệu ra file Excel
+            JOptionPane.showMessageDialog(this, "Chức năng đang được phát triển", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     //======================CÀI ĐẶT PANEL CHÍNH=================================
@@ -313,188 +339,114 @@ public class KhachHangPanel extends JPanel {
 
     //======================CÀI ĐẶT PANEL DƯỚI=================================
     private void setupBottomPanel() {
-        // Add padding to the bottom panel
+        // Thêm padding cho panel dưới
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Sử dụng BoxLayout theo chiều dọc thay vì JSplitPane
-        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
-
-        // Create customer panel
-        JPanel customerPanel = new JPanel(new BorderLayout(10, 10));
-        customerPanel.setBackground(Color.WHITE);
-
-        // Create invoice panel
-        JPanel invoicePanel = new JPanel(new BorderLayout(10, 10));
-        invoicePanel.setBackground(Color.WHITE);
-
-        // Setup customer panel
-        JPanel customerTablePanel = createCustomerTablePanel();
-        customerPanel.add(customerTablePanel, BorderLayout.CENTER);
-
-        // Setup invoice panel
-        // Create a title panel for the invoice list
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(Color.WHITE);
-        JLabel titleLabel = new JLabel("Lịch sử mua hàng");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 0));
-        titlePanel.add(titleLabel, BorderLayout.WEST);
-
-        // Create invoice table panel
-        JPanel invoiceTablePanel = createInvoiceTablePanel();
         
-        invoicePanel.add(titlePanel, BorderLayout.NORTH);
-        invoicePanel.add(invoiceTablePanel, BorderLayout.CENTER);
-
-        // Add panels to bottom panel with proper sizing
-        customerPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 300));
-        customerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-        invoicePanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 200));
-        invoicePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+        // Tạo layout cho panel dưới
+        bottomPanel.setLayout(new BorderLayout(10, 10));
         
-        bottomPanel.add(customerPanel);
-        bottomPanel.add(Box.createVerticalStrut(10)); // Khoảng cách giữa hai panel
-        bottomPanel.add(invoicePanel);
-    }
-
-    // Các phương thức setupLeftCustomerPanel và setupRightInvoicePanel đã được tích hợp vào setupBottomPanel
-
-    private JPanel createCustomerTablePanel() {
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(Color.WHITE);
-        JLabel titleLabel = new JLabel("Danh sách khách hàng");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 0));
-        tablePanel.add(titleLabel, BorderLayout.NORTH);
-
-        // Table data
-        String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng","Địa Chỉ","Điểm Tích Lũy","Giới tính", "Số Điện Thoại","Email","Ngày sinh","Tổng Chi Tiêu"};
-        KhachHangBUS khachHangBUS = new KhachHangBUS();
-        ArrayList<KhachHangDTO> danhSachKhachHang = khachHangBUS.layDanhSachKhachHang();
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        loadKhachHangData(model, danhSachKhachHang);
-        // Create table
-        khachHangTable = new CustomTable(model);
-
-        JScrollPane tableScrollPane = new JScrollPane(khachHangTable);
-        tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
-        return tablePanel;
-    }
-
-    private JPanel createInvoiceTablePanel() {
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(Color.WHITE);
-
-        // Table data - initialize with empty data
-        String[] columnNames = {"Mã hóa đơn", "Ngày tạo", "Nhân viên bán", "Tổng tiền", "Trạng thái"};
-        Object[][] data = {}; // Empty initially, will be populated when a customer is selected
-
-        // Create table
-        hoaDonTable = new CustomTable(data, columnNames);
-        JScrollPane tableScrollPane = new JScrollPane(hoaDonTable);
-        tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-        tablePanel.add(tableScrollPane, BorderLayout.CENTER);
-        return tablePanel;
-    }
-
-    private void updateInvoiceTable(String customerId) {
-        // TODO: Implement logic to fetch and display invoices for the selected customerId
-        // For now, just display sample data based on the customer ID
-
-        Object[][] invoiceData;
-        if (customerId == null || customerId.isEmpty()) {
-            invoiceData = new Object[][] {}; // Empty table
-        } else {
-            // Sample data for demonstration purposes
-            switch (customerId) {
-                case "KH001":
-                    invoiceData = new Object[][] {
-                            {"HD001", "15/05/2023", "Nguyễn Văn A", "450000", "Đã thanh toán"},
-                            {"HD008", "22/06/2023", "Trần Thị B", "350000", "Đã thanh toán"},
-                            {"HD015", "10/07/2023", "Nguyễn Văn A", "700000", "Đã thanh toán"}
-                    };
-                    break;
-                case "KH002":
-                    invoiceData = new Object[][] {
-                            {"HD003", "05/05/2023", "Trần Thị B", "780000", "Đã thanh toán"},
-                            {"HD012", "18/06/2023", "Lê Văn C", "578000", "Đã thanh toán"}
-                    };
-                    break;
-                case "KH003":
-                    invoiceData = new Object[][] {
-                            {"HD005", "10/05/2023", "Nguyễn Văn A", "243000", "Đã thanh toán"},
-                            {"HD010", "25/05/2023", "Trần Thị B", "500000", "Đã thanh toán"},
-                            {"HD018", "15/07/2023", "Lê Văn C", "500000", "Đã thanh toán"}
-                    };
-                    break;
-                case "KH004":
-                    invoiceData = new Object[][] {
-                            {"HD002", "02/05/2023", "Lê Văn C", "486000", "Đã thanh toán"},
-                            {"HD009", "24/05/2023", "Nguyễn Văn A", "800000", "Đã thanh toán"}
-                    };
-                    break;
-                case "KH005":
-                    invoiceData = new Object[][] {
-                            {"HD004", "08/05/2023", "Trần Thị B", "658000", "Đã thanh toán"},
-                            {"HD011", "01/06/2023", "Lê Văn C", "700000", "Đã thanh toán"},
-                            {"HD016", "12/07/2023", "Nguyễn Văn A", "500000", "Đã thanh toán"}
-                    };
-                    break;
-                default:
-                    invoiceData = new Object[][] {
-                            {"HD000", "01/01/2023", "Nhân viên", "100000", "Đã thanh toán"}
-                    };
-                    break;
+        // Tạo panel chứa bảng khách hàng
+        JPanel khachHangTablePanel = new JPanel(new BorderLayout());
+        khachHangTablePanel.setBackground(Color.WHITE);
+        
+        // Tạo tiêu đề cho bảng khách hàng
+        JLabel khachHangTableTitle = new JLabel("Danh sách khách hàng");
+        khachHangTableTitle.setFont(new Font("Roboto", Font.BOLD, 16));
+        khachHangTableTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        khachHangTablePanel.add(khachHangTableTitle, BorderLayout.NORTH);
+        
+        // Tạo bảng khách hàng
+        String[] khachHangColumns = {"Mã KH", "Họ tên", "Địa chỉ", "Điểm tích lũy", "Giới tính", "Số điện thoại", "Email", "Ngày sinh"};
+        DefaultTableModel khachHangModel = new DefaultTableModel(khachHangColumns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không cho phép chỉnh sửa trực tiếp trên bảng
             }
-        }
-
-        // Update the invoice table with new data
-        hoaDonTable.setModel(new DefaultTableModel(
-                invoiceData,
-                new String[] {"Mã hóa đơn", "Ngày tạo", "Nhân viên bán", "Tổng tiền", "Trạng thái"}
-        ));
-    }
-
-    // Phương thức mới để tải dữ liệu khách hàng vào model
-    private void loadKhachHangData(DefaultTableModel model, ArrayList<?> danhSachKhachHang) {
-        // TODO: Implement loading customer data
-        for (Object obj : danhSachKhachHang) {
-            if (obj instanceof KhachHangDTO) {
-                KhachHangDTO khachHang = (KhachHangDTO) obj;
-                model.addRow(new Object[]{
-                        khachHang.getMaKH(),
-                        khachHang.getHoTen(),
-                        khachHang.getDiaChi(),
-                        khachHang.getDiemTichLuy(),
-                        khachHang.getGioiTinh(),
-                        khachHang.getSDT(),
-                        khachHang.getEmail(),
-                        khachHang.getNgaySinh(),
-                });
+        };
+        
+        khachHangTable = new CustomTable();
+        khachHangTable.setModel(khachHangModel);
+        JScrollPane khachHangScrollPane = new JScrollPane(khachHangTable);
+        khachHangTablePanel.add(khachHangScrollPane, BorderLayout.CENTER);
+        
+        // Tạo panel chứa bảng hóa đơn
+        JPanel hoaDonTablePanel = new JPanel(new BorderLayout());
+        hoaDonTablePanel.setBackground(Color.WHITE);
+        
+        // Tạo tiêu đề cho bảng hóa đơn
+        JLabel hoaDonTableTitle = new JLabel("Lịch sử mua hàng");
+        hoaDonTableTitle.setFont(new Font("Roboto", Font.BOLD, 16));
+        hoaDonTableTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        hoaDonTablePanel.add(hoaDonTableTitle, BorderLayout.NORTH);
+        
+        // Tạo bảng hóa đơn
+        String[] hoaDonColumns = {"Mã HD", "Ngày lập", "Tổng tiền", "Trạng thái"};
+        DefaultTableModel hoaDonModel = new DefaultTableModel(hoaDonColumns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không cho phép chỉnh sửa trực tiếp trên bảng
             }
-        }
+        };
+        
+        hoaDonTable = new CustomTable();
+        hoaDonTable.setModel(hoaDonModel);
+        JScrollPane hoaDonScrollPane = new JScrollPane(hoaDonTable);
+        hoaDonTablePanel.add(hoaDonScrollPane, BorderLayout.CENTER);
+        
+        // Tạo panel chia đôi
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, khachHangTablePanel, hoaDonTablePanel);
+        splitPane.setResizeWeight(0.6); // 60% cho bảng khách hàng, 40% cho bảng hóa đơn
+        splitPane.setDividerSize(5);
+        splitPane.setBorder(null);
+        
+        bottomPanel.add(splitPane, BorderLayout.CENTER);
+        
+        // Làm mới bảng khách hàng
+        refreshKhachHangTable();
     }
 
-    // Phương thức làm mới bảng khách hàng
-    public void refreshKhachHangTable() {
-        // TODO: Implement refresh logic
-        // Clear the existing rows
+    private void refreshKhachHangTable() {
+        // Lấy danh sách khách hàng từ BUS
+        ArrayList<KhachHangDTO> dsKhachHang = new KhachHangBUS().layDanhSachKhachHang();
+        
+        // Cập nhật bảng khách hàng
         DefaultTableModel model = (DefaultTableModel) khachHangTable.getModel();
-        model.setRowCount(0);
-
-        // Fetch the updated data
-        ArrayList<KhachHangDTO> danhSachKhachHang = new KhachHangBUS().layDanhSachKhachHang();
-
-        // Add the updated data to the table
-        loadKhachHangData(model, danhSachKhachHang);
-
-        //in thông báo ra đã refresh để test
-        System.out.println("đã cập nhật");
-        
-        // For now, just add the sample data back with full information
+        model.setRowCount(0); // Xóa dữ liệu hiện có
+        loadKhachHangData(model, dsKhachHang);
+    }
+    
+    private void loadKhachHangData(DefaultTableModel model, ArrayList<KhachHangDTO> dsKhachHang) {
+        for (KhachHangDTO khachHang : dsKhachHang) {
+            Object[] row = new Object[]{
+                khachHang.getMaKH(),
+                khachHang.getHoTen(),
+                khachHang.getDiaChi(),
+                khachHang.getDiemTichLuy(),
+                khachHang.getGioiTinh(),
+                khachHang.getSDT(),
+                khachHang.getEmail(),
+                khachHang.getNgaySinh()
+            };
+            model.addRow(row);
+        }
+    }
+    
+    private void updateInvoiceTable(String maKH) {
+        // TODO: Cập nhật bảng hóa đơn dựa trên mã khách hàng
+        // Đây là nơi bạn sẽ hiển thị các hóa đơn của khách hàng đã chọn
+        // Ví dụ:
+        // ArrayList<HoaDonDTO> dsHoaDon = new HoaDonBUS().layDanhSachHoaDonTheoKhachHang(maKH);
+        // DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
+        // model.setRowCount(0);
+        // for (HoaDonDTO hoaDon : dsHoaDon) {
+        //     Object[] row = new Object[]{
+        //         hoaDon.getMaHD(),
+        //         hoaDon.getNgayLap(),
+        //         hoaDon.getTongTien(),
+        //         hoaDon.getTrangThai()
+        //     };
+        //     model.addRow(row);
+        // }
     }
 
     private JRadioButton createRadioButton(String text) {
@@ -553,6 +505,11 @@ public class KhachHangPanel extends JPanel {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showSuccessToast(Component parent, String message) {
+        // Hiển thị thông báo thành công
+        new CustomToastMessage(parent, message, CustomToastMessage.SUCCESS, 2000).showToast();
     }
 }
 

@@ -87,6 +87,21 @@ public class KhachHangBUS {
     }
 
 
+    // Tìm kiếm khách hàng
+    public ArrayList<KhachHangDTO> timKiemKhachHang(String keyword) {
+        KhachHangDAO khachHangDAO = new KhachHangDAO();
+        String condition = "trangThai = 1 AND (maKH LIKE '%" + keyword + "%' OR hoTen LIKE '%" + keyword + "%' OR SDT LIKE '%" + keyword + "%' OR email LIKE '%" + keyword + "%')";
+        return khachHangDAO.selectByCondition(condition);
+    }
+
+    // Lấy khách hàng theo mã
+    public KhachHangDTO layKhachHangTheoMa(String maKH) {
+        KhachHangDAO khachHangDAO = new KhachHangDAO();
+        KhachHangDTO khachHangDTO = new KhachHangDTO();
+        khachHangDTO.setMaKH(maKH);
+        return khachHangDAO.selectById(khachHangDTO);
+    }
+
 }
 
 

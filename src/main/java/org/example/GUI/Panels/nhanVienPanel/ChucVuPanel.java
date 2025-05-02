@@ -2,16 +2,17 @@ package org.example.GUI.Panels.nhanVienPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.ChucVuBUS;
+import org.example.BUS.PhanQuyenBUS;
 import org.example.Components.*;
 import org.example.DTO.ChucVuDTO;
 import org.example.DTO.PhanQuyenDTO;
+import org.example.DTO.ChucNangDTO;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import static org.example.Components.CustomToastMessage.showErrorToast;
 import static org.example.Components.CustomToastMessage.showSuccessToast;
@@ -60,6 +61,9 @@ public class ChucVuPanel extends JPanel {
      * Khởi tạo giao diện cho ChucVuPanel
      */
     public void initGUI() {
+        // Khởi tạo dữ liệu chức năng mặc định
+        PhanQuyenBUS.khoiTaoDuLieuChucNang();
+        
         setupMainPanel();
         createPanels();
         setupTopPanel();
@@ -157,22 +161,8 @@ public class ChucVuPanel extends JPanel {
             DefaultTableModel model = (DefaultTableModel) chucVuTable.getModel();
             model.setRowCount(0);
 
-            // Dữ liệu mẫu để test
-            ArrayList<ChucVuDTO> danhSachChucVu = new ArrayList<>();
-            danhSachChucVu.add(new ChucVuDTO("Giám đốc", "CV001"));
-            danhSachChucVu.add(new ChucVuDTO("Quản lý", "CV002"));
-            danhSachChucVu.add(new ChucVuDTO("Nhân viên bán hàng", "CV003"));
-            danhSachChucVu.add(new ChucVuDTO("Nhân viên kho", "CV004"));
-
-            // Lọc theo từ khóa
-            ArrayList<ChucVuDTO> ketQuaTimKiem = new ArrayList<>();
-            for (ChucVuDTO chucVu : danhSachChucVu) {
-                if (chucVu.getMaCV().toLowerCase().contains(keyword.toLowerCase()) ||
-                    chucVu.getTenCV().toLowerCase().contains(keyword.toLowerCase())) {
-                    ketQuaTimKiem.add(chucVu);
-                }
-            }
-
+            // Tìm kiếm chức vụ theo từ khóa
+            ArrayList<ChucVuDTO> ketQuaTimKiem = ChucVuBUS.timKiemChucVu(keyword);
             loadChucVuData(model, ketQuaTimKiem);
         } else {
             refreshChucVuTable();
@@ -226,14 +216,14 @@ public class ChucVuPanel extends JPanel {
             if (confirm == JOptionPane.YES_OPTION) {
                 String maCV = (String) chucVuTable.getValueAt(selectedRow, 0);
 
-                // Xóa chức vụ (giả lập)
-                int result = 1; // Giả sử xóa thành công
+                // Xóa quyền của chức vụ trước
+                PhanQuyenBUS.xoaQuyenTheoChucVu(maCV);
+
+                // Xóa chức vụ
+                int result = ChucVuBUS.xoaChucVu(maCV);
 
                 if (result > 0) {
                     showSuccessToast(this, "Xóa chức vụ thành công");
-                    // Xóa quyền của chức vụ
-                    // PhanQuyenBUS.xoaQuyenTheoChucVu(maCV);
-
                     // Làm mới bảng
                     refreshChucVuTable();
                 } else {
@@ -257,27 +247,26 @@ public class ChucVuPanel extends JPanel {
 
             int result;
             if (isEditing) {
-                // result = ChucVuBUS.capNhatChucVu(chucVu);
-                result = 1; // Temporary for testing
+                result = ChucVuBUS.capNhatChucVu(chucVu);
                 if (result > 0) {
+                    // Lưu phân quyền
+                    savePermissions(maCV);
                     showSuccessToast(this, "Cập nhật chức vụ thành công");
                 } else {
                     showErrorToast(this, "Cập nhật chức vụ thất bại");
                     return;
                 }
             } else {
-                // result = ChucVuBUS.themChucVu(chucVu);
-                result = 1; // Temporary for testing
+                result = ChucVuBUS.themChucVu(chucVu);
                 if (result > 0) {
+                    // Lưu phân quyền ngay khi thêm chức vụ mới
+                    savePermissions(maCV);
                     showSuccessToast(this, "Thêm chức vụ thành công");
                 } else {
                     showErrorToast(this, "Thêm chức vụ thất bại");
                     return;
                 }
             }
-
-            // Lưu phân quyền
-            savePermissions(maCV);
 
             // Làm mới bảng và form
             refreshChucVuTable();
@@ -582,17 +571,6 @@ public class ChucVuPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
 
-        // Nút Lưu
-        saveButton = new CustomButton("Lưu");
-        saveButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
-        saveButton.setEnabled(false); // Ban đầu vô hiệu hóa
-        buttonPanel.add(saveButton);
-
-        // Nút Hủy
-        cancelButton = new CustomButton("Hủy");
-        cancelButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
-        cancelButton.setEnabled(false);// Ban đầu vô hiệu hóa
-        buttonPanel.add(cancelButton);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -612,208 +590,186 @@ public class ChucVuPanel extends JPanel {
                 "Phân Quyền",
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                new Font("Segoe UI", Font.BOLD, 16),
+                new Font("Segoe UI", Font.BOLD, 15),
                 Color.BLACK
         ));
 
         // Thiết lập layout cho panel
         permissionPanel.setLayout(new BorderLayout());
-        permissionPanel.setBorder(BorderFactory.createCompoundBorder(
-                permissionPanel.getBorder(),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
 
-        // Danh sách các chức năng cần phân quyền
-        String[] functionNames = {
-            "Quản lý sản phẩm",
-            "Quản lý loại sản phẩm",
-            "Quản lý nhân viên",
-            "Quản lý chức vụ",
-            "Quản lý khách hàng",
-            "Quản lý nhà cung cấp",
-            "Quản lý hóa đơn",
-            "Quản lý nhập hàng",
-            "Xem báo cáo",
-            "Quản lý khuyến mãi",
-            "Quản lý kho",
-            "Quản lý tài khoản"
-        };
+        // Tạo panel chứa các quyền
+        JPanel permissionsContainer = new JPanel();
+        permissionsContainer.setLayout(new GridLayout(0, 1, 5, 5));
+        permissionsContainer.setBackground(Color.WHITE);
 
-        // Panel lưới để chứa các chức năng và radio buttons - giảm khoảng cách giữa các cột
-        JPanel gridPanel = new JPanel(new GridLayout(functionNames.length + 1, 4, 1, 2));
-        gridPanel.setBackground(Color.WHITE);
-
-        // Header row với font chữ lớn hơn
-        JLabel functionHeader = new JLabel("Chức năng", JLabel.LEFT);
-        functionHeader.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        JLabel noAccessHeader = new JLabel("Không quyền", JLabel.CENTER);
-        noAccessHeader.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        JLabel viewOnlyHeader = new JLabel("Chỉ xem", JLabel.CENTER);
-        viewOnlyHeader.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        JLabel editHeader = new JLabel("Chỉnh sửa", JLabel.CENTER);
-        editHeader.setFont(new Font("Segoe UI", Font.BOLD, 15));
-
-        gridPanel.add(functionHeader);
-        gridPanel.add(noAccessHeader);
-        gridPanel.add(viewOnlyHeader);
-        gridPanel.add(editHeader);
-
-        // Mảng lưu các nhóm radio button cho từng chức năng
-        permissionGroups = new ButtonGroup[functionNames.length];
-        noAccessButtons = new JRadioButton[functionNames.length];
-        viewOnlyButtons = new JRadioButton[functionNames.length];
-        editButtons = new JRadioButton[functionNames.length];
+        // Lấy danh sách chức năng từ cơ sở dữ liệu
+        ArrayList<ChucNangDTO> danhSachChucNang = PhanQuyenBUS.layDanhSachChucNang();
 
         // Tạo các radio button cho từng chức năng
-        for (int i = 0; i < functionNames.length; i++) {
-            // Tạo một dòng cho mỗi chức năng với font chữ lớn hơn
-            JLabel functionLabel = new JLabel(functionNames[i], JLabel.LEFT);
-            functionLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-            gridPanel.add(functionLabel);
+        permissionGroups = new ButtonGroup[danhSachChucNang.size()];
+        noAccessButtons = new JRadioButton[danhSachChucNang.size()];
+        viewOnlyButtons = new JRadioButton[danhSachChucNang.size()];
+        editButtons = new JRadioButton[danhSachChucNang.size()];
 
-            // Radio button cho "Không quyền"
+        // Tạo panel tiêu đề cho các cột
+        JPanel headerPanel = new JPanel(new GridLayout(1, 4));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.add(new JLabel("Chức Năng"));
+        headerPanel.add(new JLabel("Không Quyền"));
+        headerPanel.add(new JLabel("Chỉ Xem"));
+        headerPanel.add(new JLabel("Chỉnh Sửa"));
+        permissionsContainer.add(headerPanel);
+
+        // Tạo các radio button cho từng chức năng
+        for (int i = 0; i < danhSachChucNang.size(); i++) {
+            ChucNangDTO chucNang = danhSachChucNang.get(i);
+
+            JPanel permissionRow = new JPanel(new GridLayout(1, 4));
+            permissionRow.setBackground(Color.WHITE);
+
+            // Tạo label cho tên chức năng
+            JLabel chucNangLabel = new JLabel(chucNang.getTenChucNang());
+            chucNangLabel.setToolTipText(chucNang.getMaChucNang());
+
+            // Tạo các radio button cho các mức quyền
+            permissionGroups[i] = new ButtonGroup();
+
             noAccessButtons[i] = new JRadioButton();
             noAccessButtons[i].setBackground(Color.WHITE);
-            noAccessButtons[i].setSelected(true); // Mặc định là không quyền
-            noAccessButtons[i].setEnabled(false); // Ban đầu vô hiệu hóa
-            noAccessButtons[i].setHorizontalAlignment(JRadioButton.CENTER);
-            gridPanel.add(noAccessButtons[i]);
+            noAccessButtons[i].setActionCommand("0");
 
-            // Radio button cho "Chỉ xem"
             viewOnlyButtons[i] = new JRadioButton();
             viewOnlyButtons[i].setBackground(Color.WHITE);
-            viewOnlyButtons[i].setEnabled(false); // Ban đầu vô hiệu hóa
-            viewOnlyButtons[i].setHorizontalAlignment(JRadioButton.CENTER);
-            gridPanel.add(viewOnlyButtons[i]);
+            viewOnlyButtons[i].setActionCommand("1");
 
-            // Radio button cho "Chỉnh sửa"
             editButtons[i] = new JRadioButton();
             editButtons[i].setBackground(Color.WHITE);
-            editButtons[i].setEnabled(false); // Ban đầu vô hiệu hóa
-            editButtons[i].setHorizontalAlignment(JRadioButton.CENTER);
-            gridPanel.add(editButtons[i]);
+            editButtons[i].setActionCommand("2");
 
-            // Nhóm các radio button lại với nhau
-            permissionGroups[i] = new ButtonGroup();
+            // Thêm các radio button vào group
             permissionGroups[i].add(noAccessButtons[i]);
             permissionGroups[i].add(viewOnlyButtons[i]);
             permissionGroups[i].add(editButtons[i]);
+
+            // Mặc định là không có quyền
+            noAccessButtons[i].setSelected(true);
+
+            // Thêm các thành phần vào hàng
+            permissionRow.add(chucNangLabel);
+            permissionRow.add(noAccessButtons[i]);
+            permissionRow.add(viewOnlyButtons[i]);
+            permissionRow.add(editButtons[i]);
+
+            // Thêm hàng vào container
+            permissionsContainer.add(permissionRow);
         }
 
-        // Thêm panel lưới vào permission panel với cấu hình không scroll ngang
-        JScrollPane scrollPane = new JScrollPane(gridPanel);
+        // Tạo scroll pane cho container
+        JScrollPane scrollPane = new JScrollPane(permissionsContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        permissionPanel.add(scrollPane);
+
+        // Thêm các nút lưu và hủy
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(Color.WHITE);
+
+        saveButton = new CustomButton("Lưu");
+        saveButton.setPreferredSize(new Dimension(100, 30));
+        saveButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
+        saveButton.setEnabled(false);
+
+        cancelButton = new CustomButton("Hủy");
+        cancelButton.setPreferredSize(new Dimension(100, 30));
+        cancelButton.setButtonColors(CustomButton.ButtonColors.DISABLE);
+        cancelButton.setEnabled(false);
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        // Thêm các thành phần vào panel
+        permissionPanel.add(scrollPane, BorderLayout.CENTER);
+        permissionPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
     /**
-     * Lưu các phân quyền của chức vụ
-     * @param maCV Mã chức vụ cần lưu phân quyền
-     */
-    private void savePermissions(String maCV) {
-        // Danh sách các chức năng cần phân quyền
-        String[] functionNames = {
-            "Quản lý sản phẩm",
-            "Quản lý loại sản phẩm",
-            "Quản lý nhân viên",
-            "Quản lý chức vụ",
-            "Quản lý khách hàng",
-            "Quản lý nhà cung cấp",
-            "Quản lý hóa đơn",
-            "Quản lý nhập hàng",
-            "Xem báo cáo",
-            "Quản lý khuyến mãi",
-            "Quản lý kho",
-            "Quản lý tài khoản"
-        };
-
-        // Xóa tất cả các quyền hiện có của chức vụ này
-        // PhanQuyenBUS.xoaQuyenTheoChucVu(maCV);
-
-        // Lưu các quyền mới
-        for (int i = 0; i < functionNames.length; i++) {
-            String quyen = "khongQuyen";
-
-            if (viewOnlyButtons[i].isSelected()) {
-                quyen = "chiXem";
-            } else if (editButtons[i].isSelected()) {
-                quyen = "chinhSua";
-            }
-
-            if (quyen == "chiXem" || quyen == "chinhSua") {
-                // Tạo mã quyền cho chức năng này
-                String maQuyen = "QUY" + String.format("%03d", i + 1);
-
-                // Tạo đối tượng PhanQuyenDTO
-                PhanQuyenDTO phanQuyen = new PhanQuyenDTO(
-                );
-                phanQuyen.setMaPhanQuyen(maQuyen);
-                phanQuyen.setMaCV(maCV);
-                phanQuyen.setModule(functionNames[i]);
-                phanQuyen.setPhanQuyen(quyen);
-
-                // Lưu vào CSDL
-                // PhanQuyenBUS.themQuyen(phanQuyen);
-            }
-        }
-    }
-
-    /**
-     * Load các phân quyền của chức vụ
-     * @param maCV Mã chức vụ cần load phân quyền
+     * Load phân quyền cho chức vụ
+     * @param maCV Mã chức vụ
      */
     private void loadPermissions(String maCV) {
-        // Reset về trạng thái mặc định (không quyền)
+        // Lấy danh sách quyền của chức vụ
+        ArrayList<PhanQuyenDTO> danhSachQuyen = PhanQuyenBUS.layDanhSachQuyenTheoChucVu(maCV);
+
+        // Lấy danh sách chức năng
+        ArrayList<ChucNangDTO> danhSachChucNang = PhanQuyenBUS.layDanhSachChucNang();
+
+        // Reset tất cả các radio button về trạng thái mặc định (không quyền)
         for (int i = 0; i < noAccessButtons.length; i++) {
             noAccessButtons[i].setSelected(true);
         }
 
-        // Lấy danh sách quyền của chức vụ
-        // ArrayList<PhanQuyenDTO> dsQuyen = PhanQuyenBUS.layDanhSachQuyenTheoChucVu(maCV);
+        // Thiết lập quyền cho từng chức năng
+        for (PhanQuyenDTO phanQuyen : danhSachQuyen) {
+            String maChucNang = phanQuyen.getMaChucNang();
+            int quyen = phanQuyen.getQuyen();
 
-        // Danh sách mẫu để test
-        ArrayList<PhanQuyenDTO> dsQuyen = new ArrayList<>();
-
-        // Hiển thị các quyền đã được phân
-        for (PhanQuyenDTO quyen : dsQuyen) {
-            // Tìm index của chức năng này trong mảng
-            String tenQuyen = quyen.getModule();
-            int index = -1;
-            
-            // Danh sách các chức năng cần phân quyền
-            String[] functionNames = {
-                "Quản lý sản phẩm", 
-                "Quản lý loại sản phẩm", 
-                "Quản lý nhân viên",
-                "Quản lý chức vụ", 
-                "Quản lý khách hàng", 
-                "Quản lý nhà cung cấp",
-                "Quản lý hóa đơn", 
-                "Quản lý nhập hàng", 
-                "Xem báo cáo",
-                "Quản lý khuyến mãi", 
-                "Quản lý kho", 
-                "Quản lý tài khoản"
-            };
-            
-            for (int i = 0; i < functionNames.length; i++) {
-                if (functionNames[i].equals(tenQuyen)) {
-                    index = i;
+            // Tìm vị trí của chức năng trong danh sách
+            for (int i = 0; i < danhSachChucNang.size(); i++) {
+                if (danhSachChucNang.get(i).getMaChucNang().equals(maChucNang)) {
+                    // Thiết lập quyền tương ứng
+                    switch (quyen) {
+                        case 0:
+                            noAccessButtons[i].setSelected(true);
+                            break;
+                        case 1:
+                            viewOnlyButtons[i].setSelected(true);
+                            break;
+                        case 2:
+                            editButtons[i].setSelected(true);
+                            break;
+                        default:
+                            noAccessButtons[i].setSelected(true);
+                            break;
+                    }
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Lưu phân quyền cho chức vụ
+     * @param maCV Mã chức vụ
+     */
+    private void savePermissions(String maCV) {
+        // Lấy danh sách chức năng
+        ArrayList<ChucNangDTO> danhSachChucNang = PhanQuyenBUS.layDanhSachChucNang();
+        
+        // Tạo danh sách phân quyền mới
+        ArrayList<PhanQuyenDTO> danhSachQuyen = new ArrayList<>();
+        
+        // Lấy quyền cho từng chức năng
+        for (int i = 0; i < danhSachChucNang.size(); i++) {
+            String maChucNang = danhSachChucNang.get(i).getMaChucNang();
+            int quyen = 0; // Mặc định là không quyền
             
-            if (index != -1) {
-                // Thiết lập radio button tương ứng
-                if (quyen.isTrangThai()) {
-                    // Quyền chỉnh sửa
-                    editButtons[index].setSelected(true);
-                } else {
-                    // Quyền chỉ xem
-                    viewOnlyButtons[index].setSelected(true);
-                }
+            if (viewOnlyButtons[i].isSelected()) {
+                quyen = 1; // Chỉ xem
+            } else if (editButtons[i].isSelected()) {
+                quyen = 2; // Chỉnh sửa
             }
+            
+            // Tạo đối tượng phân quyền mới
+            PhanQuyenDTO phanQuyen = new PhanQuyenDTO(maCV, maChucNang, quyen);
+            danhSachQuyen.add(phanQuyen);
+        }
+        
+        // Lưu danh sách phân quyền vào cơ sở dữ liệu
+        boolean result = PhanQuyenBUS.capNhatTatCaQuyen(maCV, danhSachQuyen);
+        
+        if (result) {
+            showSuccessToast(this, "Cập nhật phân quyền thành công");
+        } else {
+            showErrorToast(this, "Cập nhật phân quyền thất bại");
         }
     }
     
