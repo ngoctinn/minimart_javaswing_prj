@@ -1,19 +1,35 @@
 package org.example.GUI.Dialogs;
 
 import org.example.Components.CustomButton;
-import org.example.Components.CustomTexField;
+import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
-import org.example.Utils.diaChiPanelAPI;
+import org.example.DTO.nhaCungCapDTO;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class ThemNCCDialog extends JDialog {
-    private CustomTexField maNCCField, tenNCCField, soDienThoaiField, emailField;
-    private diaChiPanelAPI diaChiPanel;
+    private CustomTextField maNCCField, tenNCCField, soDienThoaiField, diaChiField;
     private CustomButton luuButton, huyButton;
+    private boolean isEditMode = false;
+    private nhaCungCapDTO nhaCungCapEdit;
 
     public ThemNCCDialog() {
+        this.isEditMode = false;
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.put("ComboBox.buttonStyle", "icon-only");
+            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            initGUI();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public ThemNCCDialog(nhaCungCapDTO nhaCungCap) {
+        this.isEditMode = true;
+        this.nhaCungCapEdit = nhaCungCap;
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
@@ -26,6 +42,11 @@ public class ThemNCCDialog extends JDialog {
     }
 
     private void initGUI() {
+        // Xóa dòng gọi fillFormWithSupplierData() ở đây
+        // if (isEditMode && nhaCungCapEdit != null) {
+        //     fillFormWithSupplierData();
+        // }
+        
         setSize(600, 500);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLocationRelativeTo(null);
@@ -33,20 +54,17 @@ public class ThemNCCDialog extends JDialog {
         setModal(true);
         setLayout(new BorderLayout(10, 10));
 
-        // Tiêu đề
-        JLabel title = new JLabel("THÊM NHÀ CUNG CẤP", SwingConstants.CENTER);
+        JLabel title = new JLabel(isEditMode ? "SỬA NHÀ CUNG CẤP" : "THÊM NHÀ CUNG CẤP", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setForeground(new Color(0,102,204));
         title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(title, BorderLayout.NORTH);
 
-        // Main panel
         RoundedPanel mainPanel = new RoundedPanel(20);
         mainPanel.setBackground(Color.WHITE);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setLayout(new GridBagLayout());
         
-        // Create form panel with components
         JPanel formPanel = createFormPanel();
         GridBagConstraints mainGbc = new GridBagConstraints();
         mainGbc.fill = GridBagConstraints.BOTH;
@@ -56,14 +74,18 @@ public class ThemNCCDialog extends JDialog {
         mainPanel.add(formPanel, mainGbc);
         add(mainPanel, BorderLayout.CENTER);
 
-        // Button panel
         JPanel buttonPanel = createButtonPanel();
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add event listeners
         addEventListeners();
 
+        // Di chuyển đoạn code này xuống đây, sau khi các trường đã được khởi tạo
+        if (isEditMode && nhaCungCapEdit != null) {
+            fillFormWithSupplierData();
+        }
+
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -71,60 +93,25 @@ public class ThemNCCDialog extends JDialog {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
 
-        // Tạo panel bên trái
-        JPanel leftPanel = new JPanel(new GridBagLayout());
-        leftPanel.setBackground(Color.WHITE);
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-        GridBagConstraints leftGbc = new GridBagConstraints();
-        leftGbc.fill = GridBagConstraints.HORIZONTAL;
-        leftGbc.insets = new Insets(6, 2, 6, 2);
-        leftGbc.weightx = 1.0;
-
-        // Thêm các thành phần bên trái
-        addFormRow(leftPanel, "Mã NCC", maNCCField = new CustomTexField("Mã tự động (vd: NCC001)"), 0, leftGbc);
-        addFormRow(leftPanel, "Tên NCC", tenNCCField = new CustomTexField("Nhập tên nhà cung cấp"), 1, leftGbc);
-        addFormRow(leftPanel, "Số điện thoại", soDienThoaiField = new CustomTexField("0123456789"), 2, leftGbc);
-        addFormRow(leftPanel, "Email", emailField = new CustomTexField("example@gmail.com"), 3, leftGbc);
-
-        // Tạo panel bên phải
-        JPanel rightPanel = new JPanel(new GridBagLayout());
-        rightPanel.setBackground(Color.WHITE);
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
-        GridBagConstraints rightGbc = new GridBagConstraints();
-        rightGbc.fill = GridBagConstraints.HORIZONTAL;
-        rightGbc.insets = new Insets(6, 2, 6, 2);
-        rightGbc.weightx = 1.0;
-
-        // Thêm panel địa chỉ vào bên phải
+        maNCCField = new CustomTextField("Mã tự động (vd: NCC001)");
+        String maNCC = org.example.BUS.NhaCungCapBUS.generateNextMaNCC();
+        maNCCField.setText(maNCC);
+        maNCCField.setState(CustomTextField.State.DISABLED);
+        maNCCField.setEnabled(false);
+        addFormRow(panel, "Mã NCC", maNCCField.getContainer(), 0, gbc);
         
-        // Thêm panel địa chỉ
-        diaChiPanel = new diaChiPanelAPI();
-        rightGbc.gridx = 0;
-        rightGbc.gridy = 2; 
-        rightGbc.gridwidth = 2;
-        rightGbc.gridheight = 3;
-        rightGbc.anchor = GridBagConstraints.CENTER;
-        rightPanel.add(diaChiPanel, rightGbc);
+        tenNCCField = new CustomTextField("Nhập tên nhà cung cấp");
+        addFormRow(panel, "Tên NCC", tenNCCField.getContainer(), 1, gbc);
         
-        // Reset gridwidth và gridheight cho các thành phần tiếp theo
-        rightGbc.gridwidth = 1;
-        rightGbc.gridheight = 1;
-
-        // Thêm cả hai panel vào panel chính
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        panel.add(leftPanel, gbc);
+        soDienThoaiField = new CustomTextField("0123456789");
+        addFormRow(panel, "Số điện thoại", soDienThoaiField.getContainer(), 2, gbc);
         
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        panel.add(rightPanel, gbc);
+        diaChiField = new CustomTextField("Nhập địa chỉ đầy đủ");
+        addFormRow(panel, "Địa chỉ", diaChiField.getContainer(), 3, gbc);
 
         return panel;
     }
@@ -141,7 +128,6 @@ public class ThemNCCDialog extends JDialog {
         gbc.weightx = 0.7;
         gbc.anchor = GridBagConstraints.CENTER;
         
-        // Đảm bảo component có kích thước phù hợp
         if (component instanceof JTextField || component instanceof JComboBox || component instanceof JSpinner) {
             component.setPreferredSize(new Dimension(component.getPreferredSize().width, 30));
         }
@@ -156,7 +142,7 @@ public class ThemNCCDialog extends JDialog {
         huyButton = new CustomButton("Hủy");
         huyButton.setButtonColors(CustomButton.ButtonColors.RED);
         
-        luuButton = new CustomButton("Lưu");
+        luuButton = new CustomButton(isEditMode ? "Cập nhật" : "Lưu");
         luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
 
         buttonPanel.add(huyButton);
@@ -177,26 +163,63 @@ public class ThemNCCDialog extends JDialog {
         luuButton.addActionListener(e -> handleSave());
         huyButton.addActionListener(e -> handleCancel());
     }
+    
+    private void fillFormWithSupplierData() {
+        if (nhaCungCapEdit != null) {
+            maNCCField.setText(nhaCungCapEdit.getMaNCC());
+            tenNCCField.setText(nhaCungCapEdit.getTenNCC());
+            soDienThoaiField.setText(nhaCungCapEdit.getSDT());
+            diaChiField.setText(nhaCungCapEdit.getDiaChi());
+        }
+    }
 
     private void handleSave() {
-        // Code xử lý lưu dữ liệu
         if (validateInput()) {
-            // Thực hiện lưu dữ liệu
-            JOptionPane.showMessageDialog(this, "Đã lưu thông tin nhà cung cấp!",
-                    "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+            String maNCC = maNCCField.getText();
+            String tenNCC = tenNCCField.getText();
+            String soDienThoai = soDienThoaiField.getText();
+            String diaChi = diaChiField.getText();
+            
+            if (tenNCC.isEmpty() || soDienThoai.isEmpty() || diaChi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            nhaCungCapDTO nhaCungCapDTO = new nhaCungCapDTO();
+            nhaCungCapDTO.setMaNCC(maNCC);
+            nhaCungCapDTO.setTenNCC(tenNCC);
+            nhaCungCapDTO.setSDT(soDienThoai);
+            nhaCungCapDTO.setDiaChi(diaChi);
+            nhaCungCapDTO.setTrangThai(true);
+            
+            int result;
+            if (isEditMode) {
+                result = org.example.BUS.NhaCungCapBUS.capNhatNhaCungCap(nhaCungCapDTO);
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                result = org.example.BUS.NhaCungCapBUS.themNhaCungCap(nhaCungCapDTO);
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 
     private boolean validateInput() {
-        // Kiểm tra tên nhà cung cấp
         if (tenNCCField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tên nhà cung cấp không được để trống",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        // Kiểm tra số điện thoại
         String sdt = soDienThoaiField.getText().trim();
         if (sdt.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống",
@@ -208,17 +231,21 @@ public class ThemNCCDialog extends JDialog {
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        
+        if (diaChiField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
         return true;
     }
 
     private void handleCancel() {
-        // Code xử lý hủy
         dispose();
     }
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(ThemNCCDialog::new);
     }
-    
 }
