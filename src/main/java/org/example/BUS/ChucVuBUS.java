@@ -2,41 +2,71 @@ package org.example.BUS;
 
 import org.example.DAO.ChucVuDAO;
 import org.example.DTO.ChucVuDTO;
-import org.example.DTO.LoaiSanPhamDTO;
 
 import java.util.ArrayList;
 
 public class ChucVuBUS {
-
-    // lấy danh sách chức vụ
+    private static ChucVuDAO chucVuDAO = new ChucVuDAO();
+    
+    /**
+     * Lấy danh sách tất cả chức vụ
+     * @return ArrayList<ChucVuDTO> danh sách chức vụ
+     */
     public static ArrayList<ChucVuDTO> layDanhSachChucVu() {
-        ChucVuDAO chucVuDAO = new ChucVuDAO();
-        ArrayList<ChucVuDTO> dsChucVu = chucVuDAO.layDanhSachChucVu();
-        return dsChucVu;
+        return chucVuDAO.layDanhSachChucVu();
     }
-
-    // tự động sinh mã chức vụ
+    
+    /**
+     * Thêm một chức vụ mới
+     * @param chucVu ChucVuDTO chức vụ cần thêm
+     * @return int số dòng bị ảnh hưởng
+     */
+    public static int themChucVu(ChucVuDTO chucVu) {
+        return chucVuDAO.themChucVu(chucVu);
+    }
+    
+    /**
+     * Cập nhật thông tin chức vụ
+     * @param chucVu ChucVuDTO chức vụ cần cập nhật
+     * @return int số dòng bị ảnh hưởng
+     */
+    public static int capNhatChucVu(ChucVuDTO chucVu) {
+        return chucVuDAO.capNhatChucVu(chucVu);
+    }
+    
+    /**
+     * Xóa một chức vụ
+     * @param maCV String mã chức vụ cần xóa
+     * @return int số dòng bị ảnh hưởng
+     */
+    public static int xoaChucVu(String maCV) {
+        return chucVuDAO.xoaChucVu(maCV);
+    }
+    
+    /**
+     * Tìm kiếm chức vụ theo từ khóa
+     * @param keyword String từ khóa tìm kiếm
+     * @return ArrayList<ChucVuDTO> danh sách chức vụ tìm thấy
+     */
+    public static ArrayList<ChucVuDTO> timKiemChucVu(String keyword) {
+        return chucVuDAO.timKiemChucVu(keyword);
+    }
+    
+    /**
+     * Tạo mã chức vụ mới tự động
+     * @return String mã chức vụ mới
+     */
     public static String generateNextMaLSP() {
-        ArrayList<ChucVuDTO> danhSach = layDanhSachChucVu();
-        int maxId = 0;
-
-        // Find the highest existing ID number
-        for (ChucVuDTO chucVuDTO : danhSach) {
-            String maCV = chucVuDTO.getMaCV();
-            if (maCV.startsWith("CV")) {
-                try {
-                    int idNumber = Integer.parseInt(maCV.substring(3));
-                    if (idNumber > maxId) {
-                        maxId = idNumber;
-                    }
-                } catch (NumberFormatException e) {
-                    // Skip if not a valid number format
-                }
-            }
-        }
-
-        // Generate next ID
-        int nextId = maxId + 1;
-        return String.format("LSP%03d", nextId);
+        String maCV = chucVuDAO.layMaChucVuCuoiCung();
+        
+        // Tách phần số từ mã
+        String prefix = "CV";
+        String numberStr = maCV.substring(2);
+        
+        // Chuyển phần số thành số nguyên và tăng lên 1
+        int number = Integer.parseInt(numberStr) + 1;
+        
+        // Format lại mã mới với số 0 đệm phía trước
+        return String.format("%s%03d", prefix, number);
     }
 }

@@ -1,20 +1,25 @@
 package org.example.GUI.Dialogs;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import org.example.BUS.ChucVuBUS;
 import org.example.Components.*;
 // Bỏ import không cần thiết
 // import org.example.Utils.diaChiPanelAPI;
+import org.example.DTO.ChucVuDTO;
 import org.example.DTO.nhanVienDTO;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
+import java.util.ArrayList;
 // Bỏ import không cần thiết
 // import java.time.format.DateTimeFormatter;
 
 public class ThemNhanVienDialog extends JDialog {
     // Thay đổi khai báo diaChiPanel và trangThaiComboBox
-    private CustomTextField maNVField, tenNVField, emailField, soDTField, maCVField, maHDField, diaChiField;
+    private CustomTextField maNVField, tenNVField, emailField, soDTField, maHDField, diaChiField;
+    private CustomCombobox<String> tenCVComboBox;
     private CustomPasswordField matKhauField;
     private JRadioButton gioiTinhNam, gioiTinhNu;
     private JSpinner ngaySinhSpinner;
@@ -171,8 +176,16 @@ public class ThemNhanVienDialog extends JDialog {
         addFormRow(rightPanel, "Mật khẩu", matKhauField.getContainer(), 1, rightGbc); // Row 1
 
 
-        // Mã chức vụ
-        addFormRow(rightPanel, "Mã chức vụ", maCVField = new CustomTextField("Nhập mã chức vụ"), 3, rightGbc); // Row 3
+        // tên chức vụ
+        // lấy danh sách chức vụ từ cơ sở dữ liệu
+
+        ArrayList<ChucVuDTO> listCV = ChucVuBUS.layDanhSachChucVu();
+        String[] tenCVArray = new String[listCV.size()];
+        for (int i = 0; i < listCV.size(); i++) {
+            tenCVArray[i] = listCV.get(i).getTenCV();
+        }
+
+        addFormRow(rightPanel, "Mã chức vụ", tenCVComboBox = new CustomCombobox<>(tenCVArray), 3, rightGbc); // Row 3
 
         // Mã hợp đồng
         addFormRow(rightPanel, "Mã hợp đồng", maHDField = new CustomTextField("Nhập mã hợp đồng"), 4, rightGbc); // Row 4
@@ -275,7 +288,7 @@ public class ThemNhanVienDialog extends JDialog {
             matKhauField.setText(nhanVienEdit.getMatKhau());
 
             // Thiết lập mã chức vụ và mã hợp đồng
-            maCVField.setText(nhanVienEdit.getMaCV());
+            tenCVComboBox.setSelectedItem(nhanVienEdit.getMaCV());
             maHDField.setText(nhanVienEdit.getMaHD());
 
             // Thiết lập địa chỉ
@@ -319,7 +332,15 @@ public class ThemNhanVienDialog extends JDialog {
             return;
         }
         String matKhau = new String(matKhauField.getPassword()); // Lấy mật khẩu (đã ở panel phải)
-        String maCV = maCVField.getText();
+        String tenCV = (String) tenCVComboBox.getSelectedItem(); // Lấy tên chức vụ từ combobox
+        // chuyển tên chức vụ thành mã chức vụ
+        String maCV = "";
+        for (ChucVuDTO cv : ChucVuBUS.layDanhSachChucVu()) {
+            if (cv.getTenCV().equals(tenCV)) {
+                maCV = cv.getMaCV();
+                break;
+            }
+        }
         String maHD = maHDField.getText();
 
         // Kiểm tra dữ liệu
