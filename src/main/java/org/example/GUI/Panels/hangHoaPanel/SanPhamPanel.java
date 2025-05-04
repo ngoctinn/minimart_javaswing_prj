@@ -406,7 +406,7 @@ public class SanPhamPanel extends JPanel {
     }
 
     //==============Phương thức để ẩn panel hành động====================
-    public void setActionPanelVisible() {
+    public void hideActionPanel() {
         // ẩn luôn panel hành động
         mainButtonsPanel.setVisible(false);
         importExportPanel.setVisible(false);
@@ -653,7 +653,7 @@ public class SanPhamPanel extends JPanel {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
             SanPhamPanel sanPhamPanel = new SanPhamPanel();
-            sanPhamPanel.setActionPanelVisible();
+            sanPhamPanel.hideActionPanel();
             frame.add(sanPhamPanel);
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
