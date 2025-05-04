@@ -11,6 +11,7 @@ import org.example.GUI.Panels.hangHoaPanel.SanPhamPanel;
 import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChucVuPanel;
+import org.example.GUI.Panels.nhanVienPanel.HopDongPanel;
 import org.example.GUI.Panels.nhanVienPanel.NhanVienPanel;
 
 import javax.swing.*;
@@ -40,7 +41,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenuItem khachHangItem, nhaCungCapItem;
 
     // Các JMenuItem cho JMenu nhanVien
-    private JMenuItem nhanVienItem, chucVuItem, chamCongItem;
+    private JMenuItem nhanVienItem, hopDongItem, chucVuItem, chamCongItem;
 
     // Các JMenuItem cho JMenu người dùng
     private JMenuItem profileItem, logoutItem;
@@ -124,6 +125,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Tạo JMenuItem cho nhân viên
         nhanVienItem = createMenuItem("Nhân viên", "nhanvien", 16);
+        hopDongItem = createMenuItem("Hợp đồng", "hopdong", 16);
         chucVuItem = createMenuItem("Chức vụ", "chucvu", 16);
         chamCongItem = createMenuItem("Chấm công", "chamcong", 16);
 
@@ -158,6 +160,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Thêm JMenuItem vào nhân viên
         nhanVienMenu.add(nhanVienItem);
+        nhanVienMenu.add(hopDongItem);
         nhanVienMenu.add(chucVuItem);
         nhanVienMenu.add(chamCongItem);
 
@@ -204,6 +207,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Thêm ActionListener cho các JMenuItem nhân viên
         nhanVienItem.addActionListener(this);
+        hopDongItem.addActionListener(this);
         chucVuItem.addActionListener(this);
         chamCongItem.addActionListener(this);
 
@@ -250,6 +254,7 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         // Nhân viên panels
         panelMap.put("nhanVien", new NhanVienPanel());
+        panelMap.put("hopDong", new HopDongPanel());
         panelMap.put("chucVu", new ChucVuPanel());
         panelMap.put("chamCong", new ChamCongPanel());
 
@@ -285,7 +290,11 @@ public class MenuFrame extends JFrame implements ActionListener {
         // Nhân viên
         else if (source == nhanVienItem) {
             showPanel("nhanVien");
-        } else if (source == chucVuItem) {
+        }
+        else if (source == hopDongItem) {
+            showPanel("hopDong");
+        }
+        else if (source == chucVuItem) {
             showPanel("chucVu");
         } else if (source == chamCongItem) {
             showPanel("chamCong");
