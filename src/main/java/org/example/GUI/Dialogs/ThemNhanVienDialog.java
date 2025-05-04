@@ -315,11 +315,11 @@ public class ThemNhanVienDialog extends JDialog {
                     // Cập nhật dữ liệu vào cơ sở dữ liệu
                     result = NhanVienBUS.capNhatNhanVien(nhanVienDTO);
                     if (result > 0) {
-                        CustomToastMessage.showSuccessToast(this, "Cập nhật nhân viên thành công!");
                         isClosed = true;
                         this.dispose();
                     } else {
-                        CustomToastMessage.showErrorToast(this, "Cập nhật nhân viên thất bại!");
+                        isClosed = false;
+                        this.dispose();
                     }
                 } else {
                     // Tạo mã nhân viên mới nếu đang thêm mới

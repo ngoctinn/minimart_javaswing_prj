@@ -3,16 +3,20 @@ package org.example.GUI;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomPasswordField;
-import org.example.Components.CustomTexField;
+import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
+import org.example.Components.CustomToastMessage;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class
-LoginGUI extends JFrame {
+public class LoginGUI extends JFrame {
+    private CustomTextField usernameField;
+    private CustomPasswordField passwordField;
+    private JLabel errorLabel;
+
     public LoginGUI() {
         // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,8 +32,8 @@ LoginGUI extends JFrame {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(Color.WHITE);
         // Tăng kích thước panel để có thêm khoảng trống
-        panel.setPreferredSize(new Dimension(450, 350));
-        
+        panel.setPreferredSize(new Dimension(450, 450));
+
         // Thêm border đổ bóng cho panel
         panel.setBorder(new CompoundBorder(
             BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -53,20 +57,50 @@ LoginGUI extends JFrame {
         gbc.gridy = 0;
         panel.add(logo, gbc);
 
-        // Ô nhập tên đăng nhập
-        CustomTexField usernameField = new CustomTexField("Tên đăng nhập");
+        // Label và ô nhập tên đăng nhập
+        JLabel usernameLabel = new JLabel("Tên đăng nhập:");
+        usernameLabel.setFont(new Font("Roboto", Font.BOLD, 14));
+        usernameLabel.setForeground(new Color(60, 60, 60));
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(12, 15, 5, 15);
+        panel.add(usernameLabel, gbc);
+
+        usernameField = new CustomTextField();
+        usernameField.setPlaceholder("Nhập tên đăng nhập");
         usernameField.setPreferredSize(new Dimension(200, 40));
         usernameField.setFont(new Font("Roboto", Font.PLAIN, 16));
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.ipadx = 40;
-        panel.add(usernameField, gbc);
+        gbc.insets = new Insets(0, 15, 12, 15);
+        panel.add(usernameField.getContainer(), gbc);
 
-        // Ô nhập mật khẩu
-        CustomPasswordField passwordField = new CustomPasswordField("Mật khẩu");
+        // Label và ô nhập mật khẩu
+        JLabel passwordLabel = new JLabel("Mật khẩu:");
+        passwordLabel.setFont(new Font("Roboto", Font.BOLD, 14));
+        passwordLabel.setForeground(new Color(60, 60, 60));
+        gbc.gridy = 3;
+        gbc.insets = new Insets(12, 15, 5, 15);
+        panel.add(passwordLabel, gbc);
+
+        passwordField = new CustomPasswordField();
+        passwordField.setPlaceholder("Nhập mật khẩu");
         passwordField.setPreferredSize(new Dimension(200, 40));
         passwordField.setFont(new Font("Roboto", Font.PLAIN, 16));
-        gbc.gridy = 2;
-        panel.add(passwordField, gbc);
+        gbc.gridy = 4;
+        gbc.insets = new Insets(0, 15, 12, 15);
+        panel.add(passwordField.getContainer(), gbc);
+
+        // Thêm label hiển thị lỗi
+        errorLabel = new JLabel("");
+        errorLabel.setForeground(new Color(255, 80, 80));
+        errorLabel.setFont(new Font("Roboto", Font.ITALIC, 14));
+        errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        errorLabel.setVisible(false);
+        gbc.gridy = 5;
+        gbc.insets = new Insets(0, 15, 0, 15);
+        panel.add(errorLabel, gbc);
+        gbc.insets = new Insets(12, 15, 12, 15);
 
         // Quên mật khẩu?
         JLabel forgotPassword = new JLabel("Quên mật khẩu?");
@@ -75,7 +109,7 @@ LoginGUI extends JFrame {
         // Thêm css style để làm nổi bật liên kết
         forgotPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
         forgotPassword.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-        
+
         // hover color
         forgotPassword.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -89,7 +123,7 @@ LoginGUI extends JFrame {
             }
         });
 
-        gbc.gridy = 3;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(forgotPassword, gbc);
 
@@ -101,24 +135,93 @@ LoginGUI extends JFrame {
         FlatSVGIcon manageIcon = new FlatSVGIcon("Images/chart-column-grow-svgrepo-com.svg", 20, 20);
         CustomButton manageButton = new CustomButton("Quản lý", manageIcon);
         manageButton.setFont(new Font("Roboto", Font.BOLD, 16));
+        manageButton.addActionListener(e -> handleLogin("admin"));
 
         FlatSVGIcon sellIcon = new FlatSVGIcon("Images/shop-2-svgrepo-com.svg", 20, 20);
         CustomButton sellButton = new CustomButton("Bán hàng", sellIcon);
         sellButton.setFont(new Font("Roboto", Font.BOLD, 16));
+        sellButton.addActionListener(e -> handleLogin("seller"));
 
         // Tùy chỉnh màu nút bán hàng
         sellButton.setButtonColors(CustomButton.ButtonColors.GREEN);
 
         buttonPanel.add(manageButton);
         buttonPanel.add(sellButton);
-        gbc.gridy = 4;
+        gbc.gridy = 7;
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(buttonPanel, gbc);
 
         // Thêm panel chính vào JFrame
         add(panel, new GridBagConstraints());
 
+        // Thêm sự kiện Enter cho các trường nhập liệu
+        usernameField.addActionListener(e -> passwordField.requestFocus());
+        passwordField.addActionListener(e -> handleLogin("auto"));
+
         setVisible(true);
+    }
+
+    /**
+     * Xử lý đăng nhập
+     * @param mode Chế độ đăng nhập: "admin", "seller", hoặc "auto"
+     */
+    private void handleLogin(String mode) {
+        // Reset trạng thái lỗi
+        usernameField.setState(CustomTextField.State.DEFAULT);
+        passwordField.setState(CustomPasswordField.State.DEFAULT);
+        errorLabel.setVisible(false);
+
+        // Lấy thông tin đăng nhập
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
+
+        // Kiểm tra thông tin đăng nhập
+        if (username.isEmpty()) {
+            usernameField.setState(CustomTextField.State.INVALID);
+            usernameField.setErrorMessage("Vui lòng nhập tên đăng nhập");
+            usernameField.requestFocus();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            passwordField.setState(CustomPasswordField.State.INVALID);
+            passwordField.setErrorMessage("Vui lòng nhập mật khẩu");
+            passwordField.requestFocus();
+            return;
+        }
+
+        // TODO: Thực hiện kiểm tra đăng nhập với cơ sở dữ liệu
+        // Đây là mã giả để demo
+        boolean loginSuccess = false;
+
+        // Demo: Nếu username và password đều là "admin" hoặc "seller", đăng nhập thành công
+        if ((username.equals("admin") && password.equals("admin")) ||
+            (username.equals("seller") && password.equals("seller"))) {
+            loginSuccess = true;
+        }
+
+        if (loginSuccess) {
+            // Đăng nhập thành công
+            CustomToastMessage.showSuccessToast(this, "Đăng nhập thành công!");
+
+            // TODO: Chuyển đến màn hình tương ứng dựa trên vai trò người dùng
+
+            // Đây là mã giả để demo
+            if (mode.equals("admin") || username.equals("admin")) {
+                // Chuyển đến màn hình quản lý
+                JOptionPane.showMessageDialog(this, "Chuyển đến màn hình quản lý");
+            } else {
+                // Chuyển đến màn hình bán hàng
+                JOptionPane.showMessageDialog(this, "Chuyển đến màn hình bán hàng");
+            }
+        } else {
+            // Đăng nhập thất bại
+            usernameField.setState(CustomTextField.State.INVALID);
+            passwordField.setState(CustomPasswordField.State.INVALID);
+            errorLabel.setText("Tên đăng nhập hoặc mật khẩu không đúng");
+            errorLabel.setVisible(true);
+            CustomToastMessage.showErrorToast(this, "Đăng nhập thất bại!");
+        }
     }
 
     public static void main(String[] args)
