@@ -350,7 +350,7 @@ public class SanPhamPanel extends JPanel {
         mainButtonsPanel.setBackground(Color.WHITE);
         
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
         
@@ -405,11 +405,11 @@ public class SanPhamPanel extends JPanel {
         actionPanel.add(importExportPanel);
     }
 
-    //==============Phương thức để ẩn hiện panel hành động====================
+    //==============Phương thức để ẩn panel hành động====================
     public void setActionPanelVisible() {
         // ẩn luôn panel hành động
         mainButtonsPanel.setVisible(false);
-
+        importExportPanel.setVisible(false);
     }
 
     //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
