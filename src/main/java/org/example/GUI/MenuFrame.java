@@ -97,10 +97,12 @@ public class MenuFrame extends JFrame implements ActionListener {
     public void hideActionPanel(String panelName) {
         switch (panelName) {
             case "sanPham":
-                ((SanPhamPanel) panelMap.get("sanPham")).setActionPanelVisible();
+                ((SanPhamPanel) panelMap.get("sanPham")).hideActionPanel();
+                break;
+                case "loaiSanPham":
+                ((LoaiSanPhamPanel) panelMap.get("loaiSanPham")).hideActionPanel();
                 break;
         }
-        cardLayout.show(contentPanel, panelName);
     }
 
 

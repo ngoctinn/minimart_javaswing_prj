@@ -61,7 +61,7 @@ public class LoaiSanPhamPanel extends JPanel {
     }
 
     //=====phương thức để ẩn panel hành động====================
-    public void setActionPanelVisible() {
+    public void hideActionPanel() {
         mainButtonsPanel.setVisible(true);
         importExportPanel.setVisible(true);
     }
