@@ -2,10 +2,15 @@ package org.example.GUI.Panels.giaoDichPanel;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.NhaCungCapBUS;
+import org.example.BUS.SanPhamBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomCombobox;
 import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.SanPhamDTO;
+import org.example.DTO.nhaCungCapDTO;
+import org.example.GUI.Dialogs.TaoLoHangDialog;
 import org.example.GUI.Dialogs.ThemNCCDialog;
 
 import javax.swing.*;
@@ -38,7 +43,7 @@ public class nhapHangPanel extends JPanel {
     private JScrollPane productScrollPane;
 
     // Danh sách sản phẩm mẫu
-    private List<SanPhamInfo> danhSachSanPham;
+    private List<SanPhamDTO> danhSachSanPham;
 
     public nhapHangPanel() {
         initGUI();
@@ -52,8 +57,11 @@ public class nhapHangPanel extends JPanel {
         setupBottomPanelRight();
 
         // Tạo dữ liệu mẫu và hiển thị
-        createSampleProducts();
+        createProducts();
         displayProductsInRightPanel();
+
+        // Thiết lập các sự kiện
+        setupEventHandlers();
 
         this.add(topPanel, BorderLayout.NORTH);
         this.add(bottomPanel, BorderLayout.CENTER);
@@ -160,7 +168,11 @@ public class nhapHangPanel extends JPanel {
         subPanelTop.add(Box.createHorizontalStrut(10));
 
         // Combobox chọn nhà cung cấp
-        String[] suppliers = {"Nhà cung cấp 1", "Nhà cung cấp 2", "Nhà cung cấp 3"};
+        ArrayList<nhaCungCapDTO> danhSachNCC = NhaCungCapBUS.layDanhSachNhaCungCap();
+        String[] suppliers = new String[danhSachNCC.size()];
+        for (int i = 0; i < danhSachNCC.size(); i++) {
+            suppliers[i] = danhSachNCC.get(i).getTenNCC();
+        }
         supplierComboBox = new CustomCombobox<>(suppliers);
         supplierComboBox.setPlaceholder("- Chọn nhà cung cấp -");
         supplierComboBox.setPreferredSize(new Dimension(200, 30));
@@ -171,11 +183,7 @@ public class nhapHangPanel extends JPanel {
         CustomButton createSupplierButton = new CustomButton("", createSupplierIcon);
         createSupplierButton.setPreferredSize(new Dimension(30, 30));
         createSupplierButton.setMaximumSize(new Dimension(30, 30)); // Giới hạn chiều cao tối đa
-        createSupplierButton.addActionListener(e -> {
-            // Mở dialog thêm nhà cung cấp mới
-            new ThemNCCDialog();
-            // TODO: Cập nhật lại danh sách nhà cung cấp sau khi thêm
-        });
+        createSupplierButton.addActionListener(e -> handleCreateSupplierButton());
         subPanelTop.add(createSupplierButton);
     }
     private void setupSubPanelCenter() {
@@ -283,11 +291,13 @@ public class nhapHangPanel extends JPanel {
         CustomButton cancelButton = new CustomButton("Hủy");
         cancelButton.setPreferredSize(new Dimension(100, 35));
         cancelButton.setForeground(Color.WHITE);
+        cancelButton.addActionListener(e -> handleCancelButton());
 
         // Nút Lưu
         CustomButton saveButton = new CustomButton("Lưu");
         saveButton.setPreferredSize(new Dimension(100, 35));
         saveButton.setForeground(Color.WHITE);
+        saveButton.addActionListener(e -> handleSaveButton());
 
         // Thêm các nút vào panel
         controlPanel.add(cancelButton);
@@ -333,27 +343,15 @@ public class nhapHangPanel extends JPanel {
     /**
      * Tạo danh sách sản phẩm mẫu
      */
-    private void createSampleProducts() {
-        danhSachSanPham = new ArrayList<>();
-
-        // Thêm các sản phẩm mẫu
-        danhSachSanPham.add(new SanPhamInfo("SP001", "Sữa tươi Vinamilk 180ml", "Thùng 48 hộp"));
-        danhSachSanPham.add(new SanPhamInfo("SP002", "Mì gói Hảo Hảo tôm chua cay", "Thùng 30 gói"));
-        danhSachSanPham.add(new SanPhamInfo("SP003", "Nước giải khát Coca Cola 330ml", "Thùng 24 lon"));
-        danhSachSanPham.add(new SanPhamInfo("SP004", "Bánh Oreo vị Chocolate", "Hộp 10 gói"));
-        danhSachSanPham.add(new SanPhamInfo("SP005", "Dầu ăn Neptune 1L", "Thùng 12 chai"));
-        danhSachSanPham.add(new SanPhamInfo("SP006", "Nước mắm Nam Ngư 500ml", "Thùng 24 chai"));
-        danhSachSanPham.add(new SanPhamInfo("SP007", "Bột giặt Omo 800g", "Thùng 12 gói"));
-        danhSachSanPham.add(new SanPhamInfo("SP008", "Nước rửa chén Sunlight 400g", "Thùng 24 chai"));
-        danhSachSanPham.add(new SanPhamInfo("SP009", "Kem đánh răng Colgate 200g", "Thùng 24 tuýp"));
-        danhSachSanPham.add(new SanPhamInfo("SP010", "Sữa tắm Dove 500ml", "Thùng 12 chai"));
+    private void createProducts() {
+        danhSachSanPham = new SanPhamBUS().layDanhSachSanPham();
     }
 
     /**
      * Hiển thị danh sách sản phẩm ở panel bên phải
      */
     private void displayProductsInRightPanel() {
-        for (SanPhamInfo sanPham : danhSachSanPham) {
+        for (SanPhamDTO sanPham : danhSachSanPham) {
             JPanel productPanel = createProductPanel(sanPham);
             productListPanel.add(productPanel);
             productListPanel.add(Box.createVerticalStrut(5)); // Khoảng cách giữa các sản phẩm
@@ -365,7 +363,7 @@ public class nhapHangPanel extends JPanel {
      * @param sanPham Thông tin sản phẩm cần hiển thị
      * @return JPanel chứa thông tin sản phẩm
      */
-    private JPanel createProductPanel(SanPhamInfo sanPham) {
+    private JPanel createProductPanel(SanPhamDTO sanPham) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(10, 5));
         panel.setBackground(Color.WHITE);
@@ -389,7 +387,7 @@ public class nhapHangPanel extends JPanel {
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
         // Đơn vị tính
-        JLabel unitLabel = new JLabel(sanPham.getDonViTinh());
+        JLabel unitLabel = new JLabel(sanPham.getDonVi());
         unitLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
         unitLabel.setForeground(new Color(100, 100, 100));
 
@@ -400,23 +398,39 @@ public class nhapHangPanel extends JPanel {
         infoPanel.add(Box.createVerticalStrut(3));
         infoPanel.add(unitLabel);
 
+        // Panel chứa các nút
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setBackground(Color.WHITE);
+
         // Nút thêm sản phẩm
         CustomButton addButton = new CustomButton("Thêm");
         addButton.setPreferredSize(new Dimension(80, 30));
         addButton.setMaximumSize(new Dimension(80, 30)); // Giới hạn chiều cao tối đa
         addButton.setBackground(new Color(13, 110, 253)); // Màu xanh
         addButton.setForeground(Color.WHITE);
+        addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Thêm action listener cho nút thêm
-        addButton.addActionListener(e -> {
-            // Tạo panel sản phẩm đã chọn và thêm vào bên trái
-            JPanel selectedProductPanel = createSelectedProductPanel(sanPham);
-            addSanPhamToLeftPanel(selectedProductPanel);
-        });
+        addButton.addActionListener(e -> handleAddProductButton(sanPham));
+        buttonPanel.add(addButton);
+
+        // Thêm khoảng cách giữa các nút
+        buttonPanel.add(Box.createVerticalStrut(5));
+
+        // Nút tạo lô hàng mới
+        CustomButton createBatchButton = new CustomButton("Tạo lô");
+        createBatchButton.setPreferredSize(new Dimension(80, 30));
+        createBatchButton.setMaximumSize(new Dimension(80, 30)); // Giới hạn chiều cao tối đa
+        createBatchButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+        createBatchButton.setForeground(Color.WHITE);
+        createBatchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createBatchButton.addActionListener(e -> handleCreateBatchForProductButton(sanPham));
+        buttonPanel.add(createBatchButton);
 
         // Thêm các thành phần vào panel chính
         panel.add(infoPanel, BorderLayout.CENTER);
-        panel.add(addButton, BorderLayout.EAST);
+        panel.add(buttonPanel, BorderLayout.EAST);
 
         // Đảm bảo panel có chiều rộng tối đa
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
@@ -429,7 +443,7 @@ public class nhapHangPanel extends JPanel {
      * @param sanPham Thông tin sản phẩm đã chọn
      * @return JPanel chứa thông tin sản phẩm đã chọn
      */
-    private JPanel createSelectedProductPanel(SanPhamInfo sanPham) {
+    private JPanel createSelectedProductPanel(SanPhamDTO sanPham) {
         JPanel cartItemPanel = new JPanel();
         cartItemPanel.setLayout(new BoxLayout(cartItemPanel, BoxLayout.X_AXIS));
         cartItemPanel.setBackground(Color.WHITE);
@@ -480,18 +494,19 @@ public class nhapHangPanel extends JPanel {
 
         // Cột 4: Đơn giá
         CustomTextField priceField = new CustomTextField("");
-        priceField.setText("10000");
+        priceField.setText(String.valueOf(sanPham.getGiaBan()));
         priceField.setHorizontalAlignment(JTextField.LEFT);
         pricePanel.add(priceField, BorderLayout.CENTER);
 
         // Cột 5: Thành tiền
-        JLabel totalItemLabel = new JLabel("10000", JLabel.LEFT);
+        JLabel totalItemLabel = new JLabel(String.valueOf(sanPham.getGiaBan()), JLabel.LEFT);
         totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         totalPanel.add(totalItemLabel, BorderLayout.CENTER);
 
         // Cột 6: Lô hàng
         JPanel batchContentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         batchContentPanel.setBackground(Color.WHITE);
+
 
         String[] batches = {"Chọn lô hàng", "LH1001", "LH1002", "LH1003"};
         CustomCombobox<String> batchComboBox = new CustomCombobox<>(batches);
@@ -503,9 +518,7 @@ public class nhapHangPanel extends JPanel {
         CustomButton createBatchButton = new CustomButton("", createBatchIcon);
         createBatchButton.setPreferredSize(new Dimension(30, 30));
         createBatchButton.setMaximumSize(new Dimension(30, 30)); // Giới hạn chiều cao tối đa
-        createBatchButton.addActionListener(e -> {
-            // Mở dialog thêm lô hàng mới
-        });
+        createBatchButton.addActionListener(e -> handleCreateBatchForProductButton(sanPham));
         batchContentPanel.add(createBatchButton);
         batchPanel.add(batchContentPanel, BorderLayout.CENTER);
 
@@ -541,31 +554,99 @@ public class nhapHangPanel extends JPanel {
         subPanelCenter.repaint();
     }
 
+
+
+    //====================== XỬ LÝ SỰ KIỆN=================================
     /**
-     * Lớp lưu trữ thông tin sản phẩm
+     * Thiết lập các sự kiện cho các thành phần
      */
-    private static class SanPhamInfo {
-        private String maSP;
-        private String tenSP;
-        private String donViTinh;
+    private void setupEventHandlers() {
+        // Thiết lập tất cả các sự kiện ở đây
+        searchButton.addActionListener(e -> handleSearchButton());
+        refreshButton.addActionListener(e -> handleRefreshButton());
 
-        public SanPhamInfo(String maSP, String tenSP, String donViTinh) {
-            this.maSP = maSP;
-            this.tenSP = tenSP;
-            this.donViTinh = donViTinh;
-        }
+        // Các sự kiện khác đã được thiết lập trực tiếp trong các phương thức setup
+    }
 
-        public String getMaSP() {
-            return maSP;
+    // CÁC PHƯƠNG THỨC XỬ LÝ SỰ KIỆN
+    /**
+     * Xử lý sự kiện khi nhấn nút Tìm kiếm
+     */
+    private void handleSearchButton() {
+        // Xử lý tìm kiếm sản phẩm
+        String searchText = searchField.getText().trim();
+        if (!searchText.isEmpty()) {
+            // TODO: Thực hiện tìm kiếm sản phẩm theo searchText
+            System.out.println("Tìm kiếm sản phẩm: " + searchText);
         }
+    }
 
-        public String getTenSP() {
-            return tenSP;
-        }
+    /**
+     * Xử lý sự kiện khi nhấn nút Làm mới
+     */
+    private void handleRefreshButton() {
+        // Xử lý làm mới danh sách sản phẩm
+        searchField.setText("");
+        // TODO: Làm mới danh sách sản phẩm
+        System.out.println("Làm mới danh sách sản phẩm");
+    }
 
-        public String getDonViTinh() {
-            return donViTinh;
-        }
+    /**
+     * Xử lý sự kiện khi nhấn nút thêm nhà cung cấp
+     */
+    private void handleCreateSupplierButton() {
+        // Mở dialog thêm nhà cung cấp mới
+        new ThemNCCDialog();
+        // TODO: Cập nhật lại danh sách nhà cung cấp sau khi thêm
+        System.out.println("Thêm nhà cung cấp mới");
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn nút Hủy
+     */
+    private void handleCancelButton() {
+        // Xử lý hủy phiếu nhập
+        // TODO: Xử lý hủy phiếu nhập
+        System.out.println("Hủy phiếu nhập");
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn nút Lưu
+     */
+    private void handleSaveButton() {
+        // Xử lý lưu phiếu nhập
+        // TODO: Xử lý lưu phiếu nhập
+        System.out.println("Lưu phiếu nhập");
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn nút thêm sản phẩm
+     */
+    private void handleAddProductButton(SanPhamDTO sanPham) {
+        // Tạo panel sản phẩm đã chọn và thêm vào bên trái
+        JPanel selectedProductPanel = createSelectedProductPanel(sanPham);
+        addSanPhamToLeftPanel(selectedProductPanel);
+        System.out.println("Thêm sản phẩm: " + sanPham.getTenSP());
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn nút thêm lô hàng trong panel sản phẩm đã chọn
+     */
+    private void handleCreateBatchButton() {
+        // Mở dialog thêm lô hàng mới
+        // TODO: Mở dialog thêm lô hàng mới
+
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn nút tạo lô hàng mới cho sản phẩm
+     * @param sanPham Sản phẩm cần tạo lô hàng mới
+     */
+    private void handleCreateBatchForProductButton(SanPhamDTO sanPham) {
+        // lấy thông tin sản phẩm
+        new TaoLoHangDialog(null, sanPham);
+
+
     }
 
     public static void main(String[] args) {

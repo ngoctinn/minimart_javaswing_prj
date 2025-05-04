@@ -8,12 +8,12 @@ public class loHangDTO {
     private LocalDate ngaySanXuat;
     private LocalDate ngayHetHan;
     private int soLuong;
-    private int trangThai;
+    private String trangThai;
 
     public loHangDTO() {
 
     }
-    public loHangDTO(String maLoHang, String maSP, LocalDate ngaySanXuat, LocalDate ngayHetHan, int soLuong, int trangThai) {
+    public loHangDTO(String maLoHang, String maSP, LocalDate ngaySanXuat, LocalDate ngayHetHan, int soLuong, String trangThai) {
         this.maLoHang = maLoHang;
         this.maSP = maSP;
         this.ngaySanXuat = ngaySanXuat;
@@ -57,10 +57,10 @@ public class loHangDTO {
         this.soLuong = soLuong;
     }
 
-    public int getTrangThai() {
+    public String getTrangThai() {
         return trangThai;
     }
-    public void setTrangThai(int trangThai) {
+    public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
 }
