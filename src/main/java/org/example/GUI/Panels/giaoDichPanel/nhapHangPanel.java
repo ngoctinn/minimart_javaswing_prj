@@ -1,1084 +1,585 @@
 package org.example.GUI.Panels.giaoDichPanel;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.Components.CustomButton;
-import org.example.Components.CustomTable;
-import org.example.Components.PlaceholderTextField;
+import org.example.Components.CustomCombobox;
+import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
-import org.example.GUI.Dialogs.TaoLoHangDialog;
+import org.example.GUI.Dialogs.ThemNCCDialog;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class nhapHangPanel extends JPanel {
-    // UI Components
-    private RoundedPanel topPanel;
-    private RoundedPanel bottomPanel;
-    private RoundedPanel bottomPanelLeft;
-    private RoundedPanel bottomPanelRight;
+    // region Khai báo các thành phần giao diện
+    private JPanel topPanel;
+    private JPanel bottomPanel;
+    private JPanel bottomPanelLeft;
+    private JPanel bottomPanelRight;
+    //end region
 
-    // Top panel components
-    private PlaceholderTextField searchField;
+    // Các thành phần của topPanel
+    private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton refreshButton;
 
-    // Bottom panel components
-    private JTabbedPane tabbedPane;
-    private JPanel productsPanel;
 
-    // Định dạng tiền tệ
-    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-    private Color priceColor = new Color(0, 100, 180); // Màu xanh cho giá tiền
+    // Các thành phẩn của bottomPanelLeft
+    private JPanel subPanelTop;
+    private JPanel subPanelCenter;
+    private JPanel subPanelBottom;
+    private CustomCombobox<String> supplierComboBox;
 
-    // Danh sách sản phẩm nhập
-    private List<ImportItem> importItems = new ArrayList<>();
-    private double totalAmount = 0;
-    private JLabel totalLabel;
+    // Các thành phần của bottomPanelRight
+    private JPanel productListPanel;
+    private JScrollPane productScrollPane;
 
-    // Thông tin nhà cung cấp hiện tại
-    private String currentSupplier = "";
-    private JComboBox<String> supplierComboBox;
+    // Danh sách sản phẩm mẫu
+    private List<SanPhamInfo> danhSachSanPham;
 
     public nhapHangPanel() {
         initGUI();
     }
 
-    public void initGUI() {
+    private void initGUI() {
         setupMainPanel();
         createPanels();
         setupTopPanel();
         setupBottomPanelLeft();
         setupBottomPanelRight();
 
-        // Add panels to main panel
-        this.add(topPanel);
-        this.add(bottomPanel);
+        // Tạo dữ liệu mẫu và hiển thị
+        createSampleProducts();
+        displayProductsInRightPanel();
+
+        this.add(topPanel, BorderLayout.NORTH);
+        this.add(bottomPanel, BorderLayout.CENTER);
         bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
         bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
     }
 
+    //Thiết lập thuộc tính cho panel chính
     private void setupMainPanel() {
-        // Set up layout and background for main panel
         this.setLayout(new BorderLayout(10, 10));
-        this.setBackground(new Color(225, 225, 225));
+        this.setBackground(new java.awt.Color(225, 225, 225));
         this.setVisible(true);
     }
 
+    //Tạo và thiết lập các panel con
     private void createPanels() {
-        // Create sub-panels
+        // Tạo các panel con
+        // Tạo các panel con với góc bo tròn 20px
         topPanel = new RoundedPanel(20);
         bottomPanel = new RoundedPanel(20);
         bottomPanelLeft = new RoundedPanel(20);
         bottomPanelRight = new RoundedPanel(20);
 
-        // Set background colors
-        topPanel.setBackground(Color.WHITE);
-        bottomPanel.setBackground(new Color(225, 225, 225));
-        bottomPanelLeft.setBackground(Color.WHITE);
-        bottomPanelRight.setBackground(Color.WHITE);
+        // Thiết lập màu nền cho các panel
+        topPanel.setBackground(Color.WHITE);  // Màu trắng cho panel trên
+        bottomPanel.setBackground(new Color(225, 225, 225)); // Màu xám nhạt cho panel dưới
+        bottomPanelLeft.setBackground(Color.WHITE);  // Màu trắng cho panel trái
+        bottomPanelRight.setBackground(Color.WHITE); // Màu trắng cho panel phải
 
-        // Set panel sizes
-        topPanel.setPreferredSize(new Dimension(1270, 50));
-        bottomPanel.setPreferredSize(new Dimension(1270, 900));
+        // Thiết lập kích thước cho các panel
+        topPanel.setPreferredSize(new Dimension(1270, 50));    // Panel trên cao 50px
+        bottomPanel.setPreferredSize(new Dimension(1270, 900)); // Panel dưới cao 900px
 
-        // Set bottom panel proportions - 60% left, 40% right
-        bottomPanelLeft.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.6), 0));
-        bottomPanelRight.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.4), 0));
+        // Thiết lập tỷ lệ panel dưới - 70% bên trái, 30% bên phải
+        bottomPanelLeft.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.7), 0));
+        bottomPanelRight.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.3), 0));
 
-        // Set layouts
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        bottomPanel.setLayout(new BorderLayout(5, 0));
-        bottomPanelLeft.setLayout(new BorderLayout());
-        bottomPanelRight.setLayout(new BorderLayout());
+        // Thiết lập layout cho các panel
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Các thành phần căn trái, cách nhau 10px
+        bottomPanel.setLayout(new BorderLayout(5, 0));  // Layout BorderLayout với khoảng cách ngang 5px
+        bottomPanelLeft.setLayout(new BorderLayout());  // Layout BorderLayout cho panel trái
+        bottomPanelRight.setLayout(new BorderLayout()); // Layout BorderLayout cho panel phải
     }
 
     private void setupTopPanel() {
-        // Search field
-        searchField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
+        // Tiêu đề
+        JLabel title = new JLabel("Nhâp Hàng");
+        title.setFont(new Font("Roboto", Font.BOLD, 23));
+        title.setForeground(new Color(0, 0, 0));
+        topPanel.add(title);
+
+        // ô tìm kiếm
+        searchField = new CustomTextField("Tìm kiếm sản phẩm...");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         topPanel.add(searchField);
 
-        // Search button
+        // nút tìm kiếm
         searchButton = new CustomButton("Tìm");
         searchButton.setPreferredSize(new Dimension(70, 30));
         topPanel.add(searchButton);
 
-        // Add a spacer panel to push the refresh button to the right
-        JPanel spacerPanel = new JPanel();
-        spacerPanel.setOpaque(false);
-        spacerPanel.setPreferredSize(new Dimension(680, 30));
-        topPanel.add(spacerPanel);
-
-        // Refresh button
+        // nút làm mới
         FlatSVGIcon refreshIcon = new FlatSVGIcon("Icons/refresh.svg", 16, 16);
-        refreshButton = new CustomButton("Làm mới", refreshIcon);
-        refreshButton.setPreferredSize(new Dimension(150, 30));
-        refreshButton.addActionListener(e -> refreshPanel());
+        refreshButton = new CustomButton("", refreshIcon);
+        refreshButton.setPreferredSize(new Dimension(30, 30));
         topPanel.add(refreshButton);
     }
 
-    private void refreshPanel() {
-        // Clear search field and refresh data
-        searchField.setText("");
-        JOptionPane.showMessageDialog(
-                this,
-                "Đã làm mới dữ liệu!",
-                "Thông báo",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-    }
 
+    //====================setupBottomPanelLeft================================
     private void setupBottomPanelLeft() {
-        // Create tabbed pane with 2 fixed tabs
-        tabbedPane = new JTabbedPane();
+        // Tạo các thành phần của bottomPanelLeft
+        subPanelTop = new JPanel();
+        subPanelCenter = new JPanel();
+        subPanelBottom = new JPanel();
 
-        // Tab 1: Tạo lô hàng mới
-        JPanel createBatchPanel = createBatchPanel();
-        tabbedPane.addTab("Tạo lô hàng", createBatchPanel);
+        //layout
+        subPanelTop.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        // set layout cho subPanelCenter là BoxLayout theo chiều dọc
+        subPanelCenter.setLayout(new BoxLayout(subPanelCenter, BoxLayout.Y_AXIS));
+        subPanelBottom.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
-        // Tab 2: Danh sách hàng nhập
-        JPanel importListPanel = createImportListPanel();
-        tabbedPane.addTab("Danh sách hàng nhập", importListPanel);
+        //color
+        subPanelTop.setBackground(Color.WHITE);
+        subPanelCenter.setBackground(Color.WHITE);
+        subPanelBottom.setBackground(Color.WHITE);
 
-        bottomPanelLeft.add(tabbedPane, BorderLayout.CENTER);
+        // gồm 3 panel con
+        setupSubPanelTop();
+        setupSubPanelCenter();
+        setupSubPanelBottom();
+
+        bottomPanelLeft.add(subPanelTop, BorderLayout.NORTH);
+        bottomPanelLeft.add(new JScrollPane(subPanelCenter), BorderLayout.CENTER);
+        bottomPanelLeft.add(subPanelBottom, BorderLayout.SOUTH);
     }
 
-    private JPanel createBatchPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE);
+    private void setupSubPanelTop() {
+        // Label chọn nhà cung cấp
+        JLabel supplierLabel = new JLabel("Chọn nhà cung cấp:");
+        supplierLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        subPanelTop.add(supplierLabel);
+        subPanelTop.add(Box.createHorizontalStrut(10));
 
-        // Header panel with supplier info
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)
-        ));
-        headerPanel.setBackground(new Color(250, 250, 255));
+        // Combobox chọn nhà cung cấp
+        String[] suppliers = {"Nhà cung cấp 1", "Nhà cung cấp 2", "Nhà cung cấp 3"};
+        supplierComboBox = new CustomCombobox<>(suppliers);
+        supplierComboBox.setPlaceholder("- Chọn nhà cung cấp -");
+        supplierComboBox.setPreferredSize(new Dimension(200, 30));
+        subPanelTop.add(supplierComboBox);
 
-        // Info panel for supplier selection
-        JPanel infoPanel = new JPanel(new GridLayout(1, 2, 10, 5));
-        infoPanel.setBackground(new Color(250, 250, 255));
-
-        // Supplier
-        JLabel supplierLabel = new JLabel("Nhà cung cấp:");
-        supplierLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        // Combo box để chọn nhà cung cấp
-        String[] suppliers = {"Chọn nhà cung cấp", "NCC001 - Công ty TNHH ABC",
-                "NCC002 - Công ty CP XYZ", "NCC003 - Công ty TNHH DEF"};
-        supplierComboBox = new JComboBox<>(suppliers);
-        supplierComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        supplierComboBox.addActionListener(e -> {
-            if (supplierComboBox.getSelectedIndex() > 0) {
-                currentSupplier = (String) supplierComboBox.getSelectedItem();
-            } else {
-                currentSupplier = "";
-            }
-        });
-
-        JPanel supplierSelectPanel = new JPanel(new BorderLayout(5, 0));
-        supplierSelectPanel.setBackground(new Color(250, 250, 255));
-        supplierSelectPanel.add(supplierComboBox, BorderLayout.CENTER);
-
-        // Create supplier button
-        CustomButton createSupplierButton = new CustomButton("Tạo mới");
-        createSupplierButton.setPreferredSize(new Dimension(100, 30));
+        // Tạo nút thêm nhà cung cấp mới
+        FlatSVGIcon createSupplierIcon = new FlatSVGIcon("Icons/cong.svg", 10, 10); // Biểu tượng dấu cộng
+        CustomButton createSupplierButton = new CustomButton("", createSupplierIcon);
+        createSupplierButton.setPreferredSize(new Dimension(30, 30));
+        createSupplierButton.setMaximumSize(new Dimension(30, 30)); // Giới hạn chiều cao tối đa
         createSupplierButton.addActionListener(e -> {
-            String newSupplier = JOptionPane.showInputDialog(
-                    this,
-                    "Nhập tên nhà cung cấp mới:",
-                    "Tạo nhà cung cấp mới",
-                    JOptionPane.QUESTION_MESSAGE
-            );
-            if (newSupplier != null && !newSupplier.trim().isEmpty()) {
-                String supplierId = "NCC" + (int)(Math.random() * 1000);
-                String supplierFullName = supplierId + " - " + newSupplier;
-
-                supplierComboBox.addItem(supplierFullName);
-                supplierComboBox.setSelectedItem(supplierFullName);
-                currentSupplier = supplierFullName;
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Đã tạo nhà cung cấp mới: " + supplierFullName,
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
+            // Mở dialog thêm nhà cung cấp mới
+            new ThemNCCDialog();
+            // TODO: Cập nhật lại danh sách nhà cung cấp sau khi thêm
         });
-        supplierSelectPanel.add(createSupplierButton, BorderLayout.EAST);
-
-        infoPanel.add(supplierLabel);
-        infoPanel.add(supplierSelectPanel);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(250, 250, 255));
-
-        headerPanel.add(infoPanel, BorderLayout.CENTER);
-        headerPanel.add(buttonPanel, BorderLayout.EAST);
-
-        // Product addition panel
-        JPanel productAddPanel = new JPanel(new BorderLayout());
-        productAddPanel.setBackground(Color.WHITE);
-
-        // Tiêu đề
-        JLabel titleLabel = new JLabel("CHI TIẾT NHẬP HÀNG", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        titleLabel.setForeground(new Color(50, 50, 50));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        productAddPanel.add(titleLabel, BorderLayout.NORTH);
-
-        // Panel chứa tiêu đề các cột
-        JPanel headerCartPanel = new JPanel(new GridLayout(1, 6, 10, 0));
-        headerCartPanel.setBackground(new Color(245, 245, 245));
+        subPanelTop.add(createSupplierButton);
+    }
+    private void setupSubPanelCenter() {
+        // Tạo panel chứa các cột trong bảng chi tiết phiếu nhập
+        JPanel headerCartPanel = new JPanel();
+        headerCartPanel.setLayout(new BoxLayout(headerCartPanel, BoxLayout.X_AXIS));
+        headerCartPanel.setBackground(new Color(245, 245, 245)); // Màu nền xám nhạt
         headerCartPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(220, 220, 220)), // Viền dưới 2px màu xám
+                BorderFactory.createEmptyBorder(10, 15, 10, 15) // Padding 10px trên dưới, 15px trái phải
+        ));
+
+        // Định nghĩa font và màu sắc cho các tiêu đề cột
+        Font headerFont = new Font("Segoe UI", Font.BOLD, 14);
+        Color headerColor = new Color(60, 60, 60); // Màu chữ xám đậm
+
+        // Tạo các panel con cho từng cột với tỷ lệ cố định
+        JPanel codePanel = new JPanel(new BorderLayout());
+        JPanel namePanel = new JPanel(new BorderLayout());
+        JPanel qtyPanel = new JPanel(new BorderLayout());
+        JPanel pricePanel = new JPanel(new BorderLayout());
+        JPanel totalPanel = new JPanel(new BorderLayout());
+        JPanel batchPanel = new JPanel(new BorderLayout());
+
+        // Đặt màu nền cho các panel con
+        codePanel.setBackground(new Color(245, 245, 245));
+        namePanel.setBackground(new Color(245, 245, 245));
+        qtyPanel.setBackground(new Color(245, 245, 245));
+        pricePanel.setBackground(new Color(245, 245, 245));
+        totalPanel.setBackground(new Color(245, 245, 245));
+        batchPanel.setBackground(new Color(245, 245, 245));
+
+        // Đặt kích thước cho các panel con
+        codePanel.setPreferredSize(new Dimension(100, 40));
+        namePanel.setPreferredSize(new Dimension(250, 40));
+        qtyPanel.setPreferredSize(new Dimension(80, 40));
+        pricePanel.setPreferredSize(new Dimension(100, 40));
+        totalPanel.setPreferredSize(new Dimension(100, 40));
+        batchPanel.setPreferredSize(new Dimension(150, 40));
+
+        // Tạo các nhãn tiêu đề cho từng cột
+        // Cột 1: Mã sản phẩm
+        JLabel codeHeader = new JLabel("Mã SP", JLabel.LEFT);
+        codeHeader.setFont(headerFont);
+        codeHeader.setForeground(headerColor);
+
+        // Cột 2: Tên sản phẩm
+        JLabel nameHeader = new JLabel("Tên sản phẩm", JLabel.LEFT);
+        nameHeader.setFont(headerFont);
+        nameHeader.setForeground(headerColor);
+
+        // Cột 3: Số lượng
+        JLabel qtyHeader = new JLabel("Số lượng", JLabel.LEFT);
+        qtyHeader.setFont(headerFont);
+        qtyHeader.setForeground(headerColor);
+
+        // Cột 4: Đơn giá
+        JLabel priceHeader = new JLabel("Đơn giá", JLabel.LEFT);
+        priceHeader.setFont(headerFont);
+        priceHeader.setForeground(headerColor);
+
+        // Cột 5: Thành tiền
+        JLabel totalHeader = new JLabel("Thành tiền", JLabel.LEFT);
+        totalHeader.setFont(headerFont);
+        totalHeader.setForeground(headerColor);
+
+        // Cột 6: Lô hàng
+        JLabel batchHeader = new JLabel("Lô hàng", JLabel.LEFT);
+        batchHeader.setFont(headerFont);
+        batchHeader.setForeground(headerColor);
+
+        // Thêm các nhãn vào panel con tương ứng
+        codePanel.add(codeHeader, BorderLayout.CENTER);
+        namePanel.add(nameHeader, BorderLayout.CENTER);
+        qtyPanel.add(qtyHeader, BorderLayout.CENTER);
+        pricePanel.add(priceHeader, BorderLayout.CENTER);
+        totalPanel.add(totalHeader, BorderLayout.CENTER);
+        batchPanel.add(batchHeader, BorderLayout.CENTER);
+
+        // Thêm các panel con vào headerCartPanel
+        headerCartPanel.add(codePanel);
+        headerCartPanel.add(Box.createHorizontalStrut(10)); // Khoảng cách giữa các cột
+        headerCartPanel.add(namePanel);
+        headerCartPanel.add(Box.createHorizontalStrut(10));
+        headerCartPanel.add(qtyPanel);
+        headerCartPanel.add(Box.createHorizontalStrut(10));
+        headerCartPanel.add(pricePanel);
+        headerCartPanel.add(Box.createHorizontalStrut(10));
+        headerCartPanel.add(totalPanel);
+        headerCartPanel.add(Box.createHorizontalStrut(10));
+        headerCartPanel.add(batchPanel);
+
+        // Đảm bảo headerCartPanel có chiều rộng tối đa
+        headerCartPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, headerCartPanel.getPreferredSize().height));
+
+        subPanelCenter.add(headerCartPanel);
+    }
+
+    private void setupSubPanelBottom() {
+        // Tạo panel chứa các nút điều khiển
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        controlPanel.setBackground(Color.WHITE);
+
+        // Nút Hủy
+        CustomButton cancelButton = new CustomButton("Hủy");
+        cancelButton.setPreferredSize(new Dimension(100, 35));
+        cancelButton.setForeground(Color.WHITE);
+
+        // Nút Lưu
+        CustomButton saveButton = new CustomButton("Lưu");
+        saveButton.setPreferredSize(new Dimension(100, 35));
+        saveButton.setForeground(Color.WHITE);
+
+        // Thêm các nút vào panel
+        controlPanel.add(cancelButton);
+        controlPanel.add(saveButton);
+
+        subPanelBottom.add(controlPanel);
+    }
+
+    //==================END=======================
+
+    private void setupBottomPanelRight() {
+        // Tạo panel chứa danh sách sản phẩm
+        productListPanel = new JPanel();
+        productListPanel.setLayout(new BoxLayout(productListPanel, BoxLayout.Y_AXIS));
+        productListPanel.setBackground(Color.WHITE);
+
+        // Tạo JScrollPane để có thể cuộn danh sách sản phẩm
+        productScrollPane = new JScrollPane(productListPanel);
+        productScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        productScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        // Thêm tiêu đề cho panel bên phải
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        headerPanel.setBackground(new Color(245, 245, 245));
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(220, 220, 220)),
                 BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
 
-        Font headerFont = new Font("Segoe UI", Font.BOLD, 14);
-        Color headerColor = new Color(60, 60, 60);
+        JLabel headerLabel = new JLabel("Danh sách sản phẩm");
+        headerLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        headerPanel.add(headerLabel);
 
-        JLabel codeHeader = new JLabel("Mã SP", SwingConstants.CENTER);
-        codeHeader.setFont(headerFont);
-        codeHeader.setForeground(headerColor);
+        // Đảm bảo headerPanel có chiều rộng tối đa
+        headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, headerPanel.getPreferredSize().height));
 
-        JLabel nameHeader = new JLabel("Tên sản phẩm", SwingConstants.CENTER);
-        nameHeader.setFont(headerFont);
-        nameHeader.setForeground(headerColor);
-
-        JLabel qtyHeader = new JLabel("Số lượng", SwingConstants.CENTER);
-        qtyHeader.setFont(headerFont);
-        qtyHeader.setForeground(headerColor);
-
-        JLabel priceHeader = new JLabel("Đơn giá", SwingConstants.CENTER);
-        priceHeader.setFont(headerFont);
-        priceHeader.setForeground(headerColor);
-
-        JLabel totalHeader = new JLabel("Thành tiền", SwingConstants.CENTER);
-        totalHeader.setFont(headerFont);
-        totalHeader.setForeground(headerColor);
-
-        JLabel batchHeader = new JLabel("Lô hàng", SwingConstants.CENTER);
-        batchHeader.setFont(headerFont);
-        batchHeader.setForeground(headerColor);
-
-        headerCartPanel.add(codeHeader);
-        headerCartPanel.add(nameHeader);
-        headerCartPanel.add(qtyHeader);
-        headerCartPanel.add(priceHeader);
-        headerCartPanel.add(totalHeader);
-        headerCartPanel.add(batchHeader);
-
-        // Panel chính chứa danh sách các sản phẩm nhập hàng
-        JPanel itemsPanel = new JPanel();
-        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
-        itemsPanel.setBackground(Color.WHITE);
-        itemsPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        // Tạo JScrollPane cho danh sách sản phẩm
-        JScrollPane scrollPane = new JScrollPane(itemsPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
-
-        // Bottom panel with total and buttons
-        JPanel bottomActionPanel = new JPanel(new BorderLayout());
-        bottomActionPanel.setBackground(Color.WHITE);
-        bottomActionPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(230, 230, 230)),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)
-        ));
-
-        // Tổng tiền
-        totalLabel = new JLabel("TỔNG TIỀN: " + currencyFormat.format(0), SwingConstants.RIGHT);
-        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        totalLabel.setForeground(priceColor);
-
-        // Buttons panel
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        buttonsPanel.setBackground(Color.WHITE);
-
-        CustomButton saveButton = new CustomButton("Lưu phiếu nhập");
-        saveButton.setPreferredSize(new Dimension(150, 40));
-        saveButton.addActionListener(e -> {
-            if (currentSupplier.isEmpty()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Vui lòng chọn nhà cung cấp trước khi lưu!",
-                        "Thông báo",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
-
-            if (importItems.isEmpty()) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Chưa có sản phẩm nào được nhập!",
-                        "Thông báo",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
-
-            // Kiểm tra tất cả sản phẩm đã có lô hàng chưa
-            boolean allHaveBatch = true;
-            for (ImportItem item : importItems) {
-                if (item.getBatchId().isEmpty()) {
-                    allHaveBatch = false;
-                    break;
-                }
-            }
-
-            if (!allHaveBatch) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Một số sản phẩm chưa được chọn lô hàng!",
-                        "Thông báo",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Đã lưu phiếu nhập hàng thành công!",
-                    "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            // Chuyển sang tab danh sách hàng nhập
-            tabbedPane.setSelectedIndex(1);
-
-            // Reset form
-            itemsPanel.removeAll();
-            getRevalidate(itemsPanel);
-            itemsPanel.repaint();
-            importItems.clear();
-
-            supplierComboBox.setSelectedIndex(0);
-            currentSupplier = "";
-            totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(0));
-            totalAmount = 0;
-        });
-
-        CustomButton cancelButton = new CustomButton("Hủy");
-        cancelButton.setPreferredSize(new Dimension(100, 40));
-        cancelButton.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Bạn có chắc muốn hủy phiếu nhập hàng này?",
-                    "Xác nhận hủy",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                // Reset form
-                itemsPanel.removeAll();
-                itemsPanel.revalidate();
-                itemsPanel.repaint();
-                importItems.clear();
-
-                supplierComboBox.setSelectedIndex(0);
-                currentSupplier = "";
-                totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(0));
-                totalAmount = 0;
-            }
-        });
-
-        buttonsPanel.add(saveButton);
-        buttonsPanel.add(cancelButton);
-
-        bottomActionPanel.add(buttonsPanel, BorderLayout.WEST);
-        bottomActionPanel.add(totalLabel, BorderLayout.EAST);
-
-        // Thêm các thành phần vào productAddPanel
-        productAddPanel.add(headerCartPanel, BorderLayout.NORTH);
-        productAddPanel.add(scrollPane, BorderLayout.CENTER);
-        productAddPanel.add(bottomActionPanel, BorderLayout.SOUTH);
-
-        // Add all panels to main panel
-        panel.add(headerPanel, BorderLayout.NORTH);
-        panel.add(productAddPanel, BorderLayout.CENTER);
-
-        // Lưu trữ itemsPanel để truy cập sau này
-        panel.putClientProperty("itemsPanel", itemsPanel);
-
-        return panel;
-    }
-
-    private static void getRevalidate(JPanel itemsPanel) {
-        itemsPanel.revalidate();
-    }
-
-    private JPanel createImportListPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE);
-
-        // Tiêu đề
-        JLabel titleLabel = new JLabel("DANH SÁCH PHIẾU NHẬP HÀNG", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        titleLabel.setForeground(new Color(50, 50, 50));
-        titleLabel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                BorderFactory.createEmptyBorder(15, 0, 15, 0)
-        ));
-        panel.add(titleLabel, BorderLayout.NORTH);
-
-        // Bảng phiếu nhập sử dụng CustomTable
-        String[] columnNames = {"Mã phiếu", "Ngày nhập", "Mã lô", "Nhà cung cấp", "Tổng sản phẩm", "Tổng tiền", "Trạng thái"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        // Thêm dữ liệu mẫu
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Object[][] sampleData = {
-                {"PN001", dateFormat.format(new Date()), "LH4321", "NCC001 - Công ty TNHH ABC", 15, currencyFormat.format(3750000), "Hoàn thành"},
-                {"PN002", "01/06/2023", "LH2156", "NCC002 - Công ty CP XYZ", 8, currencyFormat.format(1250000), "Hoàn thành"},
-                {"PN003", "15/07/2023", "LH9876", "NCC003 - Công ty TNHH DEF", 12, currencyFormat.format(2800000), "Hoàn thành"}
-        };
-
-        for (Object[] row : sampleData) {
-            tableModel.addRow(row);
-        }
-
-        CustomTable importTable = new CustomTable(tableModel);
-        importTable.setRowHeight(30);
-        importTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        importTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-        importTable.setSelectionBackground(new Color(230, 240, 250));
-
-        // Center align text in cells
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        for (int i = 0; i < importTable.getColumnCount(); i++) {
-            importTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-
-        JScrollPane tableScrollPane = new JScrollPane(importTable);
-        tableScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        panel.add(tableScrollPane, BorderLayout.CENTER);
-
-        // Bottom action panel
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        actionPanel.setBackground(Color.WHITE);
-        actionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        CustomButton viewDetailButton = new CustomButton("Xem chi tiết");
-        viewDetailButton.setPreferredSize(new Dimension(120, 35));
-        viewDetailButton.addActionListener(e -> {
-            int selectedRow = importTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Vui lòng chọn một phiếu nhập để xem chi tiết!",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-                return;
-            }
-
-            String importId = (String) tableModel.getValueAt(selectedRow, 0);
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Xem chi tiết phiếu nhập: " + importId,
-                    "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        });
-
-        CustomButton exportButton = new CustomButton("Xuất Excel");
-        exportButton.setPreferredSize(new Dimension(120, 35));
-        exportButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Xuất danh sách phiếu nhập thành công!",
-                    "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        });
-
-        actionPanel.add(viewDetailButton);
-        actionPanel.add(exportButton);
-
-        panel.add(actionPanel, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    private void setupBottomPanelRight() {
+        // Thêm các thành phần vào bottomPanelRight
         bottomPanelRight.setLayout(new BorderLayout());
-
-        // Tạo panel chứa ô tìm kiếm
-        JPanel searchPanel = new JPanel(new BorderLayout());
-        searchPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        searchPanel.setBackground(Color.WHITE);
-
-        // Ô nhập tìm kiếm
-        PlaceholderTextField searchProductField = new PlaceholderTextField("Tìm kiếm sản phẩm...");
-        searchProductField.setPreferredSize(new Dimension(200, 30));
-        searchProductField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-
-        searchPanel.add(searchProductField, BorderLayout.CENTER);
-        bottomPanelRight.add(searchPanel, BorderLayout.NORTH);
-
-        // Tiêu đề danh sách sản phẩm
-        JLabel titleLabel = new JLabel("DANH SÁCH SẢN PHẨM", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        titleLabel.setForeground(new Color(50, 50, 50));
-        titleLabel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                BorderFactory.createEmptyBorder(5, 0, 5, 0)
-        ));
-
-        // Panel chứa danh sách sản phẩm
-        productsPanel = new JPanel();
-        productsPanel.setLayout(new BoxLayout(productsPanel, BoxLayout.Y_AXIS));
-        productsPanel.setBackground(Color.WHITE);
-        productsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Thêm sản phẩm vào danh sách
-        addSampleProducts();
-
-        // Bọc productsPanel trong JScrollPane
-        JScrollPane scrollPane = new JScrollPane(productsPanel);
-        scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        // Container for title and product list
-        JPanel productListContainer = new JPanel(new BorderLayout());
-        productListContainer.setBackground(Color.WHITE);
-        productListContainer.add(titleLabel, BorderLayout.NORTH);
-        productListContainer.add(scrollPane, BorderLayout.CENTER);
-
-        bottomPanelRight.add(productListContainer, BorderLayout.CENTER);
+        bottomPanelRight.add(headerPanel, BorderLayout.NORTH);
+        bottomPanelRight.add(productScrollPane, BorderLayout.CENTER);
     }
 
-    private void addSampleProducts() {
-        // Thêm sản phẩm mẫu vào panel
-        String[] productIds = {"SP001", "SP002", "SP003", "SP004", "SP005",
-                "SP006", "SP007", "SP008", "SP009", "SP010"};
+    /**
+     * Tạo danh sách sản phẩm mẫu
+     */
+    private void createSampleProducts() {
+        danhSachSanPham = new ArrayList<>();
 
-        String[] productNames = {"Cà phê sữa", "Cà phê đen", "Trà sữa trân châu",
-                "Nước ép cam", "Bánh mì thịt", "Sandwich gà",
-                "Bánh ngọt chocolate", "Snack khoai tây",
-                "Kem vanilla", "Sữa chua dâu"};
+        // Thêm các sản phẩm mẫu
+        danhSachSanPham.add(new SanPhamInfo("SP001", "Sữa tươi Vinamilk 180ml", "Thùng 48 hộp"));
+        danhSachSanPham.add(new SanPhamInfo("SP002", "Mì gói Hảo Hảo tôm chua cay", "Thùng 30 gói"));
+        danhSachSanPham.add(new SanPhamInfo("SP003", "Nước giải khát Coca Cola 330ml", "Thùng 24 lon"));
+        danhSachSanPham.add(new SanPhamInfo("SP004", "Bánh Oreo vị Chocolate", "Hộp 10 gói"));
+        danhSachSanPham.add(new SanPhamInfo("SP005", "Dầu ăn Neptune 1L", "Thùng 12 chai"));
+        danhSachSanPham.add(new SanPhamInfo("SP006", "Nước mắm Nam Ngư 500ml", "Thùng 24 chai"));
+        danhSachSanPham.add(new SanPhamInfo("SP007", "Bột giặt Omo 800g", "Thùng 12 gói"));
+        danhSachSanPham.add(new SanPhamInfo("SP008", "Nước rửa chén Sunlight 400g", "Thùng 24 chai"));
+        danhSachSanPham.add(new SanPhamInfo("SP009", "Kem đánh răng Colgate 200g", "Thùng 24 tuýp"));
+        danhSachSanPham.add(new SanPhamInfo("SP010", "Sữa tắm Dove 500ml", "Thùng 12 chai"));
+    }
 
-        for (int i = 0; i < productNames.length; i++) {
-            // Sử dụng ảnh thực tế thay vì tạo ảnh mẫu
-            ImageIcon productImage = loadProductImage("src/main/resources/Images/Products/sample.png");
-            Product product = new Product(productIds[i], productNames[i], productImage);
-            productsPanel.add(createProductPanel(product));
+    /**
+     * Hiển thị danh sách sản phẩm ở panel bên phải
+     */
+    private void displayProductsInRightPanel() {
+        for (SanPhamInfo sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+            productListPanel.add(productPanel);
+            productListPanel.add(Box.createVerticalStrut(5)); // Khoảng cách giữa các sản phẩm
         }
     }
 
-    // Phương thức để load ảnh sản phẩm từ file
-    private ImageIcon loadProductImage(String path) {
-        try {
-            BufferedImage img = ImageIO.read(new File(path));
-            // Thay đổi kích thước ảnh nếu cần
-            if (img != null) {
-                Image scaledImg = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-                return new ImageIcon(scaledImg);
-            }
-        } catch (IOException e) {
-            System.err.println("Không thể tải ảnh từ đường dẫn: " + path);
-            e.printStackTrace();
-            // Tạo ảnh mặc định nếu không tìm thấy ảnh
-            return createDefaultProductImage();
-        }
-        return createDefaultProductImage();
-    }
-
-    // Tạo ảnh mặc định nếu không tìm thấy ảnh
-    private ImageIcon createDefaultProductImage() {
-        BufferedImage img = new BufferedImage(80, 80, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = img.createGraphics();
-
-        // Vẽ background
-        g2d.setColor(new Color(240, 240, 240));
-        g2d.fillRect(0, 0, 80, 80);
-
-        // Vẽ viền
-        g2d.setColor(Color.GRAY);
-        g2d.drawRect(0, 0, 79, 79);
-
-        // Vẽ thông báo không có ảnh
-        g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Arial", Font.BOLD, 12));
-        g2d.drawString("No Image", 15, 45);
-
-        g2d.dispose();
-        return new ImageIcon(img);
-    }
-
-    // Tạo panel hiển thị sản phẩm
-    private JPanel createProductPanel(Product product) {
+    /**
+     * Tạo panel hiển thị thông tin sản phẩm
+     * @param sanPham Thông tin sản phẩm cần hiển thị
+     * @return JPanel chứa thông tin sản phẩm
+     */
+    private JPanel createProductPanel(SanPhamInfo sanPham) {
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout(10, 0));
+        panel.setLayout(new BorderLayout(10, 5));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
-        // Panel ảnh sản phẩm
-        JPanel imagePanel = new JPanel(new BorderLayout());
-        imagePanel.setBackground(Color.WHITE);
-        imagePanel.setPreferredSize(new Dimension(80, 80));
-
-        JLabel imageLabel = new JLabel(product.getImage());
-        imagePanel.add(imageLabel, BorderLayout.CENTER);
-
-        // Panel thông tin sản phẩm
+        // Panel chứa thông tin sản phẩm
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(Color.WHITE);
 
-        JLabel idLabel = new JLabel(product.getId());
-        idLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        idLabel.setForeground(Color.GRAY);
+        // Mã sản phẩm
+        JLabel codeLabel = new JLabel(sanPham.getMaSP());
+        codeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        codeLabel.setForeground(new Color(100, 100, 100));
 
-        JLabel nameLabel = new JLabel(product.getName());
+        // Tên sản phẩm
+        JLabel nameLabel = new JLabel(sanPham.getTenSP());
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
-        infoPanel.add(idLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
+        // Đơn vị tính
+        JLabel unitLabel = new JLabel(sanPham.getDonViTinh());
+        unitLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        unitLabel.setForeground(new Color(100, 100, 100));
+
+        // Thêm các thành phần vào infoPanel
+        infoPanel.add(codeLabel);
+        infoPanel.add(Box.createVerticalStrut(3));
         infoPanel.add(nameLabel);
+        infoPanel.add(Box.createVerticalStrut(3));
+        infoPanel.add(unitLabel);
 
-        // Panel nút chọn sản phẩm
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        actionPanel.setBackground(Color.WHITE);
+        // Nút thêm sản phẩm
+        CustomButton addButton = new CustomButton("Thêm");
+        addButton.setPreferredSize(new Dimension(80, 30));
+        addButton.setMaximumSize(new Dimension(80, 30)); // Giới hạn chiều cao tối đa
+        addButton.setBackground(new Color(13, 110, 253)); // Màu xanh
+        addButton.setForeground(Color.WHITE);
 
-        CustomButton selectButton = new CustomButton("Chọn");
-        selectButton.setPreferredSize(new Dimension(80, 30));
-        selectButton.addActionListener(e -> addProductToImport(product));
+        // Thêm action listener cho nút thêm
+        addButton.addActionListener(e -> {
+            // Tạo panel sản phẩm đã chọn và thêm vào bên trái
+            JPanel selectedProductPanel = createSelectedProductPanel(sanPham);
+            addSanPhamToLeftPanel(selectedProductPanel);
+        });
 
-        actionPanel.add(selectButton);
-
-        // Thêm các thành phần vào panel
-        panel.add(imagePanel, BorderLayout.WEST);
+        // Thêm các thành phần vào panel chính
         panel.add(infoPanel, BorderLayout.CENTER);
-        panel.add(actionPanel, BorderLayout.EAST);
+        panel.add(addButton, BorderLayout.EAST);
+
+        // Đảm bảo panel có chiều rộng tối đa
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
 
         return panel;
     }
 
-    // Thêm sản phẩm vào giỏ hàng
-    private void addProductToImport(Product product) {
-        // Kiểm tra nếu chưa chọn nhà cung cấp
-        if (currentSupplier.isEmpty() || supplierComboBox.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Vui lòng chọn nhà cung cấp trước khi thêm sản phẩm!",
-                    "Thông báo",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            tabbedPane.setSelectedIndex(0); // Chuyển đến tab tạo lô hàng
-            return;
+    /**
+     * Tạo panel hiển thị thông tin sản phẩm đã chọn
+     * @param sanPham Thông tin sản phẩm đã chọn
+     * @return JPanel chứa thông tin sản phẩm đã chọn
+     */
+    private JPanel createSelectedProductPanel(SanPhamInfo sanPham) {
+        JPanel cartItemPanel = new JPanel();
+        cartItemPanel.setLayout(new BoxLayout(cartItemPanel, BoxLayout.X_AXIS));
+        cartItemPanel.setBackground(Color.WHITE);
+        cartItemPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)), // Viền dưới màu xám
+                BorderFactory.createEmptyBorder(10, 15, 10, 15) // Padding 10px trên dưới, 15px trái phải
+        ));
+
+        // Tạo các panel con cho từng cột với tỷ lệ cố định
+        JPanel codePanel = new JPanel(new BorderLayout());
+        JPanel namePanel = new JPanel(new BorderLayout());
+        JPanel qtyPanel = new JPanel(new BorderLayout());
+        JPanel pricePanel = new JPanel(new BorderLayout());
+        JPanel totalPanel = new JPanel(new BorderLayout());
+        JPanel batchPanel = new JPanel(new BorderLayout());
+
+        // Đặt màu nền cho các panel con
+        codePanel.setBackground(Color.WHITE);
+        namePanel.setBackground(Color.WHITE);
+        qtyPanel.setBackground(Color.WHITE);
+        pricePanel.setBackground(Color.WHITE);
+        totalPanel.setBackground(Color.WHITE);
+        batchPanel.setBackground(Color.WHITE);
+
+        // Đặt kích thước cho các panel con
+        codePanel.setPreferredSize(new Dimension(100, 30));
+        namePanel.setPreferredSize(new Dimension(250, 30));
+        qtyPanel.setPreferredSize(new Dimension(80, 30));
+        pricePanel.setPreferredSize(new Dimension(100, 30));
+        totalPanel.setPreferredSize(new Dimension(100, 30));
+        batchPanel.setPreferredSize(new Dimension(150, 30));
+
+        // Cột 1: Mã sản phẩm
+        JLabel codeLabel = new JLabel(sanPham.getMaSP(), JLabel.LEFT);
+        codeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        codePanel.add(codeLabel, BorderLayout.CENTER);
+
+        // Cột 2: Tên sản phẩm
+        JLabel nameLabel = new JLabel(sanPham.getTenSP(), JLabel.LEFT);
+        nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        namePanel.add(nameLabel, BorderLayout.CENTER);
+
+        // Cột 3: Số lượng
+        CustomTextField qtyField = new CustomTextField("");
+        qtyField.setText("1");
+        qtyField.setHorizontalAlignment(JTextField.LEFT);
+        qtyPanel.add(qtyField, BorderLayout.CENTER);
+
+        // Cột 4: Đơn giá
+        CustomTextField priceField = new CustomTextField("");
+        priceField.setText("10000");
+        priceField.setHorizontalAlignment(JTextField.LEFT);
+        pricePanel.add(priceField, BorderLayout.CENTER);
+
+        // Cột 5: Thành tiền
+        JLabel totalItemLabel = new JLabel("10000", JLabel.LEFT);
+        totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        totalPanel.add(totalItemLabel, BorderLayout.CENTER);
+
+        // Cột 6: Lô hàng
+        JPanel batchContentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        batchContentPanel.setBackground(Color.WHITE);
+
+        String[] batches = {"Chọn lô hàng", "LH1001", "LH1002", "LH1003"};
+        CustomCombobox<String> batchComboBox = new CustomCombobox<>(batches);
+        batchComboBox.setPreferredSize(new Dimension(100, 30));
+        batchContentPanel.add(batchComboBox);
+
+        // Nút thêm lô hàng
+        FlatSVGIcon createBatchIcon = new FlatSVGIcon("Icons/cong.svg", 10, 10);
+        CustomButton createBatchButton = new CustomButton("", createBatchIcon);
+        createBatchButton.setPreferredSize(new Dimension(30, 30));
+        createBatchButton.setMaximumSize(new Dimension(30, 30)); // Giới hạn chiều cao tối đa
+        createBatchButton.addActionListener(e -> {
+            // Mở dialog thêm lô hàng mới
+        });
+        batchContentPanel.add(createBatchButton);
+        batchPanel.add(batchContentPanel, BorderLayout.CENTER);
+
+        // Thêm các panel con vào cartItemPanel
+        cartItemPanel.add(codePanel);
+        cartItemPanel.add(Box.createHorizontalStrut(10)); // Khoảng cách giữa các cột
+        cartItemPanel.add(namePanel);
+        cartItemPanel.add(Box.createHorizontalStrut(10));
+        cartItemPanel.add(qtyPanel);
+        cartItemPanel.add(Box.createHorizontalStrut(10));
+        cartItemPanel.add(pricePanel);
+        cartItemPanel.add(Box.createHorizontalStrut(10));
+        cartItemPanel.add(totalPanel);
+        cartItemPanel.add(Box.createHorizontalStrut(10));
+        cartItemPanel.add(batchPanel);
+
+        // Đảm bảo panel có chiều rộng tối đa
+        cartItemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, cartItemPanel.getPreferredSize().height));
+
+        return cartItemPanel;
+    }
+
+    /**
+     * Thêm sản phẩm vào khu vực bên trái
+     * @param sanPhamPanel Panel chứa thông tin sản phẩm cần thêm
+     */
+    public void addSanPhamToLeftPanel(JPanel sanPhamPanel) {
+        // Thêm panel sản phẩm vào subPanelCenter
+        subPanelCenter.add(sanPhamPanel);
+
+        // Cập nhật giao diện
+        subPanelCenter.revalidate();
+        subPanelCenter.repaint();
+    }
+
+    /**
+     * Lớp lưu trữ thông tin sản phẩm
+     */
+    private static class SanPhamInfo {
+        private String maSP;
+        private String tenSP;
+        private String donViTinh;
+
+        public SanPhamInfo(String maSP, String tenSP, String donViTinh) {
+            this.maSP = maSP;
+            this.tenSP = tenSP;
+            this.donViTinh = donViTinh;
         }
 
-        // Lấy panel danh sách sản phẩm
-        JPanel invoicePanel = (JPanel) tabbedPane.getComponentAt(0);
-        JPanel itemsPanel = (JPanel) invoicePanel.getClientProperty("itemsPanel");
-
-        // Kiểm tra xem sản phẩm đã có trong danh sách chưa
-        for (ImportItem item : importItems) {
-            if (item.getProduct().getId().equals(product.getId())) {
-                // Nếu đã có, tăng số lượng lên 1
-                item.setQuantity(item.getQuantity() + 1);
-                updateTotalAmount();
-                return;
-            }
+        public String getMaSP() {
+            return maSP;
         }
 
-        // Dialog nhập giá
-        String priceStr = JOptionPane.showInputDialog(
-                this,
-                "Nhập giá nhập cho sản phẩm " + product.getName() + " (VND):",
-                "Nhập giá",
-                JOptionPane.QUESTION_MESSAGE
-        );
-
-        if (priceStr == null || priceStr.trim().isEmpty()) {
-            return; // Người dùng hủy
+        public String getTenSP() {
+            return tenSP;
         }
 
-        try {
-            double price = Double.parseDouble(priceStr);
-
-            if (price <= 0) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Giá phải lớn hơn 0!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            // Tạo panel hiển thị sản phẩm nhập
-            JPanel itemPanel = new JPanel(new GridLayout(1, 6, 0, 0));
-            itemPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
-                    BorderFactory.createEmptyBorder(5, 0, 5, 0)
-            ));
-            itemPanel.setBackground(Color.WHITE);
-            itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 47));  // Reduced height from 55 to 45
-
-            // Mã sản phẩm
-            JLabel codeLabel = new JLabel(product.getId(), SwingConstants.CENTER);
-            codeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-            // Tên sản phẩm
-            JLabel nameLabel = new JLabel(product.getName(), SwingConstants.CENTER);
-            nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-            // Panel số lượng
-            JPanel qtyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            qtyPanel.setBackground(Color.WHITE);
-
-            JButton minusButton = new JButton("-");
-            minusButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            minusButton.setPreferredSize(new Dimension(30, 30));
-            minusButton.setFocusPainted(false);
-            minusButton.setBackground(new Color(240, 240, 240));
-
-            JTextField qtyField = new JTextField("1", 2);
-            qtyField.setHorizontalAlignment(JTextField.CENTER);
-            qtyField.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            qtyField.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                    BorderFactory.createEmptyBorder(2, 5, 2, 5)
-            ));
-            qtyField.setPreferredSize(new Dimension(40, 30));
-
-            JButton plusButton = new JButton("+");
-            plusButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            plusButton.setPreferredSize(new Dimension(30, 30));
-            plusButton.setFocusPainted(false);
-            plusButton.setBackground(new Color(240, 240, 240));
-
-            qtyPanel.add(minusButton);
-            qtyPanel.add(qtyField);
-            qtyPanel.add(plusButton);
-
-            // Panel giá nhập
-            JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            pricePanel.setBackground(Color.WHITE);
-
-            JTextField priceField = new JTextField(priceStr, 8);
-            priceField.setHorizontalAlignment(JTextField.CENTER);
-            priceField.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            priceField.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                    BorderFactory.createEmptyBorder(2, 3, 2, 3)
-            ));
-            pricePanel.add(priceField);
-
-            // Thành tiền
-            JLabel totalItemLabel = new JLabel(currencyFormat.format(price), SwingConstants.CENTER);
-            totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            totalItemLabel.setForeground(priceColor);
-
-            // Panel lô hàng
-            JPanel batchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));  // Removed spacing
-            batchPanel.setBackground(Color.WHITE);
-            
-            // Tạo dữ liệu mẫu cho combobox lô hàng
-            String[] batches = {"Chọn lô hàng", "LH1001 - Lô hàng 12/2023", 
-                                "LH1002 - Lô hàng 01/2024", "LH1003 - Lô hàng 02/2024",
-                                "LH1004 - Lô hàng 03/2024"};
-            JComboBox<String> batchComboBox = new JComboBox<>(batches);
-            batchComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            batchComboBox.setPreferredSize(new Dimension(100, 30));  // Made combobox wider
-            
-            // Thêm action listener cho combobox
-            batchComboBox.addActionListener(e -> {
-                if (batchComboBox.getSelectedIndex() > 0) {
-                    String selectedBatch = (String) batchComboBox.getSelectedItem();
-                    String batchId = selectedBatch.split(" - ")[0];
-                    
-                    // Cập nhật thông tin lô hàng cho ImportItem
-                    ImportItem item = null;
-                    for (ImportItem i : importItems) {
-                        if (i.getPanel() == itemPanel) {
-                            item = i;
-                            break;
-                        }
-                    }
-
-                    if (item != null) {
-                        item.setBatchId(batchId);
-                        
-                        // Giả lập ngày sản xuất và hạn sử dụng
-                        Calendar cal = Calendar.getInstance();
-                        item.setNgaySanXuat(cal.getTime());
-                        
-                        cal.add(Calendar.MONTH, 6); // Thêm 6 tháng cho hạn sử dụng
-                        item.setHanSuDung(cal.getTime());
-                        
-                        JOptionPane.showMessageDialog(
-                                nhapHangPanel.this,
-                                "Đã chọn " + selectedBatch,
-                                "Thông báo",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
-                    }
-                }
-            });
-
-            batchPanel.add(batchComboBox);
-
-            // Thêm các thành phần vào itemPanel
-            itemPanel.add(codeLabel);
-            itemPanel.add(nameLabel);
-            itemPanel.add(qtyPanel);
-            itemPanel.add(pricePanel);
-            itemPanel.add(totalItemLabel);
-            itemPanel.add(batchPanel);
-
-            // Tạo đối tượng ImportItem
-            ImportItem importItem = new ImportItem(product, 1, price, itemPanel, qtyField, priceField, totalItemLabel, null);
-            importItems.add(importItem);
-
-            // Thêm sự kiện cho các nút và field
-            minusButton.addActionListener(e -> {
-                int qty = importItem.getQuantity();
-                if (qty > 1) {
-                    importItem.setQuantity(qty - 1);
-                    updateTotalAmount();
-                }
-            });
-
-            plusButton.addActionListener(e -> {
-                int qty = importItem.getQuantity();
-                importItem.setQuantity(qty + 1);
-                updateTotalAmount();
-            });
-
-            qtyField.addActionListener(e -> {
-                try {
-                    int qty = Integer.parseInt(qtyField.getText());
-                    if (qty > 0) {
-                        importItem.setQuantity(qty);
-                    } else {
-                        qtyField.setText(String.valueOf(importItem.getQuantity()));
-                    }
-                    updateTotalAmount();
-                } catch (NumberFormatException ex) {
-                    qtyField.setText(String.valueOf(importItem.getQuantity()));
-                }
-            });
-
-            priceField.addActionListener(e -> {
-                try {
-                    double newPrice = Double.parseDouble(priceField.getText());
-                    if (newPrice > 0) {
-                        importItem.setPrice(newPrice);
-                    } else {
-                        priceField.setText(String.valueOf(importItem.getPrice()));
-                    }
-                    updateTotalAmount();
-                } catch (NumberFormatException ex) {
-                    priceField.setText(String.valueOf(importItem.getPrice()));
-                }
-            });
-
-            // Thêm context menu để xóa sản phẩm
-            JPopupMenu popupMenu = new JPopupMenu();
-            JMenuItem deleteItem = new JMenuItem("Xóa sản phẩm");
-            deleteItem.addActionListener(e -> {
-                itemsPanel.remove(itemPanel);
-                importItems.remove(importItem);
-                itemsPanel.revalidate();
-                itemsPanel.repaint();
-                updateTotalAmount();
-            });
-            popupMenu.add(deleteItem);
-
-            // Thêm popup menu vào item panel
-            itemPanel.setComponentPopupMenu(popupMenu);
-
-            // Thêm sản phẩm vào danh sách
-            itemsPanel.add(itemPanel);
-            itemsPanel.revalidate();
-            itemsPanel.repaint();
-
-            // Cập nhật tổng tiền
-            updateTotalAmount();
-
-            // Thông báo
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Đã thêm sản phẩm " + product.getName() + " vào phiếu nhập!",
-                    "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Vui lòng nhập số hợp lệ!",
-                    "Lỗi",
-                    JOptionPane.ERROR_MESSAGE
-            );
+        public String getDonViTinh() {
+            return donViTinh;
         }
     }
 
-    private void updateTotalAmount() {
-        totalAmount = 0;
-        for (ImportItem item : importItems) {
-            totalAmount += item.getTotalPrice();
-        }
-        totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(totalAmount));
-    }
-
-    // Lớp Product đại diện cho sản phẩm
-    private static class Product {
-        private String id;
-        private String name;
-        private ImageIcon image;
-
-        public Product(String id, String name, ImageIcon image) {
-            this.id = id;
-            this.name = name;
-            this.image = image;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public ImageIcon getImage() {
-            return image;
-        }
-    }
-
-    // Lớp ImportItem đại diện cho một mục trong phiếu nhập
-    private static class ImportItem {
-        private Product product;
-        private int quantity;
-        private double price; // Giá nhập
-        private JPanel panel;
-        private JTextField qtyField;
-        private JTextField priceField;
-        private JLabel totalItemLabel;
-        private JLabel batchLabel;
-
-        // Thông tin lô hàng
-        private String batchId = "";
-        private Date ngaySanXuat;
-        private Date hanSuDung;
-
-        public ImportItem(Product product, int quantity, double price, JPanel panel,
-                          JTextField qtyField, JTextField priceField, JLabel totalItemLabel, JLabel batchLabel) {
-            this.product = product;
-            this.quantity = quantity;
-            this.price = price;
-            this.panel = panel;
-            this.qtyField = qtyField;
-            this.priceField = priceField;
-            this.totalItemLabel = totalItemLabel;
-            this.batchLabel = batchLabel;
-        }
-
-        public Product getProduct() {
-            return product;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-            this.qtyField.setText(String.valueOf(quantity));
-            updateTotalItemPrice();
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public void setPrice(double price) {
-            this.price = price;
-            this.priceField.setText(String.valueOf(price));
-            updateTotalItemPrice();
-        }
-
-        public double getTotalPrice() {
-            return quantity * price;
-        }
-
-        public JPanel getPanel() {
-            return panel;
-        }
-
-        public String getBatchId() {
-            return batchId;
-        }
-
-        public void setBatchId(String batchId) {
-            this.batchId = batchId;
-        }
-
-        public Date getNgaySanXuat() {
-            return ngaySanXuat;
-        }
-
-        public void setNgaySanXuat(Date ngaySanXuat) {
-            this.ngaySanXuat = ngaySanXuat;
-        }
-
-        public Date getHanSuDung() {
-            return hanSuDung;
-        }
-
-        public void setHanSuDung(Date hanSuDung) {
-            this.hanSuDung = hanSuDung;
-        }
-
-        private void updateTotalItemPrice() {
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            totalItemLabel.setText(currencyFormat.format(getTotalPrice()));
-        }
-    }
-
-    // Main method for testing
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
-            JFrame frame = new JFrame();
+            UIManager.setLookAndFeel(new FlatLightLaf());
+            JFrame frame = new JFrame("Tạo Phiếu Nhập");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 400);
+            frame.setSize(1200, 800);
             frame.add(new nhapHangPanel());
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            frame.setLocationRelativeTo(null); // Hiển thị ở giữa màn hình
             frame.setVisible(true);
-        } catch (UnsupportedLookAndFeelException e) {
+        }
+        catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
     }
 }
-
