@@ -53,6 +53,57 @@ public class MenuFrame extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    // Thêm phương thức để ẩn menu item
+    public void hideMenuItem(String itemName) {
+        switch (itemName) {
+            case "sanPham":
+                sanPhamItem.setVisible(false);
+                break;
+            case "loaiSanPham":
+                loaiSanPhamItem.setVisible(false);
+                break;
+            case "banHang":
+                banHangItem.setVisible(false);
+                break;
+            case "hoaDon":
+                hoaDonItem.setVisible(false);
+                break;
+            case "nhapHang":
+                nhapHangItem.setVisible(false);
+                break;
+            case "khachHang":
+                khachHangItem.setVisible(false);
+                break;
+            case "nhaCungCap":
+                nhaCungCapItem.setVisible(false);
+                break;
+            case "nhanVien":
+                nhanVienItem.setVisible(false);
+                break;
+            case "hopDong":
+                hopDongItem.setVisible(false);
+                break;
+            case "chucVu":
+                chucVuItem.setVisible(false);
+                break;
+            case "chamCong":
+                chamCongItem.setVisible(false);
+                break;
+        }
+    }
+
+
+    //phương thức để ẩn menu hành động trong panel
+    public void hideActionPanel(String panelName) {
+        switch (panelName) {
+            case "sanPham":
+                ((SanPhamPanel) panelMap.get("sanPham")).setActionPanelVisible();
+                break;
+        }
+        cardLayout.show(contentPanel, panelName);
+    }
+
+
     private void initializeFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -314,6 +365,11 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     public void showPanel(String panelName) {
         cardLayout.show(contentPanel, panelName);
+    }
+
+    // phương thức ẩn menu item
+    public void hideMenuItem(JMenuItem menuItem) {
+        menuItem.setVisible(false);
     }
 
     private void handleProfileAction() {

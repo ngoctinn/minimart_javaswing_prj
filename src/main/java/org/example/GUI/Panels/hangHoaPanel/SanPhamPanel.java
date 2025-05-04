@@ -39,6 +39,9 @@ public class SanPhamPanel extends JPanel {
     private CustomButton importButton;
     private CustomButton exportButton;
 
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
+
     // Bottom panel components
     private CustomCombobox<String> loaiSanPhamComboBox;
     private JRadioButton radioGiaTangDan;
@@ -342,7 +345,7 @@ public class SanPhamPanel extends JPanel {
     private void setupActionButtons(JPanel actionPanel) {
         
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
         
@@ -400,6 +403,13 @@ public class SanPhamPanel extends JPanel {
         actionPanel.add(mainButtonsPanel);
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(importExportPanel);
+    }
+
+    //==============Phương thức để ẩn hiện panel hành động====================
+    public void setActionPanelVisible() {
+        // ẩn luôn panel hành động
+        mainButtonsPanel.setVisible(false);
+
     }
 
     //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
@@ -642,7 +652,9 @@ public class SanPhamPanel extends JPanel {
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
-            frame.add(new SanPhamPanel());
+            SanPhamPanel sanPhamPanel = new SanPhamPanel();
+            sanPhamPanel.setActionPanelVisible();
+            frame.add(sanPhamPanel);
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
         } catch (UnsupportedLookAndFeelException e) {

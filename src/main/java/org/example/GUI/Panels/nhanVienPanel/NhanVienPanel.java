@@ -3,11 +3,7 @@ package org.example.GUI.Panels.nhanVienPanel;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.ChucVuBUS;
 import org.example.BUS.NhanVienBUS;
-import org.example.Components.CustomButton;
-import org.example.Components.CustomCombobox;
-import org.example.Components.CustomTable;
-import org.example.Components.CustomTextField;
-import org.example.Components.RoundedPanel;
+import org.example.Components.*;
 import org.example.DTO.ChucVuDTO;
 import org.example.DTO.nhanVienDTO;
 import org.example.GUI.Dialogs.ThemNhanVienDialog;
@@ -83,7 +79,10 @@ public class NhanVienPanel extends JPanel {
         ThemNhanVienDialog dialog = new ThemNhanVienDialog();
         if (dialog.isClosed()) {
             // Nếu dialog đã được đóng, cập nhật lại dữ liệu
+            CustomToastMessage.showSuccessToast(this,"Thêm nhân viên thành công!");
             handleRefreshButton();
+        }else {
+            CustomToastMessage.showErrorToast(this,"Thêm nhân viên thất bại!");
         }
     }
 
@@ -107,6 +106,7 @@ public class NhanVienPanel extends JPanel {
             if (dialog.isClosed()) {
                 // Nếu dialog đã được đóng, cập nhật lại dữ liệu
                 handleRefreshButton();
+                CustomToastMessage.showSuccessToast(this,"Cập nhật nhân viên thành công!");
             }
         } else {
             JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
