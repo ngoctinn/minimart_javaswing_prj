@@ -34,9 +34,9 @@ public class LoaiSanPhamPanel extends JPanel {
     private JPanel rightPanel;
     private CustomTable loaiSanPhamTable;
     private CustomTable sanPhamTable;
-    private JRadioButton radioTatCa;
-    private JRadioButton radioHoatDong;
-    private JRadioButton radioKhongHoatDong;
+
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
 
     public LoaiSanPhamPanel() {
         initGUI();
@@ -58,6 +58,12 @@ public class LoaiSanPhamPanel extends JPanel {
         this.setLayout(new BorderLayout(10, 10));
         this.setBackground(new Color(225, 225, 225));
         this.setVisible(true);
+    }
+
+    //=====phương thức để ẩn panel hành động====================
+    public void setActionPanelVisible() {
+        mainButtonsPanel.setVisible(true);
+        importExportPanel.setVisible(true);
     }
 
     private void createPanels() {
@@ -176,12 +182,12 @@ public class LoaiSanPhamPanel extends JPanel {
 
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
 
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
 

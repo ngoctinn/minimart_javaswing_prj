@@ -93,4 +93,14 @@ public class PhanQuyenBUS {
         
         return success;
     }
+
+    // test lấy phân quyền theo chức vụ
+    public static void main(String[] args) {
+        ArrayList<PhanQuyenDTO> danhSachQuyen = layDanhSachQuyenTheoChucVu("CV006");
+        for (PhanQuyenDTO phanQuyen : danhSachQuyen) {
+            System.out.println(phanQuyen.getMaCV() + " - " + phanQuyen.getMaChucNang() + " - " + phanQuyen.getQuyen());
+
+        }
+        System.out.println("=== End ===");
+    }
 }
