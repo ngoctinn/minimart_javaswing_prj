@@ -252,7 +252,7 @@ public class PhieuNhapDAO implements DAOInterface<phieuNhapDTO> {
             // Bước 1: Tạo kết nối đến CSDL
             Connection connection = JDBCUtil.getConnection();
             // Bước 2: Tạo câu lệnh SQL
-            String sql = "SELECT maPN FROM PHIEUNHAP ORDER BY maPN DESC LIMIT 1";
+            String sql = "SELECT TOP 1 maPN FROM PHIEUNHAP ORDER BY maPN DESC";
             ResultSet resultSet = JDBCUtil.executeQuery(sql);
             // Bước 3: Xử lý kết quả trả về
             if (resultSet.next()) {
@@ -429,5 +429,11 @@ public class PhieuNhapDAO implements DAOInterface<phieuNhapDTO> {
                 e.printStackTrace();
             }
         }
+    }
+
+    // test tạo mã phieuNhap mới
+    public static void main(String[] args) {
+        PhieuNhapDAO phieuNhapDAO = new PhieuNhapDAO();
+        System.out.println(phieuNhapDAO.taoMaPhieuNhapMoi());
     }
 }
