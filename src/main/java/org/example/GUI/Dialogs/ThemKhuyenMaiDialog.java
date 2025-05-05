@@ -1,159 +1,312 @@
 package org.example.GUI.Dialogs;
 
+import org.example.BUS.KhuyenMaiBUS;
 import org.example.Components.CustomButton;
-import org.example.Components.CustomTexField;
+import org.example.Components.CustomDatePicker;
+import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
+import org.example.DTO.khuyenMaiDTO;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class ThemKhuyenMaiDialog extends JDialog {
-    private CustomTexField maKhuyenMaiField, tenKhuyenMaiField;
-    private JSpinner phanTramSpinner, ngayBatDauSpinner, ngayKetThucSpinner;
+    private CustomTextField maKhuyenMaiField, tenKhuyenMaiField, dieuKienField;
+    private JSpinner phanTramSpinner;
+    private CustomDatePicker ngayBatDauPicker, ngayKetThucPicker;
     private CustomButton luuButton, huyButton;
+    private boolean isEditMode = false;
+    private khuyenMaiDTO khuyenMaiEdit;
+
+    // biến kiểm tra dialog đóng hay không
+    private boolean isClosed = false;
 
     public ThemKhuyenMaiDialog() {
+        this.isEditMode = false;
         try {
             UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
             UIManager.put("ComboBox.buttonStyle", "icon-only");
             UIManager.put("ComboBox.buttonBackground", Color.WHITE);
             UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            initGUI();
+
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+    }
 
-        initGUI();
+    public ThemKhuyenMaiDialog(khuyenMaiDTO khuyenMai) {
+        this.isEditMode = true;
+        this.khuyenMaiEdit = khuyenMai;
+        try {
+            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+            UIManager.put("ComboBox.buttonStyle", "icon-only");
+            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            initGUI();
+
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initGUI() {
-        setSize(400, 370);
-        getContentPane().setBackground(new Color(245, 245, 245));
+        setSize(450, 450);
+        getContentPane().setBackground(new Color(250, 250, 250));
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
         setModal(true);
-        setLayout(null);
-
-        RoundedPanel panel = new RoundedPanel(20);
-        panel.setBackground(Color.WHITE);
-        panel.setBounds(20, 50, 350, 230);
-        panel.setLayout(null);
+        setLayout(new BorderLayout(10, 10));
 
         // Tiêu đề
-        JLabel title = new JLabel("THÊM KHUYẾN MÃI", SwingConstants.CENTER);
+        JLabel title = new JLabel(isEditMode ? "SỬA KHUYẾN MÃI" : "THÊM KHUYẾN MÃI", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
-        title.setBounds(0, 10, getWidth(), 30);
         title.setForeground(new Color(0,102,204));
-        add(title);
+        title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(title, BorderLayout.NORTH);
 
-        // Tạo các thành phần
-        createComponents(panel);
+        // Main panel
+        RoundedPanel mainPanel = new RoundedPanel(20);
+        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setLayout(new GridBagLayout());
 
-        // Thêm sự kiện cho các thành phần
+        JPanel formPanel = createFormPanel();
+        mainPanel.add(formPanel, new GridBagConstraints());
+        add(mainPanel, BorderLayout.CENTER);
+
+        // Button panel
+        JPanel buttonPanel = createButtonPanel();
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add event listeners
         addEventListeners();
 
-        add(panel);
         setVisible(true);
     }
 
-    private void createComponents(JPanel panel) {
-        // Mã khuyến mãi
-        panel.add(createLabel("Mã KM", 20, 20));
-        maKhuyenMaiField = new CustomTexField("Mã tự động (vd: KM001)");
-        maKhuyenMaiField.setBounds(130, 20, 200, 30);
-        panel.add(maKhuyenMaiField);
+    private JPanel createFormPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
 
-        // Tên khuyến mãi
-        panel.add(createLabel("Tên", 20, 60));
-        tenKhuyenMaiField = new CustomTexField("Nhập tên khuyến mãi");
-        tenKhuyenMaiField.setBounds(130, 60, 200, 30);
-        panel.add(tenKhuyenMaiField);
+        // Add form components
+        maKhuyenMaiField = new CustomTextField("");
+        maKhuyenMaiField.setEnabled(false);
+        addFormRow(panel, "Mã khuyến mãi", maKhuyenMaiField.getContainer(), 0, gbc);
 
-        // Phần trăm khuyến mãi
-        panel.add(createLabel("Giá trị KM (%)", 20, 100));
-        SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 100, 1);
-        phanTramSpinner = new JSpinner(model);
-        phanTramSpinner.setBounds(130, 100, 200, 30);
-        panel.add(phanTramSpinner);
+        if (isEditMode) {
+            maKhuyenMaiField.setText(khuyenMaiEdit.getMaKM());
+            maKhuyenMaiField.setState(CustomTextField.State.DISABLED);
 
-        // Ngày bắt đầu
-        panel.add(createLabel("Ngày bắt đầu", 20, 140));
-        SpinnerDateModel modelBatDau = new SpinnerDateModel();
-        ngayBatDauSpinner = new JSpinner(modelBatDau);
-        ngayBatDauSpinner.setBounds(130, 140, 200, 30);
-        ngayBatDauSpinner.setEditor(new JSpinner.DateEditor(ngayBatDauSpinner, "dd/MM/yyyy"));
-        panel.add(ngayBatDauSpinner);
+            tenKhuyenMaiField = new CustomTextField("Nhập tên khuyến mãi");
+            addFormRow(panel, "Tên khuyến mãi", tenKhuyenMaiField.getContainer(), 1, gbc);
+            tenKhuyenMaiField.setText(khuyenMaiEdit.getTenKM());
 
-        // Ngày kết thúc
-        panel.add(createLabel("Ngày kết thúc", 20, 180));
-        SpinnerDateModel modelKetThuc = new SpinnerDateModel();
-        ngayKetThucSpinner = new JSpinner(modelKetThuc);
-        ngayKetThucSpinner.setBounds(130, 180, 200, 30);
-        ngayKetThucSpinner.setEditor(new JSpinner.DateEditor(ngayKetThucSpinner, "dd/MM/yyyy"));
-        panel.add(ngayKetThucSpinner);
+            dieuKienField = new CustomTextField("Nhập điều kiện áp dụng");
+            addFormRow(panel, "Điều kiện", dieuKienField.getContainer(), 2, gbc);
+            dieuKienField.setText(khuyenMaiEdit.getDieuKien());
 
-        // Button lưu
-        luuButton = new CustomButton("Lưu");
-        luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-        luuButton.setBounds(260, 290, 110, 30);
-        add(luuButton);
+            // Phần trăm khuyến mãi
+            SpinnerNumberModel model = new SpinnerNumberModel((double)khuyenMaiEdit.getPhanTram(), 0, 100, 1);
+            phanTramSpinner = new JSpinner(model);
+            addFormRow(panel, "Giá trị KM (%)", phanTramSpinner, 3, gbc);
 
-        // Button hủy
-        huyButton = new CustomButton("Hủy");
-        huyButton.setButtonColors(CustomButton.ButtonColors.RED);
-        huyButton.setBounds(140, 290, 110, 30);
-        add(huyButton);
+            // Ngày bắt đầu
+            ngayBatDauPicker = new CustomDatePicker(khuyenMaiEdit.getNgayBD());
+            addFormRow(panel, "Ngày bắt đầu", ngayBatDauPicker, 4, gbc);
+
+            // Ngày kết thúc
+            ngayKetThucPicker = new CustomDatePicker(khuyenMaiEdit.getNgayKT());
+            addFormRow(panel, "Ngày kết thúc", ngayKetThucPicker, 5, gbc);
+        } else {
+            String maKM = KhuyenMaiBUS.taoMaKhuyenMaiMoi();
+            maKhuyenMaiField.setText(maKM);
+            maKhuyenMaiField.setState(CustomTextField.State.DISABLED);
+
+            tenKhuyenMaiField = new CustomTextField("Nhập tên khuyến mãi");
+            tenKhuyenMaiField.setState(CustomTextField.State.DEFAULT);
+            addFormRow(panel, "Tên khuyến mãi", tenKhuyenMaiField.getContainer(), 1, gbc);
+
+            dieuKienField = new CustomTextField("Nhập điều kiện áp dụng");
+            dieuKienField.setState(CustomTextField.State.DEFAULT);
+            addFormRow(panel, "Điều kiện", dieuKienField.getContainer(), 2, gbc);
+
+            // Phần trăm khuyến mãi
+            SpinnerNumberModel model = new SpinnerNumberModel(0.0, 0, 100, 1);
+            phanTramSpinner = new JSpinner(model);
+            addFormRow(panel, "Giá trị KM (%)", phanTramSpinner, 3, gbc);
+
+            // Ngày bắt đầu
+            ngayBatDauPicker = new CustomDatePicker(LocalDate.now());
+            addFormRow(panel, "Ngày bắt đầu", ngayBatDauPicker, 4, gbc);
+
+            // Ngày kết thúc
+            ngayKetThucPicker = new CustomDatePicker(LocalDate.now().plusDays(30));
+            addFormRow(panel, "Ngày kết thúc", ngayKetThucPicker, 5, gbc);
+        }
+
+        return panel;
     }
 
-    private JLabel createLabel(String text, int x, int y) {
+    private void addFormRow(JPanel panel, String labelText, Component component, int row, GridBagConstraints gbc) {
+        gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.weightx = 0.3;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(createLabel(labelText), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // Đảm bảo component có kích thước phù hợp
+        if (component instanceof JTextField || component instanceof JComboBox || component instanceof JSpinner) {
+            component.setPreferredSize(new Dimension(250, 30));
+        }
+
+        panel.add(component, gbc);
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        buttonPanel.setBackground(new Color(245, 245, 245));
+
+        huyButton = new CustomButton("Hủy");
+        huyButton.setButtonColors(CustomButton.ButtonColors.RED);
+
+        luuButton = new CustomButton(isEditMode ? "Cập nhật" : "Lưu");
+        luuButton.setButtonColors(CustomButton.ButtonColors.GREEN);
+
+        buttonPanel.add(huyButton);
+        buttonPanel.add(luuButton);
+
+        return buttonPanel;
+    }
+
+    private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setBounds(x, y, 100, 30);
-        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(new Color(51, 51, 51));
+        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         return label;
     }
 
-    // Xử lý sự kiện
     private void addEventListeners() {
         luuButton.addActionListener(e -> handleSave());
         huyButton.addActionListener(e -> handleCancel());
     }
 
     private void handleSave() {
-        // Code xử lý lưu dữ liệu
         if (validateInput()) {
-            // Thực hiện lưu dữ liệu
-            JOptionPane.showMessageDialog(this, "Đã lưu thông tin khuyến mãi!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+            String maKM = maKhuyenMaiField.getText().trim();
+            String tenKM = tenKhuyenMaiField.getText().trim();
+            String dieuKien = dieuKienField.getText().trim();
+            double phanTram = (Double) phanTramSpinner.getValue();
+            LocalDate ngayBD = ngayBatDauPicker.getDate();
+            LocalDate ngayKT = ngayKetThucPicker.getDate();
+            int result;
+
+            if (isEditMode) {
+                // Cập nhật khuyến mãi
+                khuyenMaiDTO khuyenMaiDTO = new khuyenMaiDTO(maKM, tenKM, dieuKien, ngayBD, ngayKT, phanTram, khuyenMaiEdit.isTrangThai());
+                result = KhuyenMaiBUS.capNhatKhuyenMai(khuyenMaiDTO);
+
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Cập nhật khuyến mãi thành công", "Thành công",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    isClosed = true;
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cập nhật khuyến mãi thất bại", "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                // Thêm mới khuyến mãi
+                khuyenMaiDTO khuyenMaiDTO = new khuyenMaiDTO(maKM, tenKM, dieuKien, ngayBD, ngayKT, phanTram, true);
+                result = KhuyenMaiBUS.themKhuyenMai(khuyenMaiDTO);
+
+
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Thêm khuyến mãi thành công", "Thành công",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    isClosed = true;
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm khuyến mãi thất bại", "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 
     private boolean validateInput() {
+        // Kiểm tra mã khuyến mãi
+        maKhuyenMaiField.setState(CustomTextField.State.DISABLED);
+
         // Kiểm tra tên khuyến mãi
-        if (tenKhuyenMaiField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Tên khuyến mãi không được để trống",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (tenKhuyenMaiField.getText().trim().isEmpty() || tenKhuyenMaiField.getText().equals("Nhập tên khuyến mãi")) {
+            tenKhuyenMaiField.setState(CustomTextField.State.INVALID);
+            tenKhuyenMaiField.setErrorMessage("Tên khuyến mãi không được để trống");
+            tenKhuyenMaiField.requestFocus();
             return false;
         }
+        tenKhuyenMaiField.setState(CustomTextField.State.DEFAULT);
+
+        // Kiểm tra điều kiện
+        if (dieuKienField.getText().trim().isEmpty() || dieuKienField.getText().equals("Nhập điều kiện áp dụng")) {
+            dieuKienField.setState(CustomTextField.State.INVALID);
+            dieuKienField.setErrorMessage("Điều kiện không được để trống");
+            dieuKienField.requestFocus();
+            return false;
+        }
+        dieuKienField.setState(CustomTextField.State.DEFAULT);
 
         // Kiểm tra ngày bắt đầu và kết thúc
-        java.util.Date ngayBatDau = (java.util.Date) ngayBatDauSpinner.getValue();
-        java.util.Date ngayKetThuc = (java.util.Date) ngayKetThucSpinner.getValue();
+        LocalDate ngayBatDau = ngayBatDauPicker.getDate();
+        LocalDate ngayKetThuc = ngayKetThucPicker.getDate();
 
-        if (ngayKetThuc.before(ngayBatDau)) {
-            JOptionPane.showMessageDialog(this, "Ngày kết thúc phải sau ngày bắt đầu",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (ngayBatDau == null) {
+            ngayBatDauPicker.setState(CustomDatePicker.State.INVALID);
+            ngayBatDauPicker.setErrorMessage("Ngày bắt đầu không được để trống");
             return false;
         }
+        ngayBatDauPicker.setState(CustomDatePicker.State.DEFAULT);
+
+        if (ngayKetThuc == null) {
+            ngayKetThucPicker.setState(CustomDatePicker.State.INVALID);
+            ngayKetThucPicker.setErrorMessage("Ngày kết thúc không được để trống");
+            return false;
+        }
+        ngayKetThucPicker.setState(CustomDatePicker.State.DEFAULT);
+
+        if (ngayKetThuc.isBefore(ngayBatDau) || ngayKetThuc.isEqual(ngayBatDau)) {
+            ngayKetThucPicker.setState(CustomDatePicker.State.INVALID);
+            ngayKetThucPicker.setErrorMessage("Ngày kết thúc phải sau ngày bắt đầu");
+            return false;
+        }
+        ngayKetThucPicker.setState(CustomDatePicker.State.DEFAULT);
 
         return true;
     }
 
     private void handleCancel() {
-        // Code xử lý hủy
         dispose();
     }
 
-    // Main để test giao diện
+    public boolean isClosed() {
+        return isClosed;
+    }
+
     public static void main(String[] args) {
-        new ThemKhuyenMaiDialog();
+        SwingUtilities.invokeLater(() -> new ThemKhuyenMaiDialog());
     }
 }

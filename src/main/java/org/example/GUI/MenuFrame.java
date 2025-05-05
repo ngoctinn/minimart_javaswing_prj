@@ -32,7 +32,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenu hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
 
     // Các JMenuItem cho JMenu giaoDich
-    private JMenuItem banHangItem ,hoaDonItem, nhapHangItem;
+    private JMenuItem banHangItem, hoaDonItem, nhapHangItem, khuyenMaiItem;
 
     // Các JMenuItem cho JMenu hangHoa
     private JMenuItem sanPhamItem, loaiSanPhamItem;
@@ -70,6 +70,9 @@ public class MenuFrame extends JFrame implements ActionListener {
                 break;
             case "nhapHang":
                 nhapHangItem.setVisible(false);
+                break;
+            case "khuyenMai":
+                khuyenMaiItem.setVisible(false);
                 break;
             case "khachHang":
                 khachHangItem.setVisible(false);
@@ -167,6 +170,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         banHangItem = createMenuItem("Bán hàng", "banhang", 16);
         hoaDonItem = createMenuItem("Hoá đơn", "hoadon", 16);
         nhapHangItem = createMenuItem("Nhập hàng", "nhaphang", 16);
+        khuyenMaiItem = createMenuItem("Khuyến mãi", "khuyenmai", 16);
 
         // Tạo JMenuItem cho hàng hóa
         sanPhamItem = createMenuItem("Sản phẩm", "danhmuc", 16);
@@ -202,6 +206,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         giaoDichMenu.add(banHangItem);
         giaoDichMenu.add(hoaDonItem);
         giaoDichMenu.add(nhapHangItem);
+        giaoDichMenu.add(khuyenMaiItem);
 
         // Thêm JMenuItem vào hàng hóa
         hangHoaMenu.add(sanPhamItem);
@@ -252,6 +257,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         banHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
         nhapHangItem.addActionListener(this);
+        khuyenMaiItem.addActionListener(this);
 
 
         // Thêm ActionListener cho các JMenuItem đối tác
@@ -300,6 +306,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("banHang", new BanHangPanel());
         panelMap.put("hoaDon", new hoaDonPanel());
         panelMap.put("nhapHang", new nhapHangPanel());
+        panelMap.put("khuyenMai", new org.example.GUI.Panels.giaoDichPanel.KhuyenMaiPanel());
 
         // Đối tác panels
         panelMap.put("khachHang", new KhachHangPanel());
@@ -333,6 +340,8 @@ public class MenuFrame extends JFrame implements ActionListener {
             showPanel("hoaDon");
         } else if (source == nhapHangItem) {
             showPanel("nhapHang");
+        } else if (source == khuyenMaiItem) {
+            showPanel("khuyenMai");
         }
         // Đối tác
         else if (source == khachHangItem) {
@@ -403,7 +412,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         UIManager.put("MenuBar.selectionForeground", Color.WHITE);
         UIManager.put("MenuBar.hoverBackground", new Color(0, 90, 195));
         UIManager.put("MenuBar.itemMargins", new Insets(7, 5, 7, 5));
-        
+
         // Menu selection color
         UIManager.put("Menu.selectionBackground", new Color(0, 80, 180));
         UIManager.put("Menu.selectionForeground", Color.WHITE);

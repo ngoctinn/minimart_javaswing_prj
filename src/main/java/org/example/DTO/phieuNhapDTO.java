@@ -1,26 +1,54 @@
 package org.example.DTO;
 import java.util.List;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
+/**
+ * Lớp DTO đại diện cho phiếu nhập hàng
+ * Dựa trên cấu trúc bảng PHIEUNHAP trong CSDL
+ */
 public class phieuNhapDTO {
-    private String maPN;
-    private String maNCC;
-    private String maNV;
-    private double tongTien;
-    private LocalDate ngayLap;
-    private LocalDate gioLap;
-    private List<chiTietPhieuNhapDTO> chiTietPhieuNhap;
+    private String maPN;        // varchar(20) - Mã phiếu nhập
+    private LocalDate ngayLap;  // date - Ngày lập phiếu
+    private LocalTime gioLap;   // time(7) - Giờ lập phiếu
+    private double tongTien;    // decimal(15,2) - Tổng tiền
+    private String maNCC;       // varchar(20) - Mã nhà cung cấp
+    private String maNV;        // varchar(20) - Mã nhân viên
+    private boolean trangThai;  // bit - Trạng thái (1: hoạt động, 0: đã xóa)
+    private List<chiTietPhieuNhapDTO> chiTietPhieuNhap; // Danh sách chi tiết phiếu nhập
 
+    /**
+     * Constructor mặc định
+     */
     public phieuNhapDTO() {
-
+        this.trangThai = true; // Mặc định là hoạt động
     }
-    public phieuNhapDTO(String maPN, String maNCC, String maNV, double tongTien, LocalDate ngayLap, LocalDate gioLap, List<chiTietPhieuNhapDTO> chiTietPhieuNhap) {
+
+    /**
+     * Constructor đầy đủ tham số
+     */
+    public phieuNhapDTO(String maPN, LocalDate ngayLap, LocalTime gioLap, double tongTien, String maNCC, String maNV, boolean trangThai, List<chiTietPhieuNhapDTO> chiTietPhieuNhap) {
         this.maPN = maPN;
-        this.maNCC = maNCC;
-        this.maNV = maNV;
-        this.tongTien = tongTien;
         this.ngayLap = ngayLap;
         this.gioLap = gioLap;
+        this.tongTien = tongTien;
+        this.maNCC = maNCC;
+        this.maNV = maNV;
+        this.trangThai = trangThai;
+        this.chiTietPhieuNhap = chiTietPhieuNhap;
+    }
+
+    /**
+     * Constructor không có trạng thái (mặc định là hoạt động)
+     */
+    public phieuNhapDTO(String maPN, LocalDate ngayLap, LocalTime gioLap, double tongTien, String maNCC, String maNV, List<chiTietPhieuNhapDTO> chiTietPhieuNhap) {
+        this.maPN = maPN;
+        this.ngayLap = ngayLap;
+        this.gioLap = gioLap;
+        this.tongTien = tongTien;
+        this.maNCC = maNCC;
+        this.maNV = maNV;
+        this.trangThai = true; // Mặc định là hoạt động
         this.chiTietPhieuNhap = chiTietPhieuNhap;
     }
 
@@ -45,7 +73,13 @@ public class phieuNhapDTO {
     }
 
     public double getTongTien() {
-        if(chiTietPhieuNhap == null && chiTietPhieuNhap.isEmpty()) {
+        // Nếu đã có giá trị tổng tiền, trả về giá trị đó
+        if (tongTien > 0) {
+            return tongTien;
+        }
+
+        // Nếu chưa có giá trị tổng tiền, tính từ chi tiết phiếu nhập
+        if(chiTietPhieuNhap == null || chiTietPhieuNhap.isEmpty()) {
             return 0;
         }
         double sum = 0;
@@ -62,10 +96,30 @@ public class phieuNhapDTO {
         this.ngayLap = ngayLap;
     }
 
-    public LocalDate getGioLap() {
+    public LocalTime getGioLap() {
         return gioLap;
     }
-    public void setGioLap(LocalDate gioLap) {
+    public void setGioLap(LocalTime gioLap) {
         this.gioLap = gioLap;
+    }
+
+    public void setTongTien(double tongTien) {
+        this.tongTien = tongTien;
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public List<chiTietPhieuNhapDTO> getChiTietPhieuNhap() {
+        return chiTietPhieuNhap;
+    }
+
+    public void setChiTietPhieuNhap(List<chiTietPhieuNhapDTO> chiTietPhieuNhap) {
+        this.chiTietPhieuNhap = chiTietPhieuNhap;
     }
 }
