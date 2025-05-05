@@ -2,6 +2,8 @@ package org.example.DAO;
 
 import org.example.DTO.phieuNhapDTO;
 import org.example.DTO.chiTietPhieuNhapDTO;
+import org.example.DTO.loHangDTO;
+import org.example.DTO.SanPhamDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -319,5 +321,113 @@ public class PhieuNhapDAO implements DAOInterface<phieuNhapDTO> {
     public ArrayList<phieuNhapDTO> layPhieuNhapTheoNhanVien(String maNV) {
         String condition = "trangThai = 1 AND maNV = '" + maNV + "'";
         return selectByCondition(condition);
+    }
+
+    /**
+     * Thực hiện nhập hàng hoàn chỉnh với phiếu nhập và chi tiết phiếu nhập
+     * @param phieuNhap Đối tượng phiếu nhập cần thêm
+     * @return int Số dòng bị ảnh hưởng (1 nếu thành công, 0 nếu thất bại)
+     */
+    public int nhapHangHoanChinh(phieuNhapDTO phieuNhap) {
+        Connection connection = null;
+        try {
+            // Bước 1: Tạo kết nối đến CSDL
+            connection = JDBCUtil.getConnection();
+            connection.setAutoCommit(false); // Bắt đầu transaction
+
+            // Bước 2: Thêm phiếu nhập
+            String sql = "INSERT INTO PHIEUNHAP (maPN, ngayLap, gioLap, tongTien, maNCC, maNV, trangThai) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            int result = JDBCUtil.executePreparedUpdate(sql,
+                    phieuNhap.getMaPN(),
+                    phieuNhap.getNgayLap(),
+                    phieuNhap.getGioLap(),
+                    phieuNhap.getTongTien(),
+                    phieuNhap.getMaNCC(),
+                    phieuNhap.getMaNV(),
+                    phieuNhap.isTrangThai());
+
+            if (result > 0 && phieuNhap.getChiTietPhieuNhap() != null && !phieuNhap.getChiTietPhieuNhap().isEmpty()) {
+                // Bước 3: Thêm chi tiết phiếu nhập và cập nhật tồn kho
+                ChiTietPhieuNhapDAO chiTietPhieuNhapDAO = new ChiTietPhieuNhapDAO();
+                boolean thanhCong = true;
+
+                for (chiTietPhieuNhapDTO chiTiet : phieuNhap.getChiTietPhieuNhap()) {
+                    // Đảm bảo mã phiếu nhập được gán đúng
+                    chiTiet.setMaPN(phieuNhap.getMaPN());
+
+                    // Thêm chi tiết và cập nhật tồn kho
+                    int ketQua = chiTietPhieuNhapDAO.insert(chiTiet);
+                    if (ketQua <= 0) {
+                        thanhCong = false;
+                        break;
+                    }
+
+                    // Cập nhật số lượng lô hàng
+                    LoHangDAO loHangDAO = new LoHangDAO();
+                    loHangDTO loHang = new loHangDTO();
+                    loHang.setMaLoHang(chiTiet.getMaLoHang());
+                    loHang = loHangDAO.selectById(loHang);
+
+                    if (loHang != null) {
+                        // Cập nhật số lượng lô hàng
+                        int soLuongMoi = loHang.getSoLuong() + chiTiet.getSoLuong();
+                        loHang.setSoLuong(soLuongMoi);
+                        int updateLoHang = loHangDAO.update(loHang);
+
+                        if (updateLoHang <= 0) {
+                            thanhCong = false;
+                            break;
+                        }
+
+                        // Cập nhật số lượng tồn kho của sản phẩm
+                        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+                        int updateTonKho = sanPhamDAO.capNhatSoLuongTonKho(loHang.getMaSP(), chiTiet.getSoLuong());
+
+                        if (updateTonKho <= 0) {
+                            thanhCong = false;
+                            break;
+                        }
+                    } else {
+                        thanhCong = false;
+                        break;
+                    }
+                }
+
+                if (thanhCong) {
+                    // Bước 4: Cập nhật tổng tiền phiếu nhập
+                    double tongTien = chiTietPhieuNhapDAO.tinhTongTienPhieuNhap(phieuNhap.getMaPN());
+                    int updateTongTien = capNhatTongTien(phieuNhap.getMaPN(), tongTien);
+
+                    if (updateTongTien > 0) {
+                        connection.commit(); // Hoàn tất transaction
+                        return 1; // Thành công
+                    }
+                }
+            }
+
+            // Nếu có lỗi, rollback transaction
+            connection.rollback();
+            return 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return 0;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

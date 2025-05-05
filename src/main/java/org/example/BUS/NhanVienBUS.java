@@ -129,95 +129,36 @@ public class NhanVienBUS {
      * @param isUpdate boolean true nếu đang cập nhật, false nếu đang thêm mới
      * @return String thông báo lỗi, rỗng nếu hợp lệ
      */
-    public static String kiemTraDuLieuHopLe(nhanVienDTO nhanVien, boolean isUpdate) {
-        // Kiểm tra họ tên
-        if (nhanVien.getHoTen() == null || nhanVien.getHoTen().trim().isEmpty()) {
-            return "Họ tên không được để trống";
+
+
+    /**
+     * Kiểm tra định dạng email có hợp lệ không
+     * @param email String email cần kiểm tra
+     * @return boolean true nếu email hợp lệ, false nếu không hợp lệ
+     */
+    public static boolean kiemTraEmailHopLe(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
         }
 
-        // Kiểm tra ngày sinh
-        if (nhanVien.getNgaySinh() == null) {
-            return "Ngày sinh không được để trống";
+        // Regex kiểm tra định dạng email
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,7}$";
+        return email.matches(emailRegex);
+    }
+
+    /**
+     * Kiểm tra định dạng số điện thoại có hợp lệ không
+     * @param sdt String số điện thoại cần kiểm tra
+     * @return boolean true nếu số điện thoại hợp lệ, false nếu không hợp lệ
+     */
+    public static boolean kiemTraSDTHopLe(String sdt) {
+        if (sdt == null || sdt.trim().isEmpty()) {
+            return false;
         }
 
-        // Kiểm tra tuổi (phải từ 18 tuổi trở lên)
-        LocalDate now = LocalDate.now();
-        LocalDate minBirthDate = now.minusYears(18);
-        if (nhanVien.getNgaySinh().isAfter(minBirthDate)) {
-            return "Nhân viên phải đủ 18 tuổi trở lên";
-        }
-
-        // Kiểm tra giới tính
-        if (nhanVien.getGioiTinh() == null || nhanVien.getGioiTinh().trim().isEmpty()) {
-            return "Giới tính không được để trống";
-        }
-
-        // Kiểm tra địa chỉ
-        if (nhanVien.getDiaChi() == null || nhanVien.getDiaChi().trim().isEmpty()) {
-            return "Địa chỉ không được để trống";
-        }
-
-        // Kiểm tra email
-        if (nhanVien.getEmail() == null || nhanVien.getEmail().trim().isEmpty()) {
-            return "Email không được để trống";
-        }
-
-        // Kiểm tra định dạng email
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        if (!nhanVien.getEmail().matches(emailRegex)) {
-            return "Định dạng email không hợp lệ";
-        }
-
-        // Kiểm tra email tồn tại
-        if (kiemTraEmailTonTai(nhanVien.getEmail(), isUpdate ? nhanVien.getMaNV() : null)) {
-            return "Email đã được sử dụng";
-        }
-
-        // Kiểm tra mật khẩu
-        if (!isUpdate && (nhanVien.getMatKhau() == null || nhanVien.getMatKhau().trim().isEmpty())) {
-            return "Mật khẩu không được để trống";
-        }
-
-        // Kiểm tra độ dài mật khẩu (nếu có mật khẩu)
-        if (nhanVien.getMatKhau() != null && !nhanVien.getMatKhau().trim().isEmpty() && nhanVien.getMatKhau().length() < 6) {
-            return "Mật khẩu phải có ít nhất 6 ký tự";
-        }
-
-        // Kiểm tra số điện thoại
-        if (nhanVien.getSDT() == null || nhanVien.getSDT().trim().isEmpty()) {
-            return "Số điện thoại không được để trống";
-        }
-
-        // Kiểm tra định dạng số điện thoại
-        String phoneRegex = "^0\\d{9}$";
-        if (!nhanVien.getSDT().matches(phoneRegex)) {
-            return "Định dạng số điện thoại không hợp lệ (phải có 10 số và bắt đầu bằng số 0)";
-        }
-
-        // Kiểm tra số điện thoại tồn tại
-        if (kiemTraSDTTonTai(nhanVien.getSDT(), isUpdate ? nhanVien.getMaNV() : null)) {
-            return "Số điện thoại đã được sử dụng";
-        }
-
-        // Kiểm tra mã chức vụ
-        if (nhanVien.getMaCV() == null || nhanVien.getMaCV().trim().isEmpty()) {
-            return "Chức vụ không được để trống";
-        }
-
-        // Kiểm tra chức vụ tồn tại
-        boolean chucVuTonTai = false;
-        for (ChucVuDTO cv : ChucVuBUS.layDanhSachChucVu()) {
-            if (cv.getMaCV().equals(nhanVien.getMaCV())) {
-                chucVuTonTai = true;
-                break;
-            }
-        }
-        if (!chucVuTonTai) {
-            return "Chức vụ không tồn tại";
-        }
-
-        // Nếu tất cả đều hợp lệ
-        return "";
+        // Regex kiểm tra định dạng số điện thoại Việt Nam
+        String phoneRegex = "^(0[9|8|7|5|3]\\d{8})|(0[2|4]\\d{8,9})$";
+        return sdt.matches(phoneRegex);
     }
 
     /**

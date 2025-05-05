@@ -369,11 +369,20 @@ public class ThemNhanVienDialog extends JDialog {
             soDTField.setErrorMessage("Số điện thoại không được để trống");
             if (firstInvalidField == null) firstInvalidField = soDTField;
             isValid = false;
-        } else if (!sdt.matches("\\d+")) {
+        } else if (!NhanVienBUS.kiemTraSDTHopLe(sdt)) {
             soDTField.setState(CustomTextField.State.INVALID);
-            soDTField.setErrorMessage("Số điện thoại phải là số");
+            soDTField.setErrorMessage("Số điện thoại không hợp lệ (phải là số điện thoại Việt Nam)");
             if (firstInvalidField == null) firstInvalidField = soDTField;
             isValid = false;
+        } else {
+            // Kiểm tra số điện thoại đã tồn tại chưa
+            String maNV = isEditMode ? nhanVienEdit.getMaNV() : null;
+            if (NhanVienBUS.kiemTraSDTTonTai(sdt, maNV)) {
+                soDTField.setState(CustomTextField.State.INVALID);
+                soDTField.setErrorMessage("Số điện thoại đã được sử dụng bởi nhân viên khác");
+                if (firstInvalidField == null) firstInvalidField = soDTField;
+                isValid = false;
+            }
         }
 
         // Kiểm tra email
@@ -383,11 +392,20 @@ public class ThemNhanVienDialog extends JDialog {
             emailField.setErrorMessage("Email không được để trống");
             if (firstInvalidField == null) firstInvalidField = emailField;
             isValid = false;
-        } else if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+        } else if (!NhanVienBUS.kiemTraEmailHopLe(email)) {
             emailField.setState(CustomTextField.State.INVALID);
-            emailField.setErrorMessage("Email không đúng định dạng");
+            emailField.setErrorMessage("Email không đúng định dạng (ví dụ: example@gmail.com)");
             if (firstInvalidField == null) firstInvalidField = emailField;
             isValid = false;
+        } else {
+            // Kiểm tra email đã tồn tại chưa
+            String maNV = isEditMode ? nhanVienEdit.getMaNV() : null;
+            if (NhanVienBUS.kiemTraEmailTonTai(email, maNV)) {
+                emailField.setState(CustomTextField.State.INVALID);
+                emailField.setErrorMessage("Email đã được sử dụng bởi nhân viên khác");
+                if (firstInvalidField == null) firstInvalidField = emailField;
+                isValid = false;
+            }
         }
 
         // Kiểm tra địa chỉ

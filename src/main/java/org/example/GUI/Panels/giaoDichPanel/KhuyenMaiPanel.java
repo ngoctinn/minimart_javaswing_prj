@@ -31,6 +31,7 @@ public class KhuyenMaiPanel extends JPanel {
     private CustomButton importButton;
     private CustomButton exportButton;
 
+
     // Bottom panel components
     private CustomTable khuyenMaiTable;
 

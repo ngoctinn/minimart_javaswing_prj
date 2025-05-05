@@ -32,6 +32,10 @@ public class KhachHangPanel extends JPanel {
     private CustomButton importButton;
     private CustomButton exportButton;
 
+    //panel hành động
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
+
     // Bottom panel components
     private CustomTable khachHangTable;
     private CustomTable hoaDonTable;
@@ -75,6 +79,15 @@ public class KhachHangPanel extends JPanel {
                 }
             }
         });
+    }
+
+    //======================CÁC PHƯƠNG THỨC=================================
+
+    //======================Phương thức ẩn menu hành động====================
+    public void hideActionPanel() {
+        // ẩn luôn panel hành động
+        mainButtonsPanel.setVisible(false);
+        importExportPanel.setVisible(false);
     }
 
     // CÁC PHƯƠNG THỨC XỬ LÝ SỰ KIỆN
@@ -277,12 +290,12 @@ public class KhachHangPanel extends JPanel {
     //======================CÀI ĐẶT CÁC NÚT HÀNH ĐỘNG=================================
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
 
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
 

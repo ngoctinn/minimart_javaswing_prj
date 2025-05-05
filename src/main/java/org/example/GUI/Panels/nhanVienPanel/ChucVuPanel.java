@@ -61,9 +61,7 @@ public class ChucVuPanel extends JPanel {
      * Khởi tạo giao diện cho ChucVuPanel
      */
     public void initGUI() {
-        // Khởi tạo dữ liệu chức năng mặc định
-        PhanQuyenBUS.khoiTaoDuLieuChucNang();
-        
+
         setupMainPanel();
         createPanels();
         setupTopPanel();

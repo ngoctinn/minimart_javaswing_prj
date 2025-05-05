@@ -15,11 +15,7 @@ public class Main {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
             setupUIManagerProperties();
-            MenuFrame menuFrame = new MenuFrame();
-            menuFrame.hideActionPanel("sanPham");
-
-
-
+            LoginGUI loginGUI = new LoginGUI();
         } catch (Exception e) {
             e.printStackTrace();
         }

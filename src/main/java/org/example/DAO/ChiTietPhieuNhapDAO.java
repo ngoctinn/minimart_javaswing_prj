@@ -2,6 +2,7 @@ package org.example.DAO;
 
 import org.example.DTO.chiTietPhieuNhapDTO;
 import org.example.DTO.loHangDTO;
+import org.example.DTO.SanPhamDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -227,5 +228,86 @@ public class ChiTietPhieuNhapDAO implements DAOInterface<chiTietPhieuNhapDTO> {
         }
 
         return tongTien;
+    }
+
+    /**
+     * Thêm chi tiết phiếu nhập và cập nhật số lượng tồn kho
+     * @param chiTietPhieuNhap Đối tượng chi tiết phiếu nhập cần thêm
+     * @return int Số dòng bị ảnh hưởng (1 nếu thành công, 0 nếu thất bại)
+     */
+    public int themChiTietVaCapNhatTonKho(chiTietPhieuNhapDTO chiTietPhieuNhap) {
+        int result = 0;
+        Connection connection = null;
+
+        try {
+            // Bước 1: Tạo kết nối đến CSDL
+            connection = JDBCUtil.getConnection();
+            connection.setAutoCommit(false); // Bắt đầu transaction
+
+            // Bước 2: Thêm chi tiết phiếu nhập
+            String sql = "INSERT INTO CHITIETPHIEUNHAP (maPN, soLuong, giaNhap, maLoHang) VALUES (?, ?, ?, ?)";
+            result = JDBCUtil.executePreparedUpdate(sql,
+                    chiTietPhieuNhap.getMaPN(),
+                    chiTietPhieuNhap.getSoLuong(),
+                    chiTietPhieuNhap.getGiaNhap(),
+                    chiTietPhieuNhap.getMaLoHang());
+
+            if (result > 0) {
+                // Bước 3: Lấy thông tin lô hàng để biết mã sản phẩm
+                LoHangDAO loHangDAO = new LoHangDAO();
+                loHangDTO loHang = new loHangDTO();
+                loHang.setMaLoHang(chiTietPhieuNhap.getMaLoHang());
+                loHang = loHangDAO.selectById(loHang);
+
+                if (loHang != null) {
+                    // Bước 4: Cập nhật số lượng lô hàng
+                    int soLuongMoi = loHang.getSoLuong() + chiTietPhieuNhap.getSoLuong();
+                    loHang.setSoLuong(soLuongMoi);
+                    int updateLoHang = loHangDAO.update(loHang);
+
+                    if (updateLoHang > 0) {
+                        // Bước 5: Cập nhật số lượng tồn kho của sản phẩm
+                        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+                        int updateTonKho = sanPhamDAO.capNhatSoLuongTonKho(loHang.getMaSP(), chiTietPhieuNhap.getSoLuong());
+
+                        if (updateTonKho > 0) {
+                            // Bước 6: Cập nhật tổng tiền phiếu nhập
+                            PhieuNhapDAO phieuNhapDAO = new PhieuNhapDAO();
+                            double tongTien = tinhTongTienPhieuNhap(chiTietPhieuNhap.getMaPN());
+                            int updateTongTien = phieuNhapDAO.capNhatTongTien(chiTietPhieuNhap.getMaPN(), tongTien);
+
+                            if (updateTongTien > 0) {
+                                connection.commit(); // Hoàn tất transaction
+                                return 1; // Thành công
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Nếu có lỗi, rollback transaction
+            connection.rollback();
+            return 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return 0;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

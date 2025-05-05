@@ -89,6 +89,54 @@ public class PhieuNhapBUS {
     }
 
     /**
+     * Thực hiện nhập hàng hoàn chỉnh với phiếu nhập và chi tiết phiếu nhập
+     * @param phieuNhap Đối tượng phiếu nhập cần thêm
+     * @return int Số dòng bị ảnh hưởng (1 nếu thành công, 0 nếu thất bại)
+     */
+    public static int nhapHangHoanChinh(phieuNhapDTO phieuNhap) {
+        // Kiểm tra dữ liệu hợp lệ
+        if (phieuNhap == null) {
+            System.out.println("Lỗi: Phiếu nhập không được null");
+            return 0;
+        }
+
+        if (phieuNhap.getMaPN() == null || phieuNhap.getMaPN().trim().isEmpty()) {
+            System.out.println("Lỗi: Mã phiếu nhập không được để trống");
+            return 0;
+        }
+
+        if (phieuNhap.getMaNCC() == null || phieuNhap.getMaNCC().trim().isEmpty()) {
+            System.out.println("Lỗi: Mã nhà cung cấp không được để trống");
+            return 0;
+        }
+
+        if (phieuNhap.getMaNV() == null || phieuNhap.getMaNV().trim().isEmpty()) {
+            System.out.println("Lỗi: Mã nhân viên không được để trống");
+            return 0;
+        }
+
+        if (phieuNhap.getChiTietPhieuNhap() == null || phieuNhap.getChiTietPhieuNhap().isEmpty()) {
+            System.out.println("Lỗi: Phiếu nhập phải có ít nhất một chi tiết");
+            return 0;
+        }
+
+        // Nếu chưa có ngày lập và giờ lập, tạo mới
+        if (phieuNhap.getNgayLap() == null) {
+            phieuNhap.setNgayLap(LocalDate.now());
+        }
+
+        if (phieuNhap.getGioLap() == null) {
+            phieuNhap.setGioLap(LocalTime.now());
+        }
+
+        // Đảm bảo trạng thái mặc định là hoạt động
+        phieuNhap.setTrangThai(true);
+
+        // Gọi phương thức nhập hàng hoàn chỉnh từ DAO
+        return phieuNhapDAO.nhapHangHoanChinh(phieuNhap);
+    }
+
+    /**
      * Lấy danh sách phiếu nhập theo khoảng thời gian
      * @param tuNgay LocalDate ngày bắt đầu
      * @param denNgay LocalDate ngày kết thúc

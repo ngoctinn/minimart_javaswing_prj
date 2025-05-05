@@ -177,4 +177,20 @@ public class ChiTietPhieuNhapBUS {
 
         return null; // Dữ liệu hợp lệ
     }
+
+    /**
+     * Thêm chi tiết phiếu nhập và cập nhật số lượng tồn kho
+     * @param chiTiet chiTietPhieuNhapDTO đối tượng chi tiết phiếu nhập cần thêm
+     * @return int số dòng bị ảnh hưởng
+     */
+    public static int themChiTietVaCapNhatTonKho(chiTietPhieuNhapDTO chiTiet) {
+        // Kiểm tra dữ liệu hợp lệ
+        String error = kiemTraDuLieuHopLe(chiTiet);
+        if (error != null) {
+            System.out.println("Lỗi: " + error);
+            return 0;
+        }
+
+        return chiTietPhieuNhapDAO.themChiTietVaCapNhatTonKho(chiTiet);
+    }
 }

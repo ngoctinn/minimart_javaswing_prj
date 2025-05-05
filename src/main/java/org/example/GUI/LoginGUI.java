@@ -1,16 +1,21 @@
 package org.example.GUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.LoginBUS;
+import org.example.BUS.PhanQuyenBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomPasswordField;
 import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
 import org.example.Components.CustomToastMessage;
+import org.example.DTO.ChucNangDTO;
+import org.example.DTO.nhanVienDTO;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class LoginGUI extends JFrame {
     private CustomTextField usernameField;
@@ -67,7 +72,7 @@ public class LoginGUI extends JFrame {
         panel.add(usernameLabel, gbc);
 
         usernameField = new CustomTextField();
-        usernameField.setPlaceholder("Nhập tên đăng nhập");
+        usernameField.setPlaceholder("Nhập số điện thoại hoặc email");
         usernameField.setPreferredSize(new Dimension(200, 40));
         usernameField.setFont(new Font("Roboto", Font.PLAIN, 16));
         gbc.gridy = 2;
@@ -127,45 +132,32 @@ public class LoginGUI extends JFrame {
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(forgotPassword, gbc);
 
-        // Nút Đăng nhập và Quản lý
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 15, 0)); // Tăng khoảng cách giữa các nút
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Thêm padding phía trên
+        // Nút Đăng nhập
+        FlatSVGIcon loginIcon = new FlatSVGIcon("Icons/login.svg", 20, 20);
+        CustomButton loginButton = new CustomButton("Đăng nhập hệ thống", loginIcon);
+        loginButton.setFont(new Font("Roboto", Font.BOLD, 16));
+        loginButton.setPreferredSize(new Dimension(200, 45));
+        loginButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+        loginButton.addActionListener(e -> handleLogin());
 
-        FlatSVGIcon manageIcon = new FlatSVGIcon("Images/chart-column-grow-svgrepo-com.svg", 20, 20);
-        CustomButton manageButton = new CustomButton("Quản lý", manageIcon);
-        manageButton.setFont(new Font("Roboto", Font.BOLD, 16));
-        manageButton.addActionListener(e -> handleLogin("admin"));
-
-        FlatSVGIcon sellIcon = new FlatSVGIcon("Images/shop-2-svgrepo-com.svg", 20, 20);
-        CustomButton sellButton = new CustomButton("Bán hàng", sellIcon);
-        sellButton.setFont(new Font("Roboto", Font.BOLD, 16));
-        sellButton.addActionListener(e -> handleLogin("seller"));
-
-        // Tùy chỉnh màu nút bán hàng
-        sellButton.setButtonColors(CustomButton.ButtonColors.GREEN);
-
-        buttonPanel.add(manageButton);
-        buttonPanel.add(sellButton);
         gbc.gridy = 7;
         gbc.anchor = GridBagConstraints.CENTER;
-        panel.add(buttonPanel, gbc);
+        panel.add(loginButton, gbc);
 
         // Thêm panel chính vào JFrame
         add(panel, new GridBagConstraints());
 
         // Thêm sự kiện Enter cho các trường nhập liệu
         usernameField.addActionListener(e -> passwordField.requestFocus());
-        passwordField.addActionListener(e -> handleLogin("auto"));
+        passwordField.addActionListener(e -> handleLogin());
 
         setVisible(true);
     }
 
     /**
      * Xử lý đăng nhập
-     * @param mode Chế độ đăng nhập: "admin", "seller", hoặc "auto"
      */
-    private void handleLogin(String mode) {
+    private void handleLogin() {
         // Reset trạng thái lỗi
         usernameField.setState(CustomTextField.State.DEFAULT);
         passwordField.setState(CustomPasswordField.State.DEFAULT);
@@ -190,30 +182,36 @@ public class LoginGUI extends JFrame {
             return;
         }
 
-        // TODO: Thực hiện kiểm tra đăng nhập với cơ sở dữ liệu
-        // Đây là mã giả để demo
-        boolean loginSuccess = false;
+        // Thực hiện đăng nhập sử dụng LoginBUS
+        nhanVienDTO nhanVien = LoginBUS.login(username, password);
 
-        // Demo: Nếu username và password đều là "admin" hoặc "seller", đăng nhập thành công
-        if ((username.equals("admin") && password.equals("admin")) ||
-            (username.equals("seller") && password.equals("seller"))) {
-            loginSuccess = true;
-        }
-
-        if (loginSuccess) {
+        if (nhanVien != null) {
             // Đăng nhập thành công
             CustomToastMessage.showSuccessToast(this, "Đăng nhập thành công!");
 
-            // TODO: Chuyển đến màn hình tương ứng dựa trên vai trò người dùng
+            // Lấy tên chức vụ của người dùng
+            String tenChucVu = LoginBUS.getCurrentUserRole();
 
-            // Đây là mã giả để demo
-            if (mode.equals("admin") || username.equals("admin")) {
-                // Chuyển đến màn hình quản lý
-                JOptionPane.showMessageDialog(this, "Chuyển đến màn hình quản lý");
-            } else {
-                // Chuyển đến màn hình bán hàng
-                JOptionPane.showMessageDialog(this, "Chuyển đến màn hình bán hàng");
+            MenuFrame menuFrame = new MenuFrame();
+
+            // Lấy danh sách chức năng của người dùng
+            ArrayList<ChucNangDTO> dsChucNang = PhanQuyenBUS.layDanhSachChucNang();
+            for (ChucNangDTO chucNang : dsChucNang) {
+                // Ẩn các chức năng không có quyền
+                if (!LoginBUS.hasPermission(chucNang.getMaChucNang())) {
+                    menuFrame.hideMenuItem(chucNang.getTenChucNang());
+                }
+                // Ẩn các hành động nếu chỉ có quyền xem
+                if (LoginBUS.getPermissionLevel(chucNang.getMaChucNang()) == 1) {
+                    menuFrame.hideActionPanel(chucNang.getTenChucNang());
+                }
             }
+
+            menuFrame.setVisible(true);
+            dispose();
+
+
+
         } else {
             // Đăng nhập thất bại
             usernameField.setState(CustomTextField.State.INVALID);

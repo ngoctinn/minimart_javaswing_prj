@@ -273,4 +273,47 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
 
     //lấy danh sách loại sản phẩm theo mã loại sản phẩm
 
+    /**
+     * Cập nhật số lượng tồn kho của sản phẩm
+     * @param maSP Mã sản phẩm cần cập nhật
+     * @param soLuong Số lượng thay đổi (dương: tăng, âm: giảm)
+     * @return int Số dòng bị ảnh hưởng (1 nếu thành công, 0 nếu thất bại)
+     */
+    public int capNhatSoLuongTonKho(String maSP, int soLuong) {
+        Connection connection = null;
+        try {
+            // Bước 1: Tạo kết nối đến CSDL
+            connection = JDBCUtil.getConnection();
+
+            // Bước 2: Lấy thông tin sản phẩm hiện tại
+            SanPhamDTO sanPham = selectById(maSP);
+            if (sanPham == null) {
+                return 0; // Không tìm thấy sản phẩm
+            }
+
+            // Bước 3: Tính toán số lượng tồn kho mới
+            int tonKhoMoi = sanPham.getTonKho() + soLuong;
+            if (tonKhoMoi < 0) {
+                tonKhoMoi = 0; // Đảm bảo tồn kho không âm
+            }
+
+            // Bước 4: Cập nhật số lượng tồn kho
+            String sql = "UPDATE SANPHAM SET tonKho = ? WHERE maSP = ?";
+            int result = JDBCUtil.executePreparedUpdate(sql, tonKhoMoi, maSP);
+
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0; // Trả về 0 nếu có lỗi
+        } finally {
+            // Bước 5: Đóng kết nối
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

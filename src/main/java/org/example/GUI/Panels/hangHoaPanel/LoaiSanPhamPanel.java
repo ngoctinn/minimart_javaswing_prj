@@ -2,8 +2,10 @@ package org.example.GUI.Panels.hangHoaPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.LoaiSanPhamBUS;
+import org.example.BUS.SanPhamBUS;
 import org.example.Components.*;
 import org.example.DTO.LoaiSanPhamDTO;
+import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Dialogs.ThemLoaiSanPhamDialog;
 
 import javax.swing.*;
@@ -121,8 +123,7 @@ public class LoaiSanPhamPanel extends JPanel {
                 for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
                     Object[] rowData = new Object[]{
                             loaiSanPham.getMaLSP(),
-                            loaiSanPham.getTenLSP(),
-                            loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+                            loaiSanPham.getTenLSP()
                     };
                     model.addRow(rowData);
                 }
@@ -147,8 +148,7 @@ public class LoaiSanPhamPanel extends JPanel {
                 for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
                     Object[] rowData = new Object[]{
                             loaiSanPham.getMaLSP(),
-                            loaiSanPham.getTenLSP(),
-                            loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+                            loaiSanPham.getTenLSP()
                     };
                     model.addRow(rowData);
                 }
@@ -356,14 +356,13 @@ public class LoaiSanPhamPanel extends JPanel {
         tablePanel.setBackground(Color.WHITE);
 
         // Table data
-        String[] columnNames = {"Mã loại", "Tên loại sản phẩm", "Trạng thái"};
+        String[] columnNames = {"Mã loại", "Tên loại sản phẩm"};
         ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
         DefaultTableModel model = new DefaultTableModel(null, columnNames);
         for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
            Object [] rowData = new Object[] {
                     loaiSanPham.getMaLSP(),
-                    loaiSanPham.getTenLSP(),
-                    loaiSanPham.getTrangThai() == true ? "Đang hoạt động" : "Không hoạt động"
+                    loaiSanPham.getTenLSP()
             };
             model.addRow(rowData);
         }
@@ -392,14 +391,13 @@ public class LoaiSanPhamPanel extends JPanel {
         ArrayList<LoaiSanPhamDTO> dsLoaiSanPham = LoaiSanPhamBUS.layDanhSachLoaiSanPham();
 
         // Create new model with updated data
-        String[] columnNames = {"Mã loại", "Tên loại sản phẩm", "Trạng thái"};
+        String[] columnNames = {"Mã loại", "Tên loại sản phẩm"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames);
 
         for (LoaiSanPhamDTO loaiSanPham : dsLoaiSanPham) {
             Object[] rowData = new Object[] {
                 loaiSanPham.getMaLSP(),
-                loaiSanPham.getTenLSP(),
-                loaiSanPham.getTrangThai() ? "Đang hoạt động" : "Không hoạt động"
+                loaiSanPham.getTenLSP()
             };
             model.addRow(rowData);
         }
@@ -414,7 +412,7 @@ public class LoaiSanPhamPanel extends JPanel {
         tablePanel.setBackground(Color.WHITE);
 
         // Table data - initialize with empty data
-        String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Trạng thái"};
+        String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm"};
         Object[][] dataLoaiSanPham = {}; // Empty initially, will be populated when a category is selected
 
         // Create table
@@ -427,45 +425,29 @@ public class LoaiSanPhamPanel extends JPanel {
     }
 
     private void updateProductTable(String categoryId) {
-        // This method would be called when a category is selected
-        // For now, we'll populate with example data based on the selected category
+        // This method is called when a category is selected
+        // Get products for the selected category from the database
+        ArrayList<SanPhamDTO> dsSanPham = SanPhamBUS.layDanhSachSanPhamTheoLoai(categoryId);
 
-        Object[][] productData;
+        // Create a new table model
+        DefaultTableModel model = new DefaultTableModel(null, new String[] {"Mã sản phẩm", "Tên sản phẩm"});
 
-        // Example data based on category ID
-        switch (categoryId) {
-            case "LSP001": // Bánh kẹo
-                productData = new Object[][] {
-                        {"SP001", "Bánh Oreo", "Đang kinh doanh"},
-                        {"SP002", "Kẹo mút Chupa Chups", "Đang kinh doanh"},
-                        {"SP003", "Bánh quy Cosy", "Đang kinh doanh"}
+        // If no products found, show a message
+        if (dsSanPham.isEmpty()) {
+            model.addRow(new Object[] {"", "Không có sản phẩm nào thuộc loại này"});
+        } else {
+            // Add each product to the table model
+            for (SanPhamDTO sanPham : dsSanPham) {
+                Object[] rowData = new Object[] {
+                    sanPham.getMaSP(),
+                    sanPham.getTenSP()
                 };
-                break;
-            case "LSP002": // Thực phẩm khô
-                productData = new Object[][] {
-                        {"SP004", "Mì gói Hảo Hảo", "Đang kinh doanh"},
-                        {"SP005", "Cháo ăn liền", "Đang kinh doanh"},
-                        {"SP006", "Khô bò", "Ngừng kinh doanh"}
-                };
-                break;
-            case "LSP003": // Thực phẩm tươi
-                productData = new Object[][] {
-                        {"SP007", "Rau muống", "Đang kinh doanh"},
-                        {"SP008", "Thịt bò", "Đang kinh doanh"},
-                        {"SP009", "Cá hồi", "Đang kinh doanh"}
-                };
-                break;
-            default:
-                productData = new Object[][] {
-                        {"", "Chọn loại sản phẩm để xem", ""}
-                };
+                model.addRow(rowData);
+            }
         }
 
         // Update the product table with new data
-        sanPhamTable.setModel(new javax.swing.table.DefaultTableModel(
-                productData,
-                new String[] {"Mã sản phẩm", "Tên sản phẩm", "Trạng thái"}
-        ));
+        sanPhamTable.setModel(model);
     }
 
     // Helper methods

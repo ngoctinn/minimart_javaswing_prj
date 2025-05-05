@@ -55,19 +55,8 @@ public class PhanQuyenBUS {
     public static int themHoacCapNhatPhanQuyen(PhanQuyenDTO phanQuyen) {
         return phanQuyenDAO.themHoacCapNhatPhanQuyen(phanQuyen);
     }
-    
-    /**
-     * Khởi tạo dữ liệu chức năng mặc định
-     * @return boolean true nếu khởi tạo thành công, false nếu thất bại
-     */
-    public static boolean khoiTaoDuLieuChucNang() {
-        return chucNangDAO.khoiTaoDuLieuMacDinh();
-    }
-    
-    /**
-     * Lấy danh sách tất cả chức năng
-     * @return ArrayList<ChucNangDTO> danh sách chức năng
-     */
+
+
     public static ArrayList<ChucNangDTO> layDanhSachChucNang() {
         return chucNangDAO.layDanhSachChucNang();
     }
@@ -96,6 +85,7 @@ public class PhanQuyenBUS {
 
     // test lấy phân quyền theo chức vụ
     public static void main(String[] args) {
+        //
         ArrayList<PhanQuyenDTO> danhSachQuyen = layDanhSachQuyenTheoChucVu("CV006");
         for (PhanQuyenDTO phanQuyen : danhSachQuyen) {
             System.out.println(phanQuyen.getMaCV() + " - " + phanQuyen.getMaChucNang() + " - " + phanQuyen.getQuyen());
