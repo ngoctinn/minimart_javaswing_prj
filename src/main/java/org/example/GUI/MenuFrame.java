@@ -109,6 +109,12 @@ public class MenuFrame extends JFrame implements ActionListener {
                 case "Quản lý loại sản phẩm":
                 ((LoaiSanPhamPanel) panelMap.get("loaiSanPham")).hideActionPanel();
                 break;
+                case "Quản lý khách hàng":
+                ((KhachHangPanel) panelMap.get("khachHang")).hideActionPanel();
+                break;
+                case "Quản lý nhà cung cấp":
+                ((nhaCungCapPanel) panelMap.get("nhaCungCap")).hideActionPanel();
+                break;
         }
     }
 

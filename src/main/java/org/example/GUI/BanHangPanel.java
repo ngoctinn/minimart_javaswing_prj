@@ -1,14 +1,17 @@
 package org.example.GUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.LoaiSanPhamBUS;
 import org.example.BUS.SanPhamBUS;
 import org.example.Components.*;
+import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
 import org.example.GUI.Dialogs.ThanhToanDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -321,11 +324,30 @@ public class BanHangPanel extends JPanel {
         leftPanel.setBackground(Color.WHITE);
         leftPanel.setPreferredSize(new Dimension((int)(bottomPanelRight.getPreferredSize().width * 0.35), 30));
 
-        // ComboBox chọn loại sản phẩm
-        String[] loaiSanPham = {"Tất cả", "Thức uống", "Đồ ăn", "Khác"};
+        //load dữ liệu loại sản phẩm
+        ArrayList<LoaiSanPhamDTO> loaiSanPhamDTOArrayList = new LoaiSanPhamBUS().layDanhSachLoaiSanPham();
+        String[] loaiSanPham = new String[loaiSanPhamDTOArrayList.size()];
+        for (int i = 0; i < loaiSanPhamDTOArrayList.size(); i++) {
+            loaiSanPham[i] = loaiSanPhamDTOArrayList.get(i).getTenLSP();
+        }
+
         CustomCombobox<String> loaiSanPhamComboBox = new CustomCombobox<>(loaiSanPham);
+        loaiSanPhamComboBox.setPlaceholder("- Chọn loại sản phẩm -");
         loaiSanPhamComboBox.setPreferredSize(new Dimension(150, 30));
         loaiSanPhamComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+
+        // Thêm sự kiện khi chọn loại sản phẩm
+        loaiSanPhamComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String selectedLoaiSP = (String) loaiSanPhamComboBox.getSelectedItem();
+                if (selectedLoaiSP != null && !selectedLoaiSP.isEmpty()) {
+                    loadProductsByCategory(selectedLoaiSP);
+                } else {
+                    loadAllProducts(); // Nếu không chọn loại nào, hiển thị tất cả sản phẩm
+                }
+            }
+        });
+
         leftPanel.add(loaiSanPhamComboBox, BorderLayout.CENTER);
 
         // Panel bên phải chứa thanh tìm kiếm và các nút (65%)
@@ -336,7 +358,7 @@ public class BanHangPanel extends JPanel {
         CustomTextField searchProductField = new CustomTextField("Tìm kiếm sản phẩm...");
         searchProductField.setPreferredSize(new Dimension(200, 30));
         searchProductField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        
+
         // Panel chứa nút refresh
         JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -351,10 +373,10 @@ public class BanHangPanel extends JPanel {
             searchProductField.setText("");
             loadAllProducts();
         });
-        
+
         // Thêm nút refresh vào panel
         buttonPanel.add(refreshButton);
-        
+
         // Thêm ô tìm kiếm và panel nút vào panel phải
         rightPanel.add(searchProductField, BorderLayout.CENTER);
         rightPanel.add(buttonPanel, BorderLayout.EAST);
@@ -377,14 +399,14 @@ public class BanHangPanel extends JPanel {
         // Thêm panel trái và phải vào searchPanel
         searchPanel.add(leftPanel, BorderLayout.WEST);
         searchPanel.add(rightPanel, BorderLayout.CENTER);
-        
+
         // Thêm searchPanel vào bottomPanelRight
         bottomPanelRight.add(searchPanel, BorderLayout.NORTH);
 
         // Panel chứa danh sách sản phẩm
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBackground(Color.WHITE);
-        
+
         productsPanel = new JPanel(new GridBagLayout());
         productsPanel.setBackground(Color.WHITE);
         productsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -396,7 +418,7 @@ public class BanHangPanel extends JPanel {
         JPanel centeringPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centeringPanel.setBackground(Color.WHITE);
         centeringPanel.add(productsPanel);
-        
+
         containerPanel.add(centeringPanel, BorderLayout.CENTER);
 
         // Bọc containerPanel trong JScrollPane
@@ -436,7 +458,7 @@ public class BanHangPanel extends JPanel {
      */
     private void loadAllProducts() {
         productsPanel.removeAll();
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.NONE;
@@ -445,17 +467,17 @@ public class BanHangPanel extends JPanel {
 
         int row = 0;
         int col = 0;
-        
+
         for (SanPhamDTO sanPham : danhSachSanPham) {
             JPanel productPanel = createProductPanel(sanPham);
-            
+
             // Đặt kích thước cố định cho panel sản phẩm
             productPanel.setPreferredSize(new Dimension(150, 200));
-            
+
             gbc.gridx = col;
             gbc.gridy = row;
             productsPanel.add(productPanel, gbc);
-            
+
             col++;
             if (col >= 3) {
                 col = 0;
@@ -472,7 +494,7 @@ public class BanHangPanel extends JPanel {
      */
     private void loadFilteredProducts(String searchText) {
         productsPanel.removeAll();
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.NONE;
@@ -481,17 +503,17 @@ public class BanHangPanel extends JPanel {
 
         int row = 0;
         int col = 0;
-        
+
         for (SanPhamDTO sanPham : danhSachSanPham) {
             JPanel productPanel = createProductPanel(sanPham);
-            
+
             // Đặt kích thước cố định cho panel sản phẩm
             productPanel.setPreferredSize(new Dimension(150, 200));
-            
+
             gbc.gridx = col;
             gbc.gridy = row;
             productsPanel.add(productPanel, gbc);
-            
+
             col++;
             if (col >= 3) {
                 col = 0;
@@ -501,6 +523,55 @@ public class BanHangPanel extends JPanel {
 
         productsPanel.revalidate();
         productsPanel.repaint();
+    }
+
+    /**
+     * Tải sản phẩm theo loại sản phẩm
+     */
+    private void loadProductsByCategory(String tenLoaiSP) {
+        productsPanel.removeAll();
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.NONE;
+
+        // Lấy mã loại sản phẩm từ tên loại sản phẩm
+        String maLoaiSP = "";
+        ArrayList<LoaiSanPhamDTO> danhSachLoaiSP = new LoaiSanPhamBUS().layDanhSachLoaiSanPham();
+        for (LoaiSanPhamDTO loaiSP : danhSachLoaiSP) {
+            if (loaiSP.getTenLSP().equals(tenLoaiSP)) {
+                maLoaiSP = loaiSP.getMaLSP();
+                break;
+            }
+        }
+
+        // Lấy danh sách sản phẩm theo mã loại sản phẩm
+        ArrayList<SanPhamDTO> danhSachSanPham = SanPhamBUS.layDanhSachSanPhamTheoLoai(maLoaiSP);
+
+        int row = 0;
+        int col = 0;
+
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+
+            // Đặt kích thước cố định cho panel sản phẩm
+            productPanel.setPreferredSize(new Dimension(150, 200));
+
+            gbc.gridx = col;
+            gbc.gridy = row;
+            productsPanel.add(productPanel, gbc);
+
+            col++;
+            if (col >= 3) {
+                col = 0;
+                row++;
+            }
+        }
+
+        productsPanel.revalidate();
+        productsPanel.repaint();
+
+        System.out.println("Tải sản phẩm theo loại: " + tenLoaiSP + " (" + maLoaiSP + ") - Đã tải " + danhSachSanPham.size() + " sản phẩm");
     }
 
     /**
@@ -561,11 +632,11 @@ public class BanHangPanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
+
                 // Vẽ nền panel
                 g2d.setColor(getBackground());
                 g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
-                
+
                 // Vẽ đổ bóng với opacity nhẹ hơn để tạo chiều sâu tinh tế
                 int shadowSize = 5;
                 for (int i = 0; i < shadowSize; i++) {
@@ -789,7 +860,7 @@ public class BanHangPanel extends JPanel {
         private Dimension layoutSize(Container target, boolean preferred) {
             synchronized (target.getTreeLock()) {
                 int targetWidth = target.getWidth();
-                
+
                 if (targetWidth == 0)
                     targetWidth = Integer.MAX_VALUE;
 

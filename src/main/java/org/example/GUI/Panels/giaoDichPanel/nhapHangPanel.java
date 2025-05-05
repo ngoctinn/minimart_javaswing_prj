@@ -607,6 +607,15 @@ public class nhapHangPanel extends JPanel {
         searchButton.addActionListener(e -> handleSearchButton());
         refreshButton.addActionListener(e -> handleRefreshButton());
 
+        // Thêm sự kiện cho ô tìm kiếm để xử lý khi nhấn Enter
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    handleSearchButton();
+                }
+            }
+        });
+
         // Các sự kiện khác đã được thiết lập trực tiếp trong các phương thức setup
     }
 
@@ -616,11 +625,50 @@ public class nhapHangPanel extends JPanel {
      */
     private void handleSearchButton() {
         // Xử lý tìm kiếm sản phẩm
-        String searchText = searchField.getText().trim();
-        if (!searchText.isEmpty()) {
-            // TODO: Thực hiện tìm kiếm sản phẩm theo searchText
-            System.out.println("Tìm kiếm sản phẩm: " + searchText);
+        String searchText = searchField.getText().trim().toLowerCase();
+        if (searchText.isEmpty() || searchText.equals("tìm kiếm sản phẩm...".toLowerCase())) {
+            // Nếu không có từ khóa tìm kiếm, hiển thị tất cả sản phẩm
+            handleRefreshButton();
+            return;
         }
+
+        // Lọc danh sách sản phẩm theo từ khóa tìm kiếm
+        List<SanPhamDTO> ketQuaTimKiem = new ArrayList<>();
+
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            // Tìm kiếm theo mã sản phẩm hoặc tên sản phẩm
+            if (sanPham.getMaSP().toLowerCase().contains(searchText) ||
+                sanPham.getTenSP().toLowerCase().contains(searchText)) {
+                ketQuaTimKiem.add(sanPham);
+            }
+        }
+
+        // Xóa danh sách sản phẩm hiện tại
+        productListPanel.removeAll();
+
+        // Hiển thị kết quả tìm kiếm
+        if (ketQuaTimKiem.isEmpty()) {
+            // Nếu không có kết quả nào, hiển thị thông báo
+            JLabel noResultLabel = new JLabel("Không tìm thấy sản phẩm nào phù hợp");
+            noResultLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            noResultLabel.setForeground(new Color(100, 100, 100));
+            noResultLabel.setHorizontalAlignment(JLabel.CENTER);
+            noResultLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+            productListPanel.add(noResultLabel);
+        } else {
+            // Hiển thị các sản phẩm tìm thấy
+            for (SanPhamDTO sanPham : ketQuaTimKiem) {
+                JPanel productPanel = createProductPanel(sanPham);
+                productListPanel.add(productPanel);
+                productListPanel.add(Box.createVerticalStrut(5)); // Khoảng cách giữa các sản phẩm
+            }
+        }
+
+        // Cập nhật giao diện
+        productListPanel.revalidate();
+        productListPanel.repaint();
+
+        System.out.println("Tìm kiếm sản phẩm: " + searchText + " - Tìm thấy " + ketQuaTimKiem.size() + " kết quả");
     }
 
     /**
@@ -629,8 +677,25 @@ public class nhapHangPanel extends JPanel {
     private void handleRefreshButton() {
         // Xử lý làm mới danh sách sản phẩm
         searchField.setText("");
-        // TODO: Làm mới danh sách sản phẩm
-        System.out.println("Làm mới danh sách sản phẩm");
+
+        // Lấy lại danh sách sản phẩm mới nhất từ cơ sở dữ liệu
+        danhSachSanPham = new SanPhamBUS().layDanhSachSanPham();
+
+        // Xóa danh sách sản phẩm hiện tại
+        productListPanel.removeAll();
+
+        // Hiển thị lại danh sách sản phẩm
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+            productListPanel.add(productPanel);
+            productListPanel.add(Box.createVerticalStrut(5)); // Khoảng cách giữa các sản phẩm
+        }
+
+        // Cập nhật giao diện
+        productListPanel.revalidate();
+        productListPanel.repaint();
+
+        System.out.println("Làm mới danh sách sản phẩm - Đã tải " + danhSachSanPham.size() + " sản phẩm");
     }
 
     /**
