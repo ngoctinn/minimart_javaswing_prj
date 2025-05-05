@@ -29,6 +29,10 @@ public class nhaCungCapPanel extends JPanel {
     private CustomButton importButton;
     private CustomButton exportButton;
 
+    // panel hành động
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
+
     // Bottom panel components
     private CustomTable nhaCungCapTable;
 
@@ -49,6 +53,11 @@ public class nhaCungCapPanel extends JPanel {
         this.add(bottomPanel, BorderLayout.CENTER);
     }
 
+    //======================PHƯƠNG THỨC ẨN PANEL HÀNH ĐỘNG====================
+    public void hideActionPanel() {
+        mainButtonsPanel.setVisible(false);
+        importExportPanel.setVisible(false);
+    }
     //====================== XỬ LÝ SỰ KIỆN=================================
     private void setupEventHandlers() {
         // Thiết lập tất cả các sự kiện ở đây
@@ -284,12 +293,12 @@ public class nhaCungCapPanel extends JPanel {
     //======================CÀI ĐẶT CÁC NÚT HÀNH ĐỘNG=================================
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
         
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
         

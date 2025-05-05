@@ -7,6 +7,7 @@ import org.example.GUI.Panels.doiTacPanel.KhachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
+import org.example.GUI.Panels.giaoDichPanel.PhieuNhapPanel;
 import org.example.GUI.Panels.hangHoaPanel.SanPhamPanel;
 import org.example.GUI.Panels.hangHoaPanel.LoaiSanPhamPanel;
 import org.example.GUI.Panels.nhanVienPanel.ChamCongPanel;
@@ -32,7 +33,7 @@ public class MenuFrame extends JFrame implements ActionListener {
     private JMenu hangHoaMenu, giaoDichMenu, doiTacMenu, nhanVienMenu, baoCaoMenu, userMenu;
 
     // Các JMenuItem cho JMenu giaoDich
-    private JMenuItem banHangItem, hoaDonItem, nhapHangItem, khuyenMaiItem;
+    private JMenuItem banHangItem, hoaDonItem, nhapHangItem, phieuNhapItem, khuyenMaiItem;
 
     // Các JMenuItem cho JMenu hangHoa
     private JMenuItem sanPhamItem, loaiSanPhamItem;
@@ -50,46 +51,49 @@ public class MenuFrame extends JFrame implements ActionListener {
         initializeFrame();
         setupMenuBar();
         setupContentPanel();
-        setVisible(true);
+        setVisible(false);
     }
 
     // Thêm phương thức để ẩn menu item
     public void hideMenuItem(String itemName) {
         switch (itemName) {
-            case "sanPham":
+            case "Quản lý sản phẩm":
                 sanPhamItem.setVisible(false);
                 break;
-            case "loaiSanPham":
+            case "Quản lý loại sản phẩm":
                 loaiSanPhamItem.setVisible(false);
                 break;
-            case "banHang":
+            case "Quản lý bán hàng":
                 banHangItem.setVisible(false);
                 break;
-            case "hoaDon":
+            case "Quản lý hoá đơn":
                 hoaDonItem.setVisible(false);
                 break;
-            case "nhapHang":
+            case "Quản lý nhập hàng":
                 nhapHangItem.setVisible(false);
                 break;
-            case "khuyenMai":
+            case "Quản lý phiếu nhập":
+                phieuNhapItem.setVisible(false);
+                break;
+            case "Quản lý khuyến mãi":
                 khuyenMaiItem.setVisible(false);
                 break;
-            case "khachHang":
+            case "Quản lý khách hàng":
                 khachHangItem.setVisible(false);
                 break;
-            case "nhaCungCap":
+            case "Quản lý nhà cung cấp":
                 nhaCungCapItem.setVisible(false);
                 break;
-            case "nhanVien":
+            case "Quản lý nhân viên":
                 nhanVienItem.setVisible(false);
                 break;
-            case "hopDong":
+            case "Quản lý hợp đồng":
                 hopDongItem.setVisible(false);
                 break;
-            case "chucVu":
+            case "Quản lý chức vụ":
                 chucVuItem.setVisible(false);
                 break;
-            case "chamCong":
+            case "Quản lý chấm công":
                 chamCongItem.setVisible(false);
                 break;
         }
@@ -99,10 +103,10 @@ public class MenuFrame extends JFrame implements ActionListener {
     //phương thức để ẩn menu hành động trong panel
     public void hideActionPanel(String panelName) {
         switch (panelName) {
-            case "sanPham":
+            case "Quản lý sản phẩm":
                 ((SanPhamPanel) panelMap.get("sanPham")).hideActionPanel();
                 break;
-                case "loaiSanPham":
+                case "Quản lý loại sản phẩm":
                 ((LoaiSanPhamPanel) panelMap.get("loaiSanPham")).hideActionPanel();
                 break;
         }
@@ -170,6 +174,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         banHangItem = createMenuItem("Bán hàng", "banhang", 16);
         hoaDonItem = createMenuItem("Hoá đơn", "hoadon", 16);
         nhapHangItem = createMenuItem("Nhập hàng", "nhaphang", 16);
+        phieuNhapItem = createMenuItem("Phiếu nhập", "nhaphang", 16);
         khuyenMaiItem = createMenuItem("Khuyến mãi", "khuyenmai", 16);
 
         // Tạo JMenuItem cho hàng hóa
@@ -206,6 +211,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         giaoDichMenu.add(banHangItem);
         giaoDichMenu.add(hoaDonItem);
         giaoDichMenu.add(nhapHangItem);
+        giaoDichMenu.add(phieuNhapItem);
         giaoDichMenu.add(khuyenMaiItem);
 
         // Thêm JMenuItem vào hàng hóa
@@ -257,6 +263,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         banHangItem.addActionListener(this);
         hoaDonItem.addActionListener(this);
         nhapHangItem.addActionListener(this);
+        phieuNhapItem.addActionListener(this);
         khuyenMaiItem.addActionListener(this);
 
 
@@ -289,7 +296,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         }
 
         // Hiển thị panel sản phẩm mặc định
-        cardLayout.show(contentPanel, "sanPham");
+        cardLayout.show(contentPanel, "tongQuan");
 
         // Thêm contentPanel vào JFrame
         add(contentPanel, BorderLayout.CENTER);
@@ -297,6 +304,9 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void initializePanels() {
         panelMap = new HashMap<>();
+
+        //tổng quan
+        panelMap.put("tongQuan", new org.example.GUI.Panels.tongQuanPanel());
 
         // Hàng hóa panels
         panelMap.put("sanPham", new SanPhamPanel());
@@ -306,6 +316,7 @@ public class MenuFrame extends JFrame implements ActionListener {
         panelMap.put("banHang", new BanHangPanel());
         panelMap.put("hoaDon", new hoaDonPanel());
         panelMap.put("nhapHang", new nhapHangPanel());
+        panelMap.put("phieuNhap", new PhieuNhapPanel());
         panelMap.put("khuyenMai", new org.example.GUI.Panels.giaoDichPanel.KhuyenMaiPanel());
 
         // Đối tác panels
@@ -340,6 +351,8 @@ public class MenuFrame extends JFrame implements ActionListener {
             showPanel("hoaDon");
         } else if (source == nhapHangItem) {
             showPanel("nhapHang");
+        } else if (source == phieuNhapItem) {
+            showPanel("phieuNhap");
         } else if (source == khuyenMaiItem) {
             showPanel("khuyenMai");
         }
@@ -436,6 +449,7 @@ public class MenuFrame extends JFrame implements ActionListener {
             UIManager.setLookAndFeel(new FlatLightLaf());
             setupUIManagerProperties();
             MenuFrame menuFrame = new MenuFrame();
+            menuFrame.setVisible(true);
 
         } catch (Exception e) {
             e.printStackTrace();

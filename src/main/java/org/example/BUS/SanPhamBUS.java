@@ -94,4 +94,15 @@ public class SanPhamBUS {
         int nextId = maxId + 1;
         return String.format("SP%03d", nextId);
     }
+
+    /**
+     * Cập nhật số lượng tồn kho của sản phẩm
+     * @param maSP Mã sản phẩm cần cập nhật
+     * @param soLuong Số lượng thay đổi (dương: tăng, âm: giảm)
+     * @return int Số dòng bị ảnh hưởng (1 nếu thành công, 0 nếu thất bại)
+     */
+    public static int capNhatSoLuongTonKho(String maSP, int soLuong) {
+        SanPhamDAO sanPhamDAO = new SanPhamDAO();
+        return sanPhamDAO.capNhatSoLuongTonKho(maSP, soLuong);
+    }
 }

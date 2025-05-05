@@ -103,34 +103,6 @@ public class ChucNangDAO {
      * Khởi tạo dữ liệu mặc định cho bảng ChucNang nếu chưa có
      * @return boolean true nếu khởi tạo thành công, false nếu thất bại
      */
-    public boolean khoiTaoDuLieuMacDinh() {
-        ArrayList<ChucNangDTO> danhSachChucNang = new ArrayList<>();
-        danhSachChucNang.add(new ChucNangDTO("QLCV", "Quản lý chức vụ"));
-        danhSachChucNang.add(new ChucNangDTO("QLHD", "Quản lý hóa đơn"));
-        danhSachChucNang.add(new ChucNangDTO("QLK", "Quản lý kho"));
-        danhSachChucNang.add(new ChucNangDTO("QLKH", "Quản lý khách hàng"));
-        danhSachChucNang.add(new ChucNangDTO("QLKM", "Quản lý khuyến mãi"));
-        danhSachChucNang.add(new ChucNangDTO("QLLSP", "Quản lý loại sản phẩm"));
-        danhSachChucNang.add(new ChucNangDTO("QLNCC", "Quản lý nhà cung cấp"));
-        danhSachChucNang.add(new ChucNangDTO("QLNH", "Quản lý nhập hàng"));
-        danhSachChucNang.add(new ChucNangDTO("QLNV", "Quản lý nhân viên"));
-        danhSachChucNang.add(new ChucNangDTO("QLSP", "Quản lý sản phẩm"));
-        danhSachChucNang.add(new ChucNangDTO("QLTK", "Quản lý tài khoản"));
-        danhSachChucNang.add(new ChucNangDTO("XBC", "Xem báo cáo"));
-        
-        boolean success = true;
-        
-        for (ChucNangDTO chucNang : danhSachChucNang) {
-            if (!kiemTraTonTai(chucNang.getMaChucNang())) {
-                int result = themChucNang(chucNang);
-                if (result <= 0) {
-                    success = false;
-                }
-            }
-        }
-        
-        return success;
-    }
 }
 
 
