@@ -1,25 +1,30 @@
 package org.example.DTO;
 
-import java.time.LocalDate;
-
+/**
+ * Lớp DTO đại diện cho chi tiết phiếu nhập hàng
+ * Dựa trên cấu trúc bảng CHITIETPHIEUNHAP trong CSDL
+ */
 public class chiTietPhieuNhapDTO {
-    private String maPN;
-    private String maSP;
-    private int soLuong;
-    private double giaNhap;
-    private LocalDate ngaySX;
-    private LocalDate hanSD;
+    private String maPN;        // varchar(20) - Mã phiếu nhập
+    private int soLuong;        // int - Số lượng
+    private double giaNhap;     // decimal(15,2) - Giá nhập
+    private String maLoHang;    // varchar(20) - Mã lô hàng
 
+    /**
+     * Constructor mặc định
+     */
     public chiTietPhieuNhapDTO() {
 
     }
-    public chiTietPhieuNhapDTO(String maPN, String maSP, int soLuong, double giaNhap, LocalDate ngaySX, LocalDate hanSD) {
+
+    /**
+     * Constructor đầy đủ tham số
+     */
+    public chiTietPhieuNhapDTO(String maPN, int soLuong, double giaNhap, String maLoHang) {
         this.maPN = maPN;
-        this.maSP = maSP;
         this.soLuong = soLuong;
         this.giaNhap = giaNhap;
-        this.ngaySX = ngaySX;
-        this.hanSD = hanSD;
+        this.maLoHang = maLoHang;
     }
 
     public String getMaPN() {
@@ -29,11 +34,11 @@ public class chiTietPhieuNhapDTO {
         this.maPN = maPN;
     }
 
-    public String getMaSP() {
-        return maSP;
+    public String getMaLoHang() {
+        return maLoHang;
     }
-    public void setMaSP(String maSP) {
-        this.maSP = maSP;
+    public void setMaLoHang(String maLoHang) {
+        this.maLoHang = maLoHang;
     }
 
     public int getSoLuong() {
@@ -49,19 +54,4 @@ public class chiTietPhieuNhapDTO {
     public void setGiaNhap(double giaNhap) {
         this.giaNhap = giaNhap;
     }
-
-    public LocalDate getNgaySX() {
-        return ngaySX;
-    }
-    public void setNgaySX(LocalDate ngaySX) {
-        this.ngaySX = ngaySX;
-    }
-
-    public LocalDate getHanSD() {
-        return hanSD;
-    }
-    public void setHanSD(LocalDate hanSD) {
-        this.hanSD = hanSD;
-    }
-
 }

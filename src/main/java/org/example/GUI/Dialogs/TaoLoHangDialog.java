@@ -261,7 +261,7 @@ public class TaoLoHangDialog extends JDialog {
         huyButton.setPreferredSize(new Dimension(100, 40));
         tableButtonPanel.add(huyButton);
 
-        hoanTatButton = new CustomButton("Hoàn tất");
+        hoanTatButton = new CustomButton("Đóng");
         hoanTatButton.setButtonColors(CustomButton.ButtonColors.GREEN);
         hoanTatButton.setPreferredSize(new Dimension(120, 40));
         tableButtonPanel.add(hoanTatButton);
@@ -291,6 +291,7 @@ public class TaoLoHangDialog extends JDialog {
 
     /**
      * Xử lý sự kiện khi nhấn nút Hoàn tất
+     * Đóng form mà không thực hiện thêm vào CSDL (đã thêm khi nhấn nút Thêm vào bảng)
      */
     private void handleComplete() {
         // Kiểm tra xem đã có lô hàng nào chưa
@@ -300,39 +301,14 @@ public class TaoLoHangDialog extends JDialog {
             return;
         }
 
-        // Lưu danh sách lô hàng vào CSDL
-        boolean success = true;
-        for (loHangDTO loHang : danhSachLoHang) {
-            // Kiểm tra dữ liệu hợp lệ
-            String errorMessage = LoHangBUS.kiemTraDuLieuLoHang(loHang);
-            if (errorMessage != null) {
-                JOptionPane.showMessageDialog(this, "Lỗi: " + errorMessage,
-                        "Lỗi", JOptionPane.ERROR_MESSAGE);
-                success = false;
-                break;
-            }
-
-            // Thêm lô hàng vào CSDL
-            int result = LoHangBUS.themLoHang(loHang);
-            if (result <= 0) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi thêm lô hàng: " + loHang.getMaLoHang(),
-                        "Lỗi", JOptionPane.ERROR_MESSAGE);
-                success = false;
-                break;
-            }
-        }
-
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Hoàn tất tạo lô hàng thành công!",
-                    "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            // Đóng dialog
-            this.confirmed = true;
-            this.dispose();
-        }
+        // Đóng dialog
+        this.confirmed = true;
+        this.dispose();
     }
 
     /**
      * Xử lý sự kiện khi nhấn nút Thêm vào bảng
+     * Thêm lô hàng vào bảng và lưu vào CSDL luôn
      */
     private void handleAddToBatch() {
         // Kiểm tra dữ liệu nhập vào
@@ -365,7 +341,23 @@ public class TaoLoHangDialog extends JDialog {
             return;
         }
 
-        // Thêm vào danh sách
+        // Kiểm tra dữ liệu hợp lệ trước khi thêm vào CSDL
+        String errorMessage = LoHangBUS.kiemTraDuLieuLoHang(loHang);
+        if (errorMessage != null) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + errorMessage,
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Thêm lô hàng vào CSDL
+        int result = LoHangBUS.themLoHang(loHang);
+        if (result <= 0) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi thêm lô hàng: " + loHang.getMaLoHang(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Thêm vào danh sách hiển thị
         danhSachLoHang.add(loHang);
 
         // Cập nhật bảng
@@ -376,7 +368,7 @@ public class TaoLoHangDialog extends JDialog {
         generateNewBatchCode();
 
         // Hiển thị thông báo thành công
-        JOptionPane.showMessageDialog(this, "Đã thêm lô hàng vào danh sách!",
+        JOptionPane.showMessageDialog(this, "Đã thêm lô hàng vào cơ sở dữ liệu thành công!",
                 "Thành công", JOptionPane.INFORMATION_MESSAGE);
     }
 
