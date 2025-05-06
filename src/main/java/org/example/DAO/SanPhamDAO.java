@@ -317,6 +317,15 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
         }
     }
 
+    //kiểm tra số lượng tồn kho
+    public boolean kiemTraSoLuongTonKho(String maSP, int soLuong) {
+        SanPhamDTO sanPham = selectById(maSP);
+        if (sanPham == null) {
+            return false;
+        }
+        return sanPham.getTonKho() >= soLuong;
+    }
+
     public int giamSoLuongTonKho(String maSP, int soLuong) {
         return capNhatSoLuongTonKho(maSP, -soLuong);
     }

@@ -1,6 +1,5 @@
 package org.example.DTO;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Lớp DTO cho hóa đơn
@@ -15,8 +14,6 @@ public class hoaDonDTO {
     private LocalDateTime thoiGianLap; // datetime - Thời gian lập hóa đơn
     private boolean trangThai;   // bit - Trạng thái hóa đơn
 
-    private List<chiTietHoaDonDTO> chiTietHoaDon; // Danh sách chi tiết hóa đơn
-
     /**
      * Constructor mặc định
      */
@@ -29,8 +26,7 @@ public class hoaDonDTO {
      * Constructor đầy đủ tham số
      */
     public hoaDonDTO(String maHoaDon, double tongTien, LocalDateTime thoiGianLap,
-                     String maKH, String maNV, String maKM, boolean trangThai,
-                     List<chiTietHoaDonDTO> chiTietHoaDon) {
+                     String maKH, String maNV, String maKM, boolean trangThai) {
         this.maHoaDon = maHoaDon;
         this.tongTien = tongTien;
         this.thoiGianLap = thoiGianLap;
@@ -38,7 +34,6 @@ public class hoaDonDTO {
         this.maNV = maNV;
         this.maKM = maKM;
         this.trangThai = trangThai;
-        this.chiTietHoaDon = chiTietHoaDon;
     }
 
     /**
@@ -154,22 +149,6 @@ public class hoaDonDTO {
     }
 
     /**
-     * Lấy danh sách chi tiết hóa đơn
-     * @return List<chiTietHoaDonDTO> danh sách chi tiết hóa đơn
-     */
-    public List<chiTietHoaDonDTO> getChiTietHoaDon() {
-        return chiTietHoaDon;
-    }
-
-    /**
-     * Đặt danh sách chi tiết hóa đơn
-     * @param chiTietHoaDon List<chiTietHoaDonDTO> danh sách chi tiết hóa đơn
-     */
-    public void setChiTietHoaDon(List<chiTietHoaDonDTO> chiTietHoaDon) {
-        this.chiTietHoaDon = chiTietHoaDon;
-    }
-
-    /**
      * Định dạng tổng tiền theo kiểu tiền tệ Việt Nam
      * @return String tổng tiền đã định dạng
      */
@@ -190,7 +169,6 @@ public class hoaDonDTO {
                 ", maNV='" + maNV + '\'' +
                 ", maKM='" + maKM + '\'' +
                 ", trangThai=" + (trangThai ? "Đang hoạt động" : "Đã hủy") +
-                ", soLuongSanPham=" + (chiTietHoaDon != null ? chiTietHoaDon.size() : 0) +
                 "}";
     }
 }

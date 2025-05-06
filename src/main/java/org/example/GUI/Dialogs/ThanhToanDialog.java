@@ -1,10 +1,24 @@
 package org.example.GUI.Dialogs;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.ChiTietHoaDonBUS;
+import org.example.BUS.HoaDonBUS;
+import org.example.BUS.KhuyenMaiBUS;
+import org.example.BUS.SanPhamBUS;
 import org.example.Components.CustomButton;
+import org.example.Components.CustomCombobox;
+import org.example.DTO.chiTietHoaDonDTO;
+import org.example.DTO.hoaDonDTO;
+import org.example.DTO.khuyenMaiDTO;
+import org.example.GUI.BanHangPanel;
+import org.example.GUI.BanHangPanel.CartItem;
+
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dialog hiển thị thông tin thanh toán hóa đơn
@@ -18,15 +32,21 @@ public class ThanhToanDialog extends JDialog {
     private JLabel amountDueLabel;
     private JLabel amountPaidLabel;
     private JLabel changeLabel;
-    private ButtonGroup paymentMethodGroup;
     private JPanel cashPanel;
-    private JPanel transferPanel;
     private JPanel amountPanel;
+    private CustomCombobox<String> khuyenMaiCombobox;
+    private ArrayList<khuyenMaiDTO> dsKhuyenMai;
 
     // Các biến lưu trữ thông tin thanh toán
     private static double totalAmount = 0;
     private double discount = 0;
     private double amountPaid = 0;
+    private String selectedPromotionCode = null;
+
+    // Thông tin hóa đơn
+    private String maKhachHang = null;
+    private String maNhanVien = null;
+    private List<CartItem> cartItems = null;
 
     // Định dạng số tiền
     private final DecimalFormat formatter = new DecimalFormat("#,###");
@@ -35,12 +55,15 @@ public class ThanhToanDialog extends JDialog {
     private final Color primaryColor = new Color(0, 102, 204);
     private final Color accentColor = new Color(240, 240, 240);
 
-    /**
+     /**
      * Khởi tạo dialog thanh toán
      * @param owner Cửa sổ cha
      * @param totalAmount Tổng số tiền cần thanh toán
+     * @param maKhachHang Mã khách hàng
+     * @param maNhanVien Mã nhân viên
+     * @param cartItems Danh sách sản phẩm trong giỏ hàng
      */
-    public ThanhToanDialog(Window owner, double totalAmount) {
+    public ThanhToanDialog(Window owner, double totalAmount, String maKhachHang, String maNhanVien, List<CartItem> cartItems) {
         super(owner, "Thanh Toán", ModalityType.APPLICATION_MODAL);
         setSize(450, 650);
         setResizable(false);
@@ -48,6 +71,9 @@ public class ThanhToanDialog extends JDialog {
         setLocationRelativeTo(owner);
         this.totalAmount = totalAmount;
         this.amountPaid = totalAmount - discount;
+        this.maKhachHang = maKhachHang;
+        this.maNhanVien = maNhanVien;
+        this.cartItems = cartItems;
 
         initializeUI();
     }
@@ -62,27 +88,25 @@ public class ThanhToanDialog extends JDialog {
         // Thêm tiêu đề
         mainPanel.add(createHeaderPanel());
 
+        // kích thước
+        setSize(450, 700);
+
         // Thêm thông tin khách hàng
         mainPanel.add(createCustomerPanel());
+
+        // Thêm panel khuyến mãi
+        JPanel khuyenMaiPanel = createPromotionPanel();
+        mainPanel.add(khuyenMaiPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // Thêm thông tin số tiền
         JPanel amountPanelContainer = createAmountPanelContainer();
         mainPanel.add(amountPanelContainer);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        // Thêm phương thức thanh toán
-        JPanel methodPanel = createPaymentMethodPanel();
-        mainPanel.add(methodPanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
         // Thêm panel thanh toán tiền mặt
         JPanel cashPanelContainer = createCashPanel();
         mainPanel.add(cashPanelContainer);
-
-        // Thêm panel thanh toán chuyển khoản
-        transferPanel = createTransferPanel();
-        transferPanel.setVisible(false);
-        mainPanel.add(transferPanel);
 
         // Thêm nút xác nhận thanh toán
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -206,141 +230,6 @@ public class ThanhToanDialog extends JDialog {
         return amountPanelContainer;
     }
 
-    /**
-     * Tạo panel phương thức thanh toán
-     * @return JPanel phương thức thanh toán
-     */
-    private JPanel createPaymentMethodPanel() {
-        JPanel methodPanel = new JPanel();
-        methodPanel.setOpaque(false);
-        methodPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                "Phương thức thanh toán"));
-        methodPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
-
-        paymentMethodGroup = new ButtonGroup();
-        JRadioButton cashButton = new JRadioButton("Tiền mặt");
-        JRadioButton transferButton = new JRadioButton("Chuyển khoản");
-
-        cashButton.setFont(new Font("Arial", Font.BOLD, 13));
-        cashButton.setForeground(new Color(51, 51, 51));
-        cashButton.setOpaque(false);
-
-        transferButton.setFont(new Font("Arial", Font.BOLD, 13));
-        transferButton.setForeground(new Color(51, 51, 51));
-        transferButton.setOpaque(false);
-
-        paymentMethodGroup.add(cashButton);
-        paymentMethodGroup.add(transferButton);
-
-        methodPanel.add(cashButton);
-        methodPanel.add(transferButton);
-
-        // Thêm sự kiện cho nút thanh toán tiền mặt
-        cashButton.addActionListener(e -> {
-            cashPanel.getParent().setVisible(true);
-            transferPanel.setVisible(false);
-            // Chỉnh lại GridLayout cho amountPanel khi chọn thanh toán tiền mặt
-            updateAmountPanelForCashPayment();
-        });
-
-        // Thêm sự kiện cho nút thanh toán chuyển khoản
-        transferButton.addActionListener(e -> {
-            cashPanel.getParent().setVisible(false);
-            transferPanel.setVisible(true);
-            // Chỉnh lại GridLayout cho amountPanel khi chọn chuyển khoản
-            updateAmountPanelForTransfer();
-        });
-
-        // Mặc định chọn thanh toán tiền mặt
-        cashButton.setSelected(true);
-
-        return methodPanel;
-    }
-
-    /**
-     * Cập nhật panel thông tin số tiền cho thanh toán tiền mặt
-     */
-    private void updateAmountPanelForCashPayment() {
-        Font labelFont = new Font("Arial", Font.BOLD, 13);
-
-        amountPanel.removeAll();
-        amountPanel.setLayout(new GridLayout(5, 2, 10, 10));
-
-        // Tổng tiền hàng
-        JLabel totalTextLabel = new JLabel("Tổng tiền hàng:");
-        totalTextLabel.setFont(labelFont);
-        totalTextLabel.setForeground(new Color(51, 51, 51));
-
-        // Giảm giá
-        JLabel discountTextLabel = new JLabel("Giảm giá:");
-        discountTextLabel.setFont(labelFont);
-        discountTextLabel.setForeground(new Color(51, 51, 51));
-
-        // Khách cần trả
-        JLabel amountDueTextLabel = new JLabel("Khách cần trả:");
-        amountDueTextLabel.setFont(labelFont);
-        amountDueTextLabel.setForeground(new Color(51, 51, 51));
-
-        // Khách thanh toán
-        JLabel amountPaidTextLabel = new JLabel("Khách thanh toán:");
-        amountPaidTextLabel.setFont(labelFont);
-        amountPaidTextLabel.setForeground(new Color(51, 51, 51));
-
-        // Tiền thừa
-        JLabel changeTextLabel = new JLabel("Tiền thừa trả khách:");
-        changeTextLabel.setFont(labelFont);
-        changeTextLabel.setForeground(new Color(51, 51, 51));
-
-        amountPanel.add(totalTextLabel);
-        amountPanel.add(totalLabel);
-        amountPanel.add(discountTextLabel);
-        amountPanel.add(discountLabel);
-        amountPanel.add(amountDueTextLabel);
-        amountPanel.add(amountDueLabel);
-        amountPanel.add(amountPaidTextLabel);
-        amountPanel.add(amountPaidLabel);
-        amountPanel.add(changeTextLabel);
-        amountPanel.add(changeLabel);
-
-        amountPanel.revalidate();
-        amountPanel.repaint();
-    }
-
-    /**
-     * Cập nhật panel thông tin số tiền cho thanh toán chuyển khoản
-     */
-    private void updateAmountPanelForTransfer() {
-        Font labelFont = new Font("Arial", Font.BOLD, 13);
-
-        amountPanel.removeAll();
-        amountPanel.setLayout(new GridLayout(3, 2, 10, 10));
-
-        // Tổng tiền hàng
-        JLabel totalTextLabel = new JLabel("Tổng tiền hàng:");
-        totalTextLabel.setFont(labelFont);
-        totalTextLabel.setForeground(new Color(51, 51, 51));
-
-        // Giảm giá
-        JLabel discountTextLabel = new JLabel("Giảm giá:");
-        discountTextLabel.setFont(labelFont);
-        discountTextLabel.setForeground(new Color(51, 51, 51));
-
-        // Khách cần trả
-        JLabel amountDueTextLabel = new JLabel("Khách cần trả:");
-        amountDueTextLabel.setFont(labelFont);
-        amountDueTextLabel.setForeground(new Color(51, 51, 51));
-
-        amountPanel.add(totalTextLabel);
-        amountPanel.add(totalLabel);
-        amountPanel.add(discountTextLabel);
-        amountPanel.add(discountLabel);
-        amountPanel.add(amountDueTextLabel);
-        amountPanel.add(amountDueLabel);
-
-        amountPanel.revalidate();
-        amountPanel.repaint();
-    }
 
     /**
      * Tạo panel thanh toán tiền mặt
@@ -384,27 +273,6 @@ public class ThanhToanDialog extends JDialog {
         return cashPanelContainer;
     }
 
-    /**
-     * Tạo panel thanh toán chuyển khoản
-     * @return JPanel thanh toán chuyển khoản
-     */
-    private JPanel createTransferPanel() {
-        JPanel transferPanel = new JPanel(new BorderLayout());
-        transferPanel.setOpaque(false);
-        transferPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-        JLabel qrLabel = new JLabel(new FlatSVGIcon("Images/QRBank.svg", 200, 200));
-        JLabel scanInstructionLabel = new JLabel("Quét mã QR để thanh toán", SwingConstants.CENTER);
-        scanInstructionLabel.setFont(new Font("Arial", Font.BOLD, 13));
-        scanInstructionLabel.setForeground(primaryColor);
-
-        transferPanel.add(qrLabel, BorderLayout.CENTER);
-        transferPanel.add(scanInstructionLabel, BorderLayout.SOUTH);
-
-        return transferPanel;
-    }
 
     /**
      * Tạo panel nút xác nhận thanh toán
@@ -414,6 +282,23 @@ public class ThanhToanDialog extends JDialog {
         CustomButton paymentButton = new CustomButton("Xác Nhận Thanh Toán");
         paymentButton.setFont(new Font("Arial", Font.BOLD, 14));
         paymentButton.setPreferredSize(new Dimension(400, 40));
+
+        // Thêm sự kiện khi nhấn nút thanh toán
+        paymentButton.addActionListener(e -> {
+            // Kiểm tra số tiền đã nhập
+            double amountDue = totalAmount - discount;
+            if (amountPaid < amountDue) {
+                JOptionPane.showMessageDialog(this, "Số tiền thanh toán không đủ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Xử lý thanh toán
+            if (processPayment()) {
+                JOptionPane.showMessageDialog(this, "Thanh toán thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                setResult(true); // Đánh dấu thanh toán thành công
+                dispose();
+            }
+        });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
@@ -474,11 +359,79 @@ public class ThanhToanDialog extends JDialog {
     }
 
     /**
+     * Tạo panel chứa combobox khuyến mãi
+     * @return JPanel chứa combobox khuyến mãi
+     */
+    private JPanel createPromotionPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+                "Khuyến mãi"));
+
+        JPanel contentPanel = new JPanel(new BorderLayout(10, 0));
+        contentPanel.setOpaque(false);
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+
+        // Label
+        JLabel khuyenMaiLabel = new JLabel("Áp dụng khuyến mãi:");
+        khuyenMaiLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        contentPanel.add(khuyenMaiLabel, BorderLayout.WEST);
+
+        // Lấy danh sách khuyến mãi có hiệu lực
+        dsKhuyenMai = KhuyenMaiBUS.layDanhSachKhuyenMaiHieuLuc();
+        String[] khuyenMaiItems = new String[dsKhuyenMai.size() + 1];
+        khuyenMaiItems[0] = "Không áp dụng khuyến mãi";
+
+        for (int i = 0; i < dsKhuyenMai.size(); i++) {
+            khuyenMaiDTO km = dsKhuyenMai.get(i);
+            khuyenMaiItems[i + 1] = km.getTenKM() + " (" + km.getPhanTram() + "%)";
+        }
+
+        // Combobox khuyến mãi
+        khuyenMaiCombobox = new CustomCombobox<>(khuyenMaiItems);
+        khuyenMaiCombobox.setPreferredSize(new Dimension(250, 30));
+        khuyenMaiCombobox.setSelectedIndex(0); // Mặc định không chọn khuyến mãi
+
+        // Thêm sự kiện khi chọn khuyến mãi
+        khuyenMaiCombobox.addActionListener(e -> {
+            int selectedIndex = khuyenMaiCombobox.getSelectedIndex();
+            if (selectedIndex > 0) {
+                // Nếu chọn khuyến mãi (không phải mục đầu tiên)
+                khuyenMaiDTO km = dsKhuyenMai.get(selectedIndex - 1);
+                // Tính giảm giá dựa trên phần trăm khuyến mãi
+                discount = totalAmount * (km.getPhanTram() / 100.0);
+                selectedPromotionCode = km.getMaKM();
+            } else {
+                // Nếu chọn "Không áp dụng khuyến mãi"
+                discount = 0;
+                selectedPromotionCode = null;
+            }
+            // Cập nhật lại các nhãn hiển thị số tiền
+            amountPaid = totalAmount - discount;
+            updateLabels();
+        });
+
+        contentPanel.add(khuyenMaiCombobox, BorderLayout.CENTER);
+        panel.add(contentPanel, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    /**
      * Thiết lập tên khách hàng
      * @param name Tên khách hàng
      */
     public void setCustomerName(String name) {
         customerNameLabel.setText("Khách hàng: " + name);
+    }
+
+    /**
+     * Lấy mã khuyến mãi đã chọn
+     * @return String mã khuyến mãi, null nếu không chọn
+     */
+    public String getSelectedPromotionCode() {
+        return selectedPromotionCode;
     }
 
     /**
@@ -490,5 +443,79 @@ public class ThanhToanDialog extends JDialog {
         amountDueLabel.setText(formatter.format(totalAmount - discount) + " đ");
         amountPaidLabel.setText(formatter.format(amountPaid) + " đ");
         updateAmountPaidAndChange();
+    }
+
+    // Biến lưu trạng thái kết quả thanh toán
+    private boolean paymentSuccessful = false;
+
+    /**
+     * Thiết lập kết quả thanh toán
+     * @param success true nếu thanh toán thành công, false nếu thất bại
+     */
+    private void setResult(boolean success) {
+        this.paymentSuccessful = success;
+    }
+
+    /**
+     * Kiểm tra xem thanh toán có thành công không
+     * @return true nếu thanh toán thành công, false nếu thất bại
+     */
+    public boolean isPaymentSuccessful() {
+        return paymentSuccessful;
+    }
+
+    /**
+     * Xử lý thanh toán hóa đơn
+     * @return true nếu thanh toán thành công, false nếu thất bại
+     */
+    private boolean processPayment() {
+        try {
+            // Tạo hóa đơn mới
+            HoaDonBUS hoaDonBUS = new HoaDonBUS();
+            hoaDonDTO hoaDon = hoaDonBUS.taoHoaDonMoi(maKhachHang, maNhanVien, selectedPromotionCode);
+
+            if (hoaDon == null) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi tạo hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            // Thêm chi tiết hóa đơn
+            ArrayList<chiTietHoaDonDTO> dsChiTiet = new ArrayList<>();
+
+            for (CartItem item : cartItems) {
+                chiTietHoaDonDTO chiTiet = new chiTietHoaDonDTO();
+                chiTiet.setMaHoaDon(hoaDon.getMaHoaDon());
+                chiTiet.setMaSP(item.getSanPham().getMaSP());
+                chiTiet.setSoLuong(item.getQuantity());
+                chiTiet.setGiaBan(item.getSanPham().getGiaBan());
+
+                dsChiTiet.add(chiTiet);
+
+                // Cập nhật số lượng tồn kho (giảm đi)
+                SanPhamBUS.capNhatSoLuongTonKho(item.getSanPham().getMaSP(), -item.getQuantity());
+            }
+
+            // Thêm tất cả chi tiết hóa đơn
+            int result = ChiTietHoaDonBUS.themNhieuChiTietHoaDon(dsChiTiet);
+
+            if (result <= 0) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi thêm chi tiết hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            return true;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            ThanhToanDialog dialog = new ThanhToanDialog(null, 100000, "KH001", "NV001", new ArrayList<>());
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
+        });
     }
 }

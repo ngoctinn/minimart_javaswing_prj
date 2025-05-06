@@ -1,300 +1,234 @@
 package org.example.BUS;
 
 import org.example.DAO.HoaDonDAO;
+import org.example.DAO.ChiTietHoaDonDAO;
 import org.example.DTO.hoaDonDTO;
 import org.example.DTO.chiTietHoaDonDTO;
-import org.example.DTO.KhachHangDTO;
-import org.example.DTO.khuyenMaiDTO;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Lớp xử lý logic nghiệp vụ liên quan đến hóa đơn
+ * Lớp BUS xử lý logic nghiệp vụ liên quan đến hóa đơn
  */
 public class HoaDonBUS {
-    private static HoaDonDAO hoaDonDAO = new HoaDonDAO();
+    private HoaDonDAO hoaDonDAO;
+    private ChiTietHoaDonDAO chiTietHoaDonDAO;
+    private ArrayList<hoaDonDTO> dsHoaDon;
 
     /**
-     * Lấy danh sách tất cả hóa đơn
-     * @return ArrayList<hoaDonDTO> danh sách tất cả hóa đơn
+     * Constructor mặc định
      */
-    public static ArrayList<hoaDonDTO> selectAll() {
-        return hoaDonDAO.selectAll();
+    public HoaDonBUS() {
+        hoaDonDAO = new HoaDonDAO();
+        chiTietHoaDonDAO = new ChiTietHoaDonDAO();
+        dsHoaDon = new ArrayList<>();
     }
 
     /**
-     * Lấy danh sách hóa đơn đang hoạt động
-     * @return ArrayList<hoaDonDTO> danh sách hóa đơn đang hoạt động
+     * Lấy danh sách hóa đơn
+     * @return ArrayList chứa các hóa đơn
      */
-    public static ArrayList<hoaDonDTO> layDanhSachHoaDon() {
-        return hoaDonDAO.layHoaDonTheoTrangThai(true);
+    public ArrayList<hoaDonDTO> getDsHoaDon() {
+        return dsHoaDon;
+    }
+
+    /**
+     * Đọc danh sách hóa đơn từ CSDL
+     * @return true nếu đọc thành công, false nếu thất bại
+     */
+    public boolean docDanhSachHoaDon() {
+        dsHoaDon = hoaDonDAO.layDanhSachHoaDon();
+        return dsHoaDon != null;
     }
 
     /**
      * Thêm hóa đơn mới
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn cần thêm
-     * @return int số dòng bị ảnh hưởng
+     * @param hoaDon Đối tượng hóa đơn cần thêm
+     * @return true nếu thêm thành công, false nếu thất bại
      */
-    public static int themHoaDon(hoaDonDTO hoaDon) {
-        // Kiểm tra dữ liệu hợp lệ
-        String error = kiemTraDuLieuHopLe(hoaDon);
-        if (error != null) {
-            System.out.println("Lỗi: " + error);
-            return 0;
+    public boolean themHoaDon(hoaDonDTO hoaDon) {
+        // Kiểm tra dữ liệu đầu vào
+        if (hoaDon == null) {
+            return false;
         }
 
-        return hoaDonDAO.insert(hoaDon);
+        // Tạo mã hóa đơn mới nếu chưa có
+        if (hoaDon.getMaHoaDon() == null || hoaDon.getMaHoaDon().isEmpty()) {
+            hoaDon.setMaHoaDon(hoaDonDAO.taoMaHoaDonMoi());
+        }
+
+        // Đặt thời gian lập hóa đơn nếu chưa có
+        if (hoaDon.getThoiGianLap() == null) {
+            hoaDon.setThoiGianLap(LocalDateTime.now());
+        }
+
+        // Thêm hóa đơn vào CSDL
+        int result = hoaDonDAO.insert(hoaDon);
+        if (result > 0) {
+            // Thêm thành công, cập nhật danh sách
+            dsHoaDon.add(hoaDon);
+            return true;
+        }
+        return false;
     }
 
     /**
      * Cập nhật thông tin hóa đơn
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn cần cập nhật
-     * @return int số dòng bị ảnh hưởng
+     * @param hoaDon Đối tượng hóa đơn cần cập nhật
+     * @return true nếu cập nhật thành công, false nếu thất bại
      */
-    public static int capNhatHoaDon(hoaDonDTO hoaDon) {
-        // Kiểm tra dữ liệu hợp lệ
-        String error = kiemTraDuLieuHopLe(hoaDon);
-        if (error != null) {
-            System.out.println("Lỗi: " + error);
-            return 0;
+    public boolean capNhatHoaDon(hoaDonDTO hoaDon) {
+        // Kiểm tra dữ liệu đầu vào
+        if (hoaDon == null || hoaDon.getMaHoaDon() == null || hoaDon.getMaHoaDon().isEmpty()) {
+            return false;
         }
 
-        return hoaDonDAO.update(hoaDon);
+        // Cập nhật hóa đơn trong CSDL
+        int result = hoaDonDAO.update(hoaDon);
+        if (result > 0) {
+            // Cập nhật thành công, cập nhật danh sách
+            for (int i = 0; i < dsHoaDon.size(); i++) {
+                if (dsHoaDon.get(i).getMaHoaDon().equals(hoaDon.getMaHoaDon())) {
+                    dsHoaDon.set(i, hoaDon);
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Xóa hóa đơn (cập nhật trạng thái)
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn cần xóa
-     * @return int số dòng bị ảnh hưởng
+     * Xóa hóa đơn (cập nhật trạng thái thành false)
+     * @param maHoaDon Mã hóa đơn cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
      */
-    public static int xoaHoaDon(hoaDonDTO hoaDon) {
-        return hoaDonDAO.delete(hoaDon);
+    public boolean xoaHoaDon(String maHoaDon) {
+        // Kiểm tra dữ liệu đầu vào
+        if (maHoaDon == null || maHoaDon.isEmpty()) {
+            return false;
+        }
+
+        // Tìm hóa đơn cần xóa
+        hoaDonDTO hoaDon = timHoaDonTheoMa(maHoaDon);
+        if (hoaDon == null) {
+            return false;
+        }
+
+        // Cập nhật trạng thái thành false
+        hoaDon.setTrangThai(false);
+        int result = hoaDonDAO.update(hoaDon);
+        if (result > 0) {
+            // Xóa thành công, cập nhật danh sách
+            for (int i = 0; i < dsHoaDon.size(); i++) {
+                if (dsHoaDon.get(i).getMaHoaDon().equals(maHoaDon)) {
+                    dsHoaDon.remove(i);
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Tìm kiếm hóa đơn theo từ khóa
-     * @param keyword String từ khóa tìm kiếm
-     * @return ArrayList<hoaDonDTO> danh sách hóa đơn tìm thấy
+     * Tìm hóa đơn theo mã hóa đơn
+     * @param maHoaDon Mã hóa đơn cần tìm
+     * @return Đối tượng hóa đơn tìm được, null nếu không tìm thấy
      */
-    public static ArrayList<hoaDonDTO> timKiemHoaDon(String keyword) {
-        return hoaDonDAO.timKiemHoaDon(keyword);
-    }
+    public hoaDonDTO timHoaDonTheoMa(String maHoaDon) {
+        // Kiểm tra dữ liệu đầu vào
+        if (maHoaDon == null || maHoaDon.isEmpty()) {
+            return null;
+        }
 
-    /**
-     * Lấy thông tin hóa đơn theo mã
-     * @param maHoaDon String mã hóa đơn
-     * @return hoaDonDTO đối tượng hóa đơn, null nếu không tìm thấy
-     */
-    public static hoaDonDTO layHoaDonTheoMa(String maHoaDon) {
+        // Tìm trong danh sách đã load
+        for (hoaDonDTO hoaDon : dsHoaDon) {
+            if (hoaDon.getMaHoaDon().equals(maHoaDon)) {
+                return hoaDon;
+            }
+        }
+
+        // Nếu không tìm thấy trong danh sách, tìm trong CSDL
         hoaDonDTO hoaDon = new hoaDonDTO();
         hoaDon.setMaHoaDon(maHoaDon);
         return hoaDonDAO.selectById(hoaDon);
     }
 
     /**
-     * Tạo mã hóa đơn mới tự động tăng
-     * @return String mã hóa đơn mới
+     * Tìm kiếm hóa đơn theo từ khóa
+     * @param keyword Từ khóa tìm kiếm
+     * @return ArrayList chứa các hóa đơn tìm thấy
      */
-    public static String taoMaHoaDonMoi() {
-        return hoaDonDAO.taoMaHoaDonMoi();
+    public ArrayList<hoaDonDTO> timKiemHoaDon(String keyword) {
+        // Kiểm tra dữ liệu đầu vào
+        if (keyword == null || keyword.isEmpty()) {
+            return dsHoaDon;
+        }
+
+        // Tìm kiếm trong CSDL
+        return hoaDonDAO.timKiemHoaDon(keyword);
     }
 
-    /**
-     * Kiểm tra dữ liệu hóa đơn hợp lệ
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn cần kiểm tra
-     * @return String thông báo lỗi, null nếu hợp lệ
-     */
-    public static String kiemTraDuLieuHopLe(hoaDonDTO hoaDon) {
-        // Kiểm tra mã hóa đơn
-        if (hoaDon.getMaHoaDon() == null || hoaDon.getMaHoaDon().trim().isEmpty()) {
-            return "Mã hóa đơn không được để trống";
-        }
-
-        // Kiểm tra mã nhân viên
-        if (hoaDon.getMaNV() == null || hoaDon.getMaNV().trim().isEmpty()) {
-            return "Mã nhân viên không được để trống";
-        }
-
-        // Kiểm tra ngày lập
-        if (hoaDon.getThoiGianLap() == null) {
-            return "Ngày lập không được để trống";
-        }
-
-        // Kiểm tra tổng tiền
-        if (hoaDon.getTongTien() < 0) {
-            return "Tổng tiền không được âm";
-        }
-
-        return null; // Dữ liệu hợp lệ
-    }
-
-    /**
-     * Thêm hóa đơn và chi tiết hóa đơn trong một giao dịch
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn cần thêm
-     * @return boolean true nếu thành công, false nếu thất bại
-     */
-    public static boolean themHoaDonVaChiTiet(hoaDonDTO hoaDon) {
-        // Kiểm tra dữ liệu hợp lệ
-        String error = kiemTraDuLieuHopLe(hoaDon);
-        if (error != null) {
-            System.out.println("Lỗi: " + error);
-            return false;
-        }
-
-        return hoaDonDAO.themHoaDonVaChiTiet(hoaDon);
-    }
-
-    /**
-     * Tạo hóa đơn mới với thông tin cơ bản
-     * @param maNV String mã nhân viên
-     * @param maKH String mã khách hàng (có thể null nếu khách vãng lai)
-     * @param maKM String mã khuyến mãi (có thể null nếu không áp dụng)
-     * @return hoaDonDTO đối tượng hóa đơn mới
-     */
-    public static hoaDonDTO taoHoaDonMoi(String maNV, String maKH, String maKM) {
-        hoaDonDTO hoaDon = new hoaDonDTO();
-        
-        // Tạo mã hóa đơn mới
-        hoaDon.setMaHoaDon(taoMaHoaDonMoi());
-        
-        // Thiết lập thông tin cơ bản
-        hoaDon.setMaNV(maNV);
-        hoaDon.setMaKH(maKH);
-        hoaDon.setMaKM(maKM);
-        hoaDon.setThoiGianLap(java.time.LocalDateTime.now());
-        hoaDon.setTongTien(0);
-        hoaDon.setTrangThai(true);
-        hoaDon.setChiTietHoaDon(new ArrayList<>());
-        
-        return hoaDon;
-    }
 
     /**
      * Lấy danh sách hóa đơn theo khoảng thời gian
-     * @param tuNgay LocalDate ngày bắt đầu
-     * @param denNgay LocalDate ngày kết thúc
-     * @return ArrayList<hoaDonDTO> danh sách hóa đơn
+     * @param tuNgay Thời gian bắt đầu
+     * @param denNgay Thời gian kết thúc
+     * @return ArrayList chứa các hóa đơn trong khoảng thời gian
      */
-    public static ArrayList<hoaDonDTO> layHoaDonTheoKhoangThoiGian(LocalDate tuNgay, LocalDate denNgay) {
+    public ArrayList<hoaDonDTO> layHoaDonTheoKhoangThoiGian(LocalDateTime tuNgay, LocalDateTime denNgay) {
+        // Kiểm tra dữ liệu đầu vào
+        if (tuNgay == null || denNgay == null) {
+            return dsHoaDon;
+        }
+
+        // Lấy hóa đơn theo khoảng thời gian từ CSDL
         return hoaDonDAO.layHoaDonTheoKhoangThoiGian(tuNgay, denNgay);
     }
 
     /**
-     * Lấy danh sách hóa đơn theo khách hàng
-     * @param maKH String mã khách hàng
-     * @return ArrayList<hoaDonDTO> danh sách hóa đơn
+     * Tính tổng doanh thu theo khoảng thời gian
+     * @param tuNgay Thời gian bắt đầu
+     * @param denNgay Thời gian kết thúc
+     * @return Tổng doanh thu
      */
-    public static ArrayList<hoaDonDTO> layHoaDonTheoKhachHang(String maKH) {
-        return hoaDonDAO.layHoaDonTheoKhachHang(maKH);
-    }
-
-    /**
-     * Lấy danh sách hóa đơn theo nhân viên
-     * @param maNV String mã nhân viên
-     * @return ArrayList<hoaDonDTO> danh sách hóa đơn
-     */
-    public static ArrayList<hoaDonDTO> layHoaDonTheoNhanVien(String maNV) {
-        return hoaDonDAO.layHoaDonTheoNhanVien(maNV);
-    }
-
-    /**
-     * Lấy danh sách hóa đơn theo khuyến mãi
-     * @param maKM String mã khuyến mãi
-     * @return ArrayList<hoaDonDTO> danh sách hóa đơn
-     */
-    public static ArrayList<hoaDonDTO> layHoaDonTheoKhuyenMai(String maKM) {
-        return hoaDonDAO.layHoaDonTheoKhuyenMai(maKM);
-    }
-
-    /**
-     * Áp dụng khuyến mãi cho hóa đơn
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn
-     * @param maKM String mã khuyến mãi
-     * @return boolean true nếu thành công, false nếu thất bại
-     */
-    public static boolean apDungKhuyenMai(hoaDonDTO hoaDon, String maKM) {
-        // Kiểm tra khuyến mãi có tồn tại và còn hiệu lực không
-        if (maKM != null && !maKM.trim().isEmpty()) {
-            khuyenMaiDTO khuyenMai = KhuyenMaiBUS.layKhuyenMaiTheoMa(maKM);
-            if (khuyenMai == null || !khuyenMai.isActive()) {
-                return false;
-            }
-            
-            // Cập nhật mã khuyến mãi cho hóa đơn
-            hoaDon.setMaKM(maKM);
-            return capNhatHoaDon(hoaDon) > 0;
+    public double tinhTongDoanhThu(LocalDateTime tuNgay, LocalDateTime denNgay) {
+        // Lấy danh sách hóa đơn trong khoảng thời gian
+        ArrayList<hoaDonDTO> dsHoaDonTheoThoiGian = layHoaDonTheoKhoangThoiGian(tuNgay, denNgay);
+        
+        // Tính tổng doanh thu
+        double tongDoanhThu = 0;
+        for (hoaDonDTO hoaDon : dsHoaDonTheoThoiGian) {
+            tongDoanhThu += hoaDon.getTongTien();
         }
         
-        // Nếu không có mã khuyến mãi, xóa khuyến mãi hiện tại
-        hoaDon.setMaKM(null);
-        return capNhatHoaDon(hoaDon) > 0;
+        return tongDoanhThu;
     }
 
     /**
-     * Tính tổng tiền sau khuyến mãi
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn
-     * @return double tổng tiền sau khuyến mãi
+     * Tạo hóa đơn mới
+     * @param maKH Mã khách hàng
+     * @param maNV Mã nhân viên
+     * @param maKM Mã khuyến mãi
+     * @return Đối tượng hóa đơn mới tạo, null nếu tạo thất bại
      */
-    public static double tinhTongTienSauKhuyenMai(hoaDonDTO hoaDon) {
-        double tongTien = hoaDon.getTongTien();
+    public hoaDonDTO taoHoaDonMoi(String maKH, String maNV, String maKM) {
+        // Tạo đối tượng hóa đơn mới
+        hoaDonDTO hoaDon = new hoaDonDTO();
+        hoaDon.setMaHoaDon(hoaDonDAO.taoMaHoaDonMoi());
+        hoaDon.setTongTien(0);
+        hoaDon.setMaKH(maKH);
+        hoaDon.setMaNV(maNV);
+        hoaDon.setMaKM(maKM);
+        hoaDon.setThoiGianLap(LocalDateTime.now());
+        hoaDon.setTrangThai(true);
         
-        // Nếu có áp dụng khuyến mãi
-        if (hoaDon.getMaKM() != null && !hoaDon.getMaKM().trim().isEmpty()) {
-            khuyenMaiDTO khuyenMai = KhuyenMaiBUS.layKhuyenMaiTheoMa(hoaDon.getMaKM());
-            if (khuyenMai != null && khuyenMai.isActive()) {
-                // Kiểm tra điều kiện áp dụng khuyến mãi (nếu có)
-                if (khuyenMai.getDieuKien() == null || tongTien >= Double.parseDouble(khuyenMai.getDieuKien())) {
-                    // Tính giảm giá theo phần trăm
-                    double giamGia = tongTien * khuyenMai.getPhanTram() / 100;
-                    tongTien -= giamGia;
-                }
-            }
+        // Thêm hóa đơn vào CSDL
+        if (themHoaDon(hoaDon)) {
+            return hoaDon;
         }
-        
-        return tongTien;
-    }
-
-    /**
-     * Cập nhật điểm tích lũy cho khách hàng
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn
-     * @return boolean true nếu thành công, false nếu thất bại
-     */
-    public static boolean capNhatDiemTichLuy(hoaDonDTO hoaDon) {
-        // Nếu không có khách hàng, không cần cập nhật điểm
-        if (hoaDon.getMaKH() == null || hoaDon.getMaKH().trim().isEmpty()) {
-            return true;
-        }
-        
-        // Lấy thông tin khách hàng
-        KhachHangDTO khachHang = new KhachHangBUS().layKhachHangTheoMa(hoaDon.getMaKH());
-        if (khachHang == null) {
-            return false;
-        }
-        
-        // Tính điểm tích lũy (ví dụ: cứ 100,000 VND được 1 điểm)
-        int diemThem = (int)(hoaDon.getTongTien() / 100000);
-        khachHang.setDiemTichLuy(khachHang.getDiemTichLuy() + diemThem);
-        
-        // Cập nhật điểm tích lũy cho khách hàng
-        return new KhachHangBUS().capNhatKhachHang(khachHang) > 0;
-    }
-
-    /**
-     * Hoàn tất hóa đơn (thêm hóa đơn, cập nhật điểm tích lũy)
-     * @param hoaDon hoaDonDTO đối tượng hóa đơn
-     * @return boolean true nếu thành công, false nếu thất bại
-     */
-    public static boolean hoanTatHoaDon(hoaDonDTO hoaDon) {
-        // Thêm hóa đơn và chi tiết
-        boolean themHoaDonThanhCong = themHoaDonVaChiTiet(hoaDon);
-        if (!themHoaDonThanhCong) {
-            return false;
-        }
-        
-        // Cập nhật điểm tích lũy cho khách hàng
-        return capNhatDiemTichLuy(hoaDon);
+        return null;
     }
 }
