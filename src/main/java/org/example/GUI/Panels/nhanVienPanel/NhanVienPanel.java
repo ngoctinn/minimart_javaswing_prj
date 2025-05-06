@@ -31,6 +31,9 @@ public class NhanVienPanel extends JPanel {
     private CustomButton importButton;
     private CustomButton exportButton;
 
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
+
     // Bottom panel components
     private CustomCombobox<String> chucVuComboBox;
     private CustomTable nhanVienTable;
@@ -58,6 +61,11 @@ public class NhanVienPanel extends JPanel {
     }
 
     //====================== XỬ LÝ SỰ KIỆN=================================
+    // =====================PHƯƠNG THỨC ẨN HÀNH ĐỘNG=========================
+    public void hideActionPanel() {
+        mainButtonsPanel.setVisible(false);
+        importExportPanel.setVisible(false);
+    }
     private void setupEventHandlers() {
         // Thiết lập tất cả các sự kiện ở đây
         addButton.addActionListener(e -> handleAddButton());
@@ -305,12 +313,12 @@ public class NhanVienPanel extends JPanel {
 
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
 
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
 

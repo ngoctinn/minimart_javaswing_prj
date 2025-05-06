@@ -659,11 +659,17 @@ public class BanHangPanel extends JPanel {
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // Thêm tên sản phẩm
-        JLabel nameLabel = new JLabel(sanPham.getTenSP());
+        // Thêm tên sản phẩm với giới hạn chiều rộng
+        String tenSP = sanPham.getTenSP();
+        // Giới hạn tên sản phẩm nếu quá dài
+        if (tenSP.length() > 15) {
+            tenSP = tenSP.substring(0, 15) + "...";
+        }
+        JLabel nameLabel = new JLabel(tenSP);
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 13));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setToolTipText(sanPham.getTenSP()); // Hiển thị tên đầy đủ khi hover chuột
 
         // Thêm giá sản phẩm
         JLabel priceLabel = new JLabel(currencyFormat.format(sanPham.getGiaBan()));
@@ -721,10 +727,16 @@ public class BanHangPanel extends JPanel {
         cartItemPanel.setBackground(Color.WHITE);
         cartItemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
 
-        // Thêm tên sản phẩm
-        JLabel nameLabel = new JLabel(sanPham.getTenSP(), SwingConstants.CENTER);
+        // Thêm tên sản phẩm với giới hạn chiều rộng
+        String tenSP = sanPham.getTenSP();
+        // Giới hạn tên sản phẩm nếu quá dài
+        if (tenSP.length() > 25) {
+            tenSP = tenSP.substring(0, 22) + "...";
+        }
+        JLabel nameLabel = new JLabel(tenSP, SwingConstants.CENTER);
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         nameLabel.setForeground(new Color(50, 50, 50));
+        nameLabel.setToolTipText(sanPham.getTenSP()); // Hiển thị tên đầy đủ khi hover chuột
         cartItemPanel.add(nameLabel);
 
         // Thêm phần chọn số lượng

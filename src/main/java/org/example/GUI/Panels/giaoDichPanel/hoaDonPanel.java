@@ -33,6 +33,10 @@ public class hoaDonPanel extends JPanel {
     private CustomTable hoaDonTable;
     private CustomButton filterDateButton;
 
+    //panel hành động
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
+
     public hoaDonPanel() {
         initGUI();
     }
@@ -49,6 +53,12 @@ public class hoaDonPanel extends JPanel {
         this.add(bottomPanel, BorderLayout.CENTER);
         bottomPanel.add(bottomPanelLeft, BorderLayout.WEST);
         bottomPanel.add(bottomPanelRight, BorderLayout.CENTER);
+    }
+
+    //=====phương thức để ẩn panel hành động====================
+    public void hideActionPanel() {
+        mainButtonsPanel.setVisible(true);
+        importExportPanel.setVisible(true);
     }
 
     //======================CÀI ĐẶT PANEL CHÍNH=================================
@@ -144,12 +154,12 @@ public class hoaDonPanel extends JPanel {
     //======================CÀI ĐẶT CÁC NÚT HÀNH ĐỘNG=================================
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
         
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
         

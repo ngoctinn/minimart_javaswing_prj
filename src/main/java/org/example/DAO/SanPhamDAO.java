@@ -316,4 +316,8 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
             }
         }
     }
+
+    public int giamSoLuongTonKho(String maSP, int soLuong) {
+        return capNhatSoLuongTonKho(maSP, -soLuong);
+    }
 }

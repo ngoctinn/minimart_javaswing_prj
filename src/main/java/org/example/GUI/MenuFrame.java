@@ -106,14 +106,20 @@ public class MenuFrame extends JFrame implements ActionListener {
             case "Quản lý sản phẩm":
                 ((SanPhamPanel) panelMap.get("sanPham")).hideActionPanel();
                 break;
-                case "Quản lý loại sản phẩm":
+            case "Quản lý loại sản phẩm":
                 ((LoaiSanPhamPanel) panelMap.get("loaiSanPham")).hideActionPanel();
                 break;
-                case "Quản lý khách hàng":
+            case "Quản lý khách hàng":
                 ((KhachHangPanel) panelMap.get("khachHang")).hideActionPanel();
                 break;
-                case "Quản lý nhà cung cấp":
+            case "Quản lý nhà cung cấp":
                 ((nhaCungCapPanel) panelMap.get("nhaCungCap")).hideActionPanel();
+                break;
+            case "Quản lý nhân viên":
+                ((NhanVienPanel) panelMap.get("nhanVien")).hideActionPanel();
+                break;
+            case "Quản lý phiếu nhập":
+                ((PhieuNhapPanel) panelMap.get("phieuNhap")).hideActionPanel();
                 break;
         }
     }

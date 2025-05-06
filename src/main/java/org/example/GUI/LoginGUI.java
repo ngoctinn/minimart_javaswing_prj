@@ -207,6 +207,11 @@ public class LoginGUI extends JFrame {
                 }
             }
 
+            // nếu là chức vụ thì ẩn thêm action
+            if (LoginBUS.getPermissionLevel("CN05") == 0) {
+                menuFrame.hideActionPanel("Quản lý phiếu nhập");
+            }
+
             menuFrame.setVisible(true);
             dispose();
 
