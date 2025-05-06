@@ -67,8 +67,12 @@
             <version>5.2.3</version>
         </dependency>
 
-
-
+        <!-- iText PDF library for PDF generation -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.3</version>
+        </dependency>
 
     </dependencies>
 

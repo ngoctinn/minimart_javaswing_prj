@@ -197,14 +197,41 @@ public class HoaDonBUS {
     public double tinhTongDoanhThu(LocalDateTime tuNgay, LocalDateTime denNgay) {
         // Lấy danh sách hóa đơn trong khoảng thời gian
         ArrayList<hoaDonDTO> dsHoaDonTheoThoiGian = layHoaDonTheoKhoangThoiGian(tuNgay, denNgay);
-        
+
         // Tính tổng doanh thu
         double tongDoanhThu = 0;
         for (hoaDonDTO hoaDon : dsHoaDonTheoThoiGian) {
             tongDoanhThu += hoaDon.getTongTien();
         }
-        
+
         return tongDoanhThu;
+    }
+
+    /**
+     * Lấy danh sách hóa đơn theo mã khách hàng
+     * @param maKH Mã khách hàng
+     * @return ArrayList chứa các hóa đơn của khách hàng
+     */
+    public ArrayList<hoaDonDTO> layHoaDonTheoKhachHang(String maKH) {
+        // Kiểm tra dữ liệu đầu vào
+        if (maKH == null || maKH.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Đảm bảo danh sách hóa đơn đã được tải
+        if (dsHoaDon.isEmpty()) {
+            docDanhSachHoaDon();
+        }
+
+        // Lọc hóa đơn theo mã khách hàng
+        ArrayList<hoaDonDTO> dsHoaDonTheoKH = new ArrayList<>();
+        for (hoaDonDTO hoaDon : dsHoaDon) {
+            if (hoaDon.getMaKH() != null && hoaDon.getMaKH().equals(maKH)) {
+                dsHoaDonTheoKH.add(hoaDon);
+            }
+        }
+
+        return dsHoaDonTheoKH;
     }
 
     /**
@@ -224,7 +251,7 @@ public class HoaDonBUS {
         hoaDon.setMaKM(maKM);
         hoaDon.setThoiGianLap(LocalDateTime.now());
         hoaDon.setTrangThai(true);
-        
+
         // Thêm hóa đơn vào CSDL
         if (themHoaDon(hoaDon)) {
             return hoaDon;

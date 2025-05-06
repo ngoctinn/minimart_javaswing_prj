@@ -52,6 +52,9 @@ public class nhapHangPanel extends JPanel {
     private JPanel productListPanel;
     private JScrollPane productScrollPane;
 
+    //khai báo combobox lô hnafg
+    private CustomCombobox<String> batchComboBox;
+
     // Danh sách sản phẩm mẫu
     private List<SanPhamDTO> danhSachSanPham;
 
@@ -550,7 +553,8 @@ public class nhapHangPanel extends JPanel {
             batches[i] = danhSachLoHang.get(i).getMaLoHang() + " HSD: " + danhSachLoHang.get(i).getNgayHetHan();
         }
 
-        CustomCombobox<String> batchComboBox = new CustomCombobox<>(batches);
+
+        batchComboBox = new CustomCombobox<>(batches);
         batchComboBox.setPlaceholder("- Chọn lô hàng -");
         batchComboBox.setPreferredSize(new Dimension(100, 30));
         batchContentPanel.add(batchComboBox);
@@ -595,7 +599,6 @@ public class nhapHangPanel extends JPanel {
         subPanelCenter.revalidate();
         subPanelCenter.repaint();
     }
-
 
 
     //====================== XỬ LÝ SỰ KIỆN=================================
@@ -705,16 +708,46 @@ public class nhapHangPanel extends JPanel {
         // Mở dialog thêm nhà cung cấp mới
         new ThemNCCDialog();
         // TODO: Cập nhật lại danh sách nhà cung cấp sau khi thêm
-        System.out.println("Thêm nhà cung cấp mới");
+
     }
 
     /**
      * Xử lý sự kiện khi nhấn nút Hủy
+     * Xóa tất cả sản phẩm đã chọn và đặt lại form về trạng thái ban đầu
      */
     private void handleCancelButton() {
-        // Xử lý hủy phiếu nhập
-        // TODO: Xử lý hủy phiếu nhập
-        System.out.println("Hủy phiếu nhập");
+        // Hiển thị hộp thoại xác nhận
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc chắn muốn hủy phiếu nhập hàng này?",
+                "Xác nhận hủy",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+        
+        // Nếu người dùng chọn Yes
+        if (option == JOptionPane.YES_OPTION) {
+            // Xóa tất cả sản phẩm đã chọn trong giỏ hàng
+            subPanelCenter.removeAll();
+            
+            // Thêm lại header cho bảng chi tiết phiếu nhập
+            setupSubPanelCenter();
+            
+            // Đặt lại combobox nhà cung cấp về trạng thái ban đầu
+            supplierComboBox.setSelectedIndex(-1);
+            
+            // Làm mới giao diện
+            subPanelCenter.revalidate();
+            subPanelCenter.repaint();
+            
+            // Thông báo cho người dùng
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Đã hủy phiếu nhập hàng!",
+                    "Thông báo",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     /**
@@ -894,6 +927,13 @@ public class nhapHangPanel extends JPanel {
         // lấy thông tin sản phẩm
         new TaoLoHangDialog(null, sanPham);
 
+        ArrayList<loHangDTO> danhSachLoHang = LoHangBUS.layDanhSachLoHangTheoMaSP(sanPham.getMaSP());
+        String[] batches = new String[danhSachLoHang.size()];
+        for (int i = 0; i < danhSachLoHang.size(); i++) {
+            batches[i] = danhSachLoHang.get(i).getMaLoHang() + " HSD: " + danhSachLoHang.get(i).getNgayHetHan();
+        }
+
+        batchComboBox.setModel(new DefaultComboBoxModel<>(batches));
 
     }
 

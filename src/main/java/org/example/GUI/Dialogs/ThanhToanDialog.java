@@ -12,6 +12,7 @@ import org.example.DTO.hoaDonDTO;
 import org.example.DTO.khuyenMaiDTO;
 import org.example.GUI.BanHangPanel;
 import org.example.GUI.BanHangPanel.CartItem;
+import org.example.Utils.PDFGenerator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -293,8 +294,53 @@ public class ThanhToanDialog extends JDialog {
             }
 
             // Xử lý thanh toán
-            if (processPayment()) {
+            hoaDonDTO hoaDon = processPayment();
+            if (hoaDon != null) {
                 JOptionPane.showMessageDialog(this, "Thanh toán thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+                // Hiển thị hộp thoại xác nhận in hóa đơn
+                int choice = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có muốn in hóa đơn không?",
+                    "In hóa đơn",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    // Hiển thị hộp thoại chọn nơi lưu file PDF
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setDialogTitle("Lưu hóa đơn PDF");
+                    fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Files", "pdf"));
+
+                    int result = fileChooser.showSaveDialog(this);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        // Lấy đường dẫn file đã chọn
+                        String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                        // Thêm đuôi .pdf nếu chưa có
+                        if (!filePath.toLowerCase().endsWith(".pdf")) {
+                            filePath += ".pdf";
+                        }
+
+                        // Lấy danh sách chi tiết hóa đơn
+                        ArrayList<chiTietHoaDonDTO> dsChiTiet = ChiTietHoaDonBUS.layChiTietHoaDonTheoMaHD(hoaDon.getMaHoaDon());
+
+                        // Tạo file PDF
+                        boolean success = PDFGenerator.taoHoaDonPDF(hoaDon, dsChiTiet, filePath);
+
+                        if (success) {
+                            // Mở file PDF sau khi tạo thành công
+                            try {
+                                if (Desktop.isDesktopSupported()) {
+                                    Desktop.getDesktop().open(new java.io.File(filePath));
+                                }
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(this, "Không thể mở file PDF: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    }
+                }
+
                 setResult(true); // Đánh dấu thanh toán thành công
                 dispose();
             }
@@ -466,9 +512,9 @@ public class ThanhToanDialog extends JDialog {
 
     /**
      * Xử lý thanh toán hóa đơn
-     * @return true nếu thanh toán thành công, false nếu thất bại
+     * @return Đối tượng hóa đơn nếu thanh toán thành công, null nếu thất bại
      */
-    private boolean processPayment() {
+    private hoaDonDTO processPayment() {
         try {
             // Tạo hóa đơn mới
             HoaDonBUS hoaDonBUS = new HoaDonBUS();
@@ -476,7 +522,7 @@ public class ThanhToanDialog extends JDialog {
 
             if (hoaDon == null) {
                 JOptionPane.showMessageDialog(this, "Lỗi khi tạo hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
+                return null;
             }
 
             // Thêm chi tiết hóa đơn
@@ -500,14 +546,14 @@ public class ThanhToanDialog extends JDialog {
 
             if (result <= 0) {
                 JOptionPane.showMessageDialog(this, "Lỗi khi thêm chi tiết hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
+                return null;
             }
 
-            return true;
+            return hoaDon;
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
-            return false;
+            return null;
         }
     }
 

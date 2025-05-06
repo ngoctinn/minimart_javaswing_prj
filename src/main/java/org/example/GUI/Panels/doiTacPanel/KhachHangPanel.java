@@ -1,10 +1,12 @@
 package org.example.GUI.Panels.doiTacPanel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.HoaDonBUS;
 import org.example.BUS.KhachHangBUS;
 import org.example.Components.*;
 import org.example.DAO.KhachHangDAO;
 import org.example.DTO.KhachHangDTO;
+import org.example.DTO.hoaDonDTO;
 import org.example.GUI.Dialogs.ThemKhachHangDialog;
 
 import javax.swing.*;
@@ -55,7 +57,7 @@ public class KhachHangPanel extends JPanel {
         this.add(topPanel, BorderLayout.NORTH);
         this.add(bottomPanel, BorderLayout.CENTER);
     }
-    
+
     //====================== XỬ LÝ SỰ KIỆN=================================
     private void setupEventHandlers() {
         // Thiết lập tất cả các sự kiện ở đây
@@ -177,7 +179,7 @@ public class KhachHangPanel extends JPanel {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Chọn file Excel để nhập");
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files", "xlsx", "xls"));
-        
+
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             // TODO: Xử lý nhập dữ liệu từ file Excel
@@ -192,7 +194,7 @@ public class KhachHangPanel extends JPanel {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Lưu danh sách khách hàng");
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files", "xlsx"));
-        
+
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             // TODO: Xử lý xuất dữ liệu ra file Excel
@@ -354,20 +356,20 @@ public class KhachHangPanel extends JPanel {
     private void setupBottomPanel() {
         // Thêm padding cho panel dưới
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Tạo layout cho panel dưới
         bottomPanel.setLayout(new BorderLayout(10, 10));
-        
+
         // Tạo panel chứa bảng khách hàng
         JPanel khachHangTablePanel = new JPanel(new BorderLayout());
         khachHangTablePanel.setBackground(Color.WHITE);
-        
+
         // Tạo tiêu đề cho bảng khách hàng
         JLabel khachHangTableTitle = new JLabel("Danh sách khách hàng");
         khachHangTableTitle.setFont(new Font("Roboto", Font.BOLD, 16));
         khachHangTableTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         khachHangTablePanel.add(khachHangTableTitle, BorderLayout.NORTH);
-        
+
         // Tạo bảng khách hàng
         String[] khachHangColumns = {"Mã KH", "Họ tên", "Địa chỉ", "Điểm tích lũy", "Giới tính", "Số điện thoại", "Email", "Ngày sinh"};
         DefaultTableModel khachHangModel = new DefaultTableModel(khachHangColumns, 0) {
@@ -376,22 +378,22 @@ public class KhachHangPanel extends JPanel {
                 return false; // Không cho phép chỉnh sửa trực tiếp trên bảng
             }
         };
-        
+
         khachHangTable = new CustomTable();
         khachHangTable.setModel(khachHangModel);
         JScrollPane khachHangScrollPane = new JScrollPane(khachHangTable);
         khachHangTablePanel.add(khachHangScrollPane, BorderLayout.CENTER);
-        
+
         // Tạo panel chứa bảng hóa đơn
         JPanel hoaDonTablePanel = new JPanel(new BorderLayout());
         hoaDonTablePanel.setBackground(Color.WHITE);
-        
+
         // Tạo tiêu đề cho bảng hóa đơn
         JLabel hoaDonTableTitle = new JLabel("Lịch sử mua hàng");
         hoaDonTableTitle.setFont(new Font("Roboto", Font.BOLD, 16));
         hoaDonTableTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         hoaDonTablePanel.add(hoaDonTableTitle, BorderLayout.NORTH);
-        
+
         // Tạo bảng hóa đơn
         String[] hoaDonColumns = {"Mã HD", "Ngày lập", "Tổng tiền", "Trạng thái"};
         DefaultTableModel hoaDonModel = new DefaultTableModel(hoaDonColumns, 0) {
@@ -400,20 +402,20 @@ public class KhachHangPanel extends JPanel {
                 return false; // Không cho phép chỉnh sửa trực tiếp trên bảng
             }
         };
-        
+
         hoaDonTable = new CustomTable();
         hoaDonTable.setModel(hoaDonModel);
         JScrollPane hoaDonScrollPane = new JScrollPane(hoaDonTable);
         hoaDonTablePanel.add(hoaDonScrollPane, BorderLayout.CENTER);
-        
+
         // Tạo panel chia đôi
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, khachHangTablePanel, hoaDonTablePanel);
         splitPane.setResizeWeight(0.6); // 60% cho bảng khách hàng, 40% cho bảng hóa đơn
         splitPane.setDividerSize(5);
         splitPane.setBorder(null);
-        
+
         bottomPanel.add(splitPane, BorderLayout.CENTER);
-        
+
         // Làm mới bảng khách hàng
         refreshKhachHangTable();
     }
@@ -421,13 +423,13 @@ public class KhachHangPanel extends JPanel {
     private void refreshKhachHangTable() {
         // Lấy danh sách khách hàng từ BUS
         ArrayList<KhachHangDTO> dsKhachHang = new KhachHangBUS().layDanhSachKhachHang();
-        
+
         // Cập nhật bảng khách hàng
         DefaultTableModel model = (DefaultTableModel) khachHangTable.getModel();
         model.setRowCount(0); // Xóa dữ liệu hiện có
         loadKhachHangData(model, dsKhachHang);
     }
-    
+
     private void loadKhachHangData(DefaultTableModel model, ArrayList<KhachHangDTO> dsKhachHang) {
         for (KhachHangDTO khachHang : dsKhachHang) {
             Object[] row = new Object[]{
@@ -443,23 +445,31 @@ public class KhachHangPanel extends JPanel {
             model.addRow(row);
         }
     }
-    
+
     private void updateInvoiceTable(String maKH) {
-        // TODO: Cập nhật bảng hóa đơn dựa trên mã khách hàng
-        // Đây là nơi bạn sẽ hiển thị các hóa đơn của khách hàng đã chọn
-        // Ví dụ:
-        // ArrayList<HoaDonDTO> dsHoaDon = new HoaDonBUS().layDanhSachHoaDonTheoKhachHang(maKH);
-        // DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
-        // model.setRowCount(0);
-        // for (HoaDonDTO hoaDon : dsHoaDon) {
-        //     Object[] row = new Object[]{
-        //         hoaDon.getMaHD(),
-        //         hoaDon.getNgayLap(),
-        //         hoaDon.getTongTien(),
-        //         hoaDon.getTrangThai()
-        //     };
-        //     model.addRow(row);
-        // }
+        // Lấy danh sách hóa đơn của khách hàng
+        ArrayList<hoaDonDTO> dsHoaDon = new HoaDonBUS().layHoaDonTheoKhachHang(maKH);
+
+        // Cập nhật bảng hóa đơn
+        DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        // Nếu không có hóa đơn nào
+        if (dsHoaDon.isEmpty()) {
+            model.addRow(new Object[]{"Không có hóa đơn nào", "", "", ""});
+            return;
+        }
+
+        // Thêm dữ liệu vào bảng
+        for (hoaDonDTO hoaDon : dsHoaDon) {
+            Object[] row = new Object[]{
+                hoaDon.getMaHoaDon(),
+                hoaDon.getThoiGianLap().toString(),
+                hoaDon.getTongTienFormatted(),
+                hoaDon.isTrangThai() ? "Hoàn thành" : "Đang xử lý"
+            };
+            model.addRow(row);
+        }
     }
 
     private JRadioButton createRadioButton(String text) {
