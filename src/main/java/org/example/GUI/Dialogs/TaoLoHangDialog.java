@@ -399,6 +399,13 @@ public class TaoLoHangDialog extends JDialog {
             return false;
         }
 
+        // kiểm tra ngày sản xuất có lớn hơn ngày hiện tại k
+        if (ngaySanXuat.isAfter(LocalDate.now())) {
+            JOptionPane.showMessageDialog(this, "Ngày sản xuất phải trước ngày hiện tại!",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
         return true;
     }
 

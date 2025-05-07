@@ -57,6 +57,8 @@ public class nhapHangPanel extends JPanel {
 
     // Danh sách sản phẩm mẫu
     private List<SanPhamDTO> danhSachSanPham;
+    private CustomTextField qtyField;
+    private CustomTextField priceField;
 
     public nhapHangPanel() {
         initGUI();
@@ -254,7 +256,7 @@ public class nhapHangPanel extends JPanel {
         qtyHeader.setForeground(headerColor);
 
         // Cột 4: Đơn giá
-        JLabel priceHeader = new JLabel("Giá bán", JLabel.LEFT);
+        JLabel priceHeader = new JLabel("Giá nhập", JLabel.LEFT);
         priceHeader.setFont(headerFont);
         priceHeader.setForeground(headerColor);
 
@@ -500,19 +502,18 @@ public class nhapHangPanel extends JPanel {
         namePanel.add(nameLabel, BorderLayout.CENTER);
 
         // Cột 3: Số lượng
-        CustomTextField qtyField = new CustomTextField("");
+        qtyField = new CustomTextField("");
         qtyField.setText("1");
         qtyField.setHorizontalAlignment(JTextField.LEFT);
         qtyPanel.add(qtyField, BorderLayout.CENTER);
 
         // Cột 4: Đơn giá
-        CustomTextField priceField = new CustomTextField("");
-        priceField.setText(String.valueOf(sanPham.getGiaBan()));
+        priceField = new CustomTextField("");
         priceField.setHorizontalAlignment(JTextField.LEFT);
         pricePanel.add(priceField, BorderLayout.CENTER);
 
         // Cột 5: Thành tiền
-        JLabel totalItemLabel = new JLabel(String.format("%,.0f", sanPham.getGiaBan()), JLabel.LEFT);
+        JLabel totalItemLabel = new JLabel("0", JLabel.LEFT);
         totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         totalPanel.add(totalItemLabel, BorderLayout.CENTER);
 
@@ -521,6 +522,15 @@ public class nhapHangPanel extends JPanel {
             try {
                 double quantity = Double.parseDouble(qtyField.getText().trim());
                 double price = Double.parseDouble(priceField.getText().trim());
+                // kiểm tra dữ liệu nhập vào
+                if (quantity <= 0 || price <= 0) {
+                    JOptionPane.showMessageDialog(this, "Số lượng và đơn giá phải lớn hơn 0", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    qtyField.setText(null);
+                    priceField.setText(null);
+                    return;
+                }
+
+
                 double total = quantity * price;
                 totalItemLabel.setText(String.format("%,.0f", total));
             } catch (NumberFormatException ex) {
@@ -707,8 +717,14 @@ public class nhapHangPanel extends JPanel {
     private void handleCreateSupplierButton() {
         // Mở dialog thêm nhà cung cấp mới
         new ThemNCCDialog();
-        // TODO: Cập nhật lại danh sách nhà cung cấp sau khi thêm
 
+        // Cập nhật lại combobox nhà cung cấp
+        ArrayList<nhaCungCapDTO> danhSachNCC = NhaCungCapBUS.layDanhSachNhaCungCap();
+        String[] suppliers = new String[danhSachNCC.size()];
+        for (int i = 0; i < danhSachNCC.size(); i++) {
+            suppliers[i] = danhSachNCC.get(i).getTenNCC();
+        }
+        supplierComboBox.setModel(new DefaultComboBoxModel<>(suppliers));
     }
 
     /**
@@ -764,6 +780,12 @@ public class nhapHangPanel extends JPanel {
             // Kiểm tra xem đã có sản phẩm nào được thêm vào phiếu nhập chưa
             if (subPanelCenter.getComponentCount() <= 1) { // Chỉ có header, không có sản phẩm
                 JOptionPane.showMessageDialog(this, "Vui lòng thêm ít nhất một sản phẩm vào phiếu nhập", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            //kiểm tra xem đã nhập số lượng và giá nhập cho sản phẩm chưa
+            if (qtyField.getText().trim().isEmpty() || priceField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập số lượng và giá nhập cho sản phẩm", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
