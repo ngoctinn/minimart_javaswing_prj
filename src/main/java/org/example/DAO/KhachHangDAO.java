@@ -161,6 +161,48 @@ public class KhachHangDAO implements DAOInterface<KhachHangDTO> {
         return dsKhachHang;
     }
 
+    // Cập nhật điểm tích lũy của khách hàng
+    public int capNhatDiemTichLuy(String maKH, int diemTichLuy) {
+        // Bước 1: Tạo kết nối đến CSDL
+        JDBCUtil.getConnection();
+        // Bước 2: Tạo câu lệnh SQL
+        String sql = "UPDATE KHACHHANG SET diemTichLuy = ? WHERE maKH = ?";
+        int result = JDBCUtil.executePreparedUpdate(sql, diemTichLuy, maKH);
+        // Bước 3: Đóng kết nối
+        JDBCUtil.closeConnection();
+        return result;
+    }
+
+    // lấy khách hàng theo số điện thoại
+    public KhachHangDTO layKhachHangTheoSDT(String sdt) {
+        KhachHangDTO khachHangDTO = new KhachHangDTO();
+        try {
+            //Bước 1: Tạo kết nối đến CSDL
+            Connection connection = JDBCUtil.getConnection();
+            //Bước 2: Tạo ra đối tượng statement từ connection
+            String sql = "SELECT * FROM KHACHHANG WHERE SDT = ?";
+            ResultSet resultSet = JDBCUtil.executePreparedQuery(sql, sdt);
+            if (resultSet.next()) {
+                khachHangDTO.setMaKH(resultSet.getString("maKH"));
+                khachHangDTO.setHoTen(resultSet.getString("hoTen"));
+                khachHangDTO.setGioiTinh(resultSet.getString("gioiTinh"));
+                khachHangDTO.setDiemTichLuy(resultSet.getInt("diemTichLuy"));
+                khachHangDTO.setDiaChi(resultSet.getString("diaChi"));
+                khachHangDTO.setSDT(resultSet.getString("SDT"));
+                khachHangDTO.setEmail(resultSet.getString("email"));
+                khachHangDTO.setNgaySinh(resultSet.getDate("ngaySinh").toLocalDate());
+                khachHangDTO.setTrangThai(resultSet.getBoolean("trangThai"));
+                return khachHangDTO;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return khachHangDTO;
+    }
+
     public static void main(String[] args) {
         // test chức năng
     }

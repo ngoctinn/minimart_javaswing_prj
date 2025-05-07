@@ -1,14 +1,24 @@
 package org.example.GUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.KhachHangBUS;
+import org.example.BUS.KhuyenMaiBUS;
+import org.example.BUS.LoginBUS;
+import org.example.BUS.LoaiSanPhamBUS;
 import org.example.BUS.SanPhamBUS;
 import org.example.Components.*;
+import org.example.DTO.KhachHangDTO;
+import org.example.DTO.LoaiSanPhamDTO;
 import org.example.DTO.SanPhamDTO;
+import org.example.DTO.chiTietHoaDonDTO;
+import org.example.DTO.hoaDonDTO;
+import org.example.DTO.khuyenMaiDTO;
 import org.example.GUI.Dialogs.ThanhToanDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -28,6 +38,7 @@ public class BanHangPanel extends JPanel {
     private CustomTextField searchField;
     private CustomButton searchButton;
     private CustomButton addTabButton;
+    private RoundedPanel customerInfoPanel; // Panel hiển thị thông tin khách hàng
 
     // Bottom panel components
     private JTabbedPane tabbedPane;
@@ -38,9 +49,16 @@ public class BanHangPanel extends JPanel {
     private List<List<CartItem>> cartItemsByTab = new ArrayList<>();
     private double[] totalAmountByTab = new double[100]; // Giả sử không quá 100 tab
 
+    // Hóa đơn cho mỗi tab
+    private List<hoaDonDTO> hoaDonByTab = new ArrayList<>();
+    private KhachHangDTO selectedCustomer = null;
+    private String selectedKhuyenMaiMa = null;
+
     // Định dạng tiền tệ
     private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private Color priceColor = new Color(0, 100, 180); // Màu xanh cho giá tiền
+    private JLabel diemTichLuyValue;
+    private JLabel tenKHValue;
 
     public BanHangPanel() {
         initGUI();
@@ -92,7 +110,7 @@ public class BanHangPanel extends JPanel {
         bottomPanelRight.setPreferredSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.4), 0));
 
         // Thiết lập layout
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        topPanel.setLayout(new BorderLayout(10, 10));
         bottomPanel.setLayout(new BorderLayout(5, 0));
         bottomPanelLeft.setLayout(new BorderLayout());
         bottomPanelRight.setLayout(new BorderLayout());
@@ -102,29 +120,113 @@ public class BanHangPanel extends JPanel {
      * Thiết lập panel trên cùng
      */
     private void setupTopPanel() {
+        // Panel bên trái chứa ô tìm kiếm và nút tìm kiếm
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        leftPanel.setOpaque(false);
+
         // Ô tìm kiếm
         searchField = new CustomTextField("Tìm kiếm khách hàng...");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        topPanel.add(searchField);
+        leftPanel.add(searchField);
 
         // Nút tìm kiếm
         searchButton = new CustomButton("Tìm");
         searchButton.setPreferredSize(new Dimension(70, 30));
-        topPanel.add(searchButton);
+        searchButton.addActionListener(e -> searchCustomer());
+        leftPanel.add(searchButton);
 
-        // Panel khoảng cách để đẩy nút thêm sang phải
-        JPanel spacerPanel = new JPanel();
-        spacerPanel.setOpaque(false);
-        spacerPanel.setPreferredSize(new Dimension(680, 30));
-        topPanel.add(spacerPanel);
+        // Thêm panel bên trái vào topPanel
+        topPanel.add(leftPanel, BorderLayout.WEST);
+
+        // Tạo panel hiển thị thông tin khách hàng ở giữa
+        customerInfoPanel = createCustomerInfoPanel();
+        topPanel.add(customerInfoPanel, BorderLayout.CENTER);
+
+        // Panel bên phải chứa nút thêm hóa đơn mới
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        rightPanel.setOpaque(false);
 
         // Nút thêm hóa đơn mới
         FlatSVGIcon addIcon = new FlatSVGIcon("Icons/cong.svg", 16, 16);
         addTabButton = new CustomButton("Thêm hóa đơn", addIcon);
         addTabButton.setPreferredSize(new Dimension(150, 30));
         addTabButton.addActionListener(e -> addNewTab());
-        topPanel.add(addTabButton);
+        rightPanel.add(addTabButton);
+
+        // Thêm panel bên phải vào topPanel
+        topPanel.add(rightPanel, BorderLayout.EAST);
+    }
+
+    /**
+     * Tạo panel hiển thị thông tin khách hàng
+     */
+    private RoundedPanel createCustomerInfoPanel() {
+        RoundedPanel panel = new RoundedPanel(15); // Panel bo góc
+        panel.setBackground(new Color(230, 240, 250)); // Màu nền xanh dương pastel sáng
+        panel.setLayout(new GridLayout(2, 2, 10, 5)); // Bố cục 2 dòng, 2 cột
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20)); // Padding bên trong
+
+        // Tạo các JLabel cho thông tin
+        JLabel tenKHLabel = new JLabel("Tên khách hàng:");
+        tenKHLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        tenKHValue = new JLabel("Chưa chọn");
+        tenKHValue.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+
+        JLabel diemTichLuyLabel = new JLabel("Điểm tích lũy:");
+        diemTichLuyLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        diemTichLuyValue = new JLabel("0");
+        diemTichLuyValue.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+
+        // Thêm vào panel
+        panel.add(tenKHLabel);
+        panel.add(tenKHValue);
+        panel.add(diemTichLuyLabel);
+        panel.add(diemTichLuyValue);
+
+        // Gắn vào clientProperty để dễ cập nhật sau
+        panel.putClientProperty("tenKHValue", tenKHValue);
+        panel.putClientProperty("diemTichLuyValue", diemTichLuyValue);
+
+        return panel;
+    }
+
+    /**
+     * Tìm kiếm khách hàng theo từ khóa
+     */
+    private void searchCustomer() {
+        String keyword = searchField.getText().trim();
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Tìm kiếm khách hàng theo số điện thoại
+        KhachHangDTO khachHang = KhachHangBUS.layKhachHangTheoSDT(keyword);
+        if (khachHang == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Cập nhật thông tin khách hàng
+        selectedCustomer = khachHang;
+        updateCustomerInfo(khachHang);
+
+        // Cập nhật mã khách hàng cho hóa đơn hiện tại
+        int currentTab = tabbedPane.getSelectedIndex();
+        if (currentTab >= 0 && currentTab < hoaDonByTab.size()) {
+            hoaDonByTab.get(currentTab).setMaKH(khachHang.getMaKH());
+        }
+    }
+
+    /**
+     * Cập nhật thông tin khách hàng trên panel
+     */
+    private void updateCustomerInfo(KhachHangDTO khachHang) {
+        if (khachHang != null) {
+            tenKHValue.setText(khachHang.getHoTen());
+            diemTichLuyValue.setText(String.valueOf(khachHang.getDiemTichLuy()));
+        }
     }
 
     /**
@@ -169,6 +271,9 @@ public class BanHangPanel extends JPanel {
         // Khởi tạo giỏ hàng cho tab đầu tiên
         cartItemsByTab.add(new ArrayList<>());
 
+        // Tạo hóa đơn mới cho tab đầu tiên
+        String maNV = LoginBUS.getCurrentUser() != null ? LoginBUS.getCurrentUser().getMaNV() : "NV001";
+
         bottomPanelLeft.add(tabbedPane, BorderLayout.CENTER);
     }
 
@@ -184,6 +289,9 @@ public class BanHangPanel extends JPanel {
 
         // Khởi tạo giỏ hàng cho tab mới
         cartItemsByTab.add(new ArrayList<>());
+
+        // Tạo hóa đơn mới cho tab
+        String maNV = LoginBUS.getCurrentUser() != null ? LoginBUS.getCurrentUser().getMaNV() : "NV001";
     }
 
     /**
@@ -271,7 +379,7 @@ public class BanHangPanel extends JPanel {
     /**
      * Lớp đại diện cho một mục trong giỏ hàng
      */
-    private static class CartItem {
+    public static class CartItem {
         private SanPhamDTO sanPham;
         private int quantity;
         private JPanel panel;
@@ -321,11 +429,30 @@ public class BanHangPanel extends JPanel {
         leftPanel.setBackground(Color.WHITE);
         leftPanel.setPreferredSize(new Dimension((int)(bottomPanelRight.getPreferredSize().width * 0.35), 30));
 
-        // ComboBox chọn loại sản phẩm
-        String[] loaiSanPham = {"Tất cả", "Thức uống", "Đồ ăn", "Khác"};
+        //load dữ liệu loại sản phẩm
+        ArrayList<LoaiSanPhamDTO> loaiSanPhamDTOArrayList = new LoaiSanPhamBUS().layDanhSachLoaiSanPham();
+        String[] loaiSanPham = new String[loaiSanPhamDTOArrayList.size()];
+        for (int i = 0; i < loaiSanPhamDTOArrayList.size(); i++) {
+            loaiSanPham[i] = loaiSanPhamDTOArrayList.get(i).getTenLSP();
+        }
+
         CustomCombobox<String> loaiSanPhamComboBox = new CustomCombobox<>(loaiSanPham);
+        loaiSanPhamComboBox.setPlaceholder("- Chọn loại sản phẩm -");
         loaiSanPhamComboBox.setPreferredSize(new Dimension(150, 30));
         loaiSanPhamComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+
+        // Thêm sự kiện khi chọn loại sản phẩm
+        loaiSanPhamComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String selectedLoaiSP = (String) loaiSanPhamComboBox.getSelectedItem();
+                if (selectedLoaiSP != null && !selectedLoaiSP.isEmpty()) {
+                    loadProductsByCategory(selectedLoaiSP);
+                } else {
+                    loadAllProducts(); // Nếu không chọn loại nào, hiển thị tất cả sản phẩm
+                }
+            }
+        });
+
         leftPanel.add(loaiSanPhamComboBox, BorderLayout.CENTER);
 
         // Panel bên phải chứa thanh tìm kiếm và các nút (65%)
@@ -336,7 +463,7 @@ public class BanHangPanel extends JPanel {
         CustomTextField searchProductField = new CustomTextField("Tìm kiếm sản phẩm...");
         searchProductField.setPreferredSize(new Dimension(200, 30));
         searchProductField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        
+
         // Panel chứa nút refresh
         JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 0));
         buttonPanel.setBackground(Color.WHITE);
@@ -351,10 +478,10 @@ public class BanHangPanel extends JPanel {
             searchProductField.setText("");
             loadAllProducts();
         });
-        
+
         // Thêm nút refresh vào panel
         buttonPanel.add(refreshButton);
-        
+
         // Thêm ô tìm kiếm và panel nút vào panel phải
         rightPanel.add(searchProductField, BorderLayout.CENTER);
         rightPanel.add(buttonPanel, BorderLayout.EAST);
@@ -377,14 +504,14 @@ public class BanHangPanel extends JPanel {
         // Thêm panel trái và phải vào searchPanel
         searchPanel.add(leftPanel, BorderLayout.WEST);
         searchPanel.add(rightPanel, BorderLayout.CENTER);
-        
+
         // Thêm searchPanel vào bottomPanelRight
         bottomPanelRight.add(searchPanel, BorderLayout.NORTH);
 
         // Panel chứa danh sách sản phẩm
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBackground(Color.WHITE);
-        
+
         productsPanel = new JPanel(new GridBagLayout());
         productsPanel.setBackground(Color.WHITE);
         productsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -396,7 +523,7 @@ public class BanHangPanel extends JPanel {
         JPanel centeringPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centeringPanel.setBackground(Color.WHITE);
         centeringPanel.add(productsPanel);
-        
+
         containerPanel.add(centeringPanel, BorderLayout.CENTER);
 
         // Bọc containerPanel trong JScrollPane
@@ -418,10 +545,35 @@ public class BanHangPanel extends JPanel {
                 return;
             }
 
-            ThanhToanDialog dialog = new ThanhToanDialog(SwingUtilities.getWindowAncestor(this), totalAmount);
-            dialog.setVisible(true);
-        });
+            // Lấy thông tin khách hàng và nhân viên
+            String maKhachHang = selectedCustomer != null ? selectedCustomer.getMaKH() : "KH001"; // Mặc định là khách hàng vãng lai
+            String maNhanVien = LoginBUS.getCurrentUser() != null ? LoginBUS.getCurrentUser().getMaNV() : "NV001";
 
+            // Lấy danh sách sản phẩm trong giỏ hàng
+            List<CartItem> cartItems = cartItemsByTab.get(currentTab);
+
+            // Hiển thị dialog thanh toán
+            ThanhToanDialog dialog = new ThanhToanDialog(SwingUtilities.getWindowAncestor(this), totalAmount, maKhachHang, maNhanVien, cartItems);
+            dialog.setVisible(true);
+
+            // Nếu thanh toán thành công, xóa giỏ hàng
+            if (dialog.isPaymentSuccessful()) {
+                // Xóa sản phẩm trong giỏ hàng
+                JPanel invoicePanel = (JPanel) tabbedPane.getComponentAt(currentTab);
+                JPanel cartItemsPanel = (JPanel) invoicePanel.getClientProperty("cartItemsPanel");
+                JLabel totalLabel = (JLabel) invoicePanel.getClientProperty("totalLabel");
+
+                cartItemsPanel.removeAll();
+                cartItemsByTab.get(currentTab).clear();
+                totalAmountByTab[currentTab] = 0;
+                totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(0));
+
+                cartItemsPanel.revalidate();
+                cartItemsPanel.repaint();
+
+                JOptionPane.showMessageDialog(this, "Thanh toán thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         // Thêm panel chứa nút thanh toán vào bottomPanelRight
         JPanel thanhToanPanel = new JPanel(new BorderLayout());
         thanhToanPanel.add(btnThanhToan, BorderLayout.CENTER);
@@ -436,7 +588,7 @@ public class BanHangPanel extends JPanel {
      */
     private void loadAllProducts() {
         productsPanel.removeAll();
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.NONE;
@@ -445,17 +597,17 @@ public class BanHangPanel extends JPanel {
 
         int row = 0;
         int col = 0;
-        
+
         for (SanPhamDTO sanPham : danhSachSanPham) {
             JPanel productPanel = createProductPanel(sanPham);
-            
+
             // Đặt kích thước cố định cho panel sản phẩm
             productPanel.setPreferredSize(new Dimension(150, 200));
-            
+
             gbc.gridx = col;
             gbc.gridy = row;
             productsPanel.add(productPanel, gbc);
-            
+
             col++;
             if (col >= 3) {
                 col = 0;
@@ -472,7 +624,7 @@ public class BanHangPanel extends JPanel {
      */
     private void loadFilteredProducts(String searchText) {
         productsPanel.removeAll();
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.NONE;
@@ -481,17 +633,17 @@ public class BanHangPanel extends JPanel {
 
         int row = 0;
         int col = 0;
-        
+
         for (SanPhamDTO sanPham : danhSachSanPham) {
             JPanel productPanel = createProductPanel(sanPham);
-            
+
             // Đặt kích thước cố định cho panel sản phẩm
             productPanel.setPreferredSize(new Dimension(150, 200));
-            
+
             gbc.gridx = col;
             gbc.gridy = row;
             productsPanel.add(productPanel, gbc);
-            
+
             col++;
             if (col >= 3) {
                 col = 0;
@@ -501,6 +653,55 @@ public class BanHangPanel extends JPanel {
 
         productsPanel.revalidate();
         productsPanel.repaint();
+    }
+
+    /**
+     * Tải sản phẩm theo loại sản phẩm
+     */
+    private void loadProductsByCategory(String tenLoaiSP) {
+        productsPanel.removeAll();
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.NONE;
+
+        // Lấy mã loại sản phẩm từ tên loại sản phẩm
+        String maLoaiSP = "";
+        ArrayList<LoaiSanPhamDTO> danhSachLoaiSP = new LoaiSanPhamBUS().layDanhSachLoaiSanPham();
+        for (LoaiSanPhamDTO loaiSP : danhSachLoaiSP) {
+            if (loaiSP.getTenLSP().equals(tenLoaiSP)) {
+                maLoaiSP = loaiSP.getMaLSP();
+                break;
+            }
+        }
+
+        // Lấy danh sách sản phẩm theo mã loại sản phẩm
+        ArrayList<SanPhamDTO> danhSachSanPham = SanPhamBUS.layDanhSachSanPhamTheoLoai(maLoaiSP);
+
+        int row = 0;
+        int col = 0;
+
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+
+            // Đặt kích thước cố định cho panel sản phẩm
+            productPanel.setPreferredSize(new Dimension(150, 200));
+
+            gbc.gridx = col;
+            gbc.gridy = row;
+            productsPanel.add(productPanel, gbc);
+
+            col++;
+            if (col >= 3) {
+                col = 0;
+                row++;
+            }
+        }
+
+        productsPanel.revalidate();
+        productsPanel.repaint();
+
+        System.out.println("Tải sản phẩm theo loại: " + tenLoaiSP + " (" + maLoaiSP + ") - Đã tải " + danhSachSanPham.size() + " sản phẩm");
     }
 
     /**
@@ -561,11 +762,11 @@ public class BanHangPanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
+
                 // Vẽ nền panel
                 g2d.setColor(getBackground());
                 g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
-                
+
                 // Vẽ đổ bóng với opacity nhẹ hơn để tạo chiều sâu tinh tế
                 int shadowSize = 5;
                 for (int i = 0; i < shadowSize; i++) {
@@ -588,11 +789,17 @@ public class BanHangPanel extends JPanel {
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // Thêm tên sản phẩm
-        JLabel nameLabel = new JLabel(sanPham.getTenSP());
+        // Thêm tên sản phẩm với giới hạn chiều rộng
+        String tenSP = sanPham.getTenSP();
+        // Giới hạn tên sản phẩm nếu quá dài
+        if (tenSP.length() > 15) {
+            tenSP = tenSP.substring(0, 15) + "...";
+        }
+        JLabel nameLabel = new JLabel(tenSP);
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 13));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setToolTipText(sanPham.getTenSP()); // Hiển thị tên đầy đủ khi hover chuột
 
         // Thêm giá sản phẩm
         JLabel priceLabel = new JLabel(currencyFormat.format(sanPham.getGiaBan()));
@@ -630,16 +837,28 @@ public class BanHangPanel extends JPanel {
         JPanel cartItemsPanel = (JPanel) invoicePanel.getClientProperty("cartItemsPanel");
         JLabel totalLabel = (JLabel) invoicePanel.getClientProperty("totalLabel");
 
+
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         List<CartItem> cartItems = cartItemsByTab.get(currentTab);
         for (CartItem item : cartItems) {
             if (item.getSanPham().getMaSP().equals(sanPham.getMaSP())) {
                 // Nếu đã có, tăng số lượng lên 1
-                item.setQuantity(item.getQuantity() + 1);
+                int newQuantity = item.getQuantity() + 1;
+
+                // Kiểm tra tồn kho trước khi thêm
+                if (!SanPhamBUS.kiemTraTonKho(sanPham.getMaSP(), newQuantity)) {
+                    JOptionPane.showMessageDialog(this, "Số lượng sản phẩm trong kho không đủ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                item.setQuantity(newQuantity);
+
+
                 updateTotalAmount(currentTab, totalLabel);
                 return;
             }
         }
+
 
         // Nếu chưa có, tạo mới panel cho sản phẩm trong giỏ hàng
         JPanel cartItemPanel = new JPanel(new GridLayout(1, 4, 10, 0));
@@ -650,10 +869,16 @@ public class BanHangPanel extends JPanel {
         cartItemPanel.setBackground(Color.WHITE);
         cartItemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
 
-        // Thêm tên sản phẩm
-        JLabel nameLabel = new JLabel(sanPham.getTenSP(), SwingConstants.CENTER);
+        // Thêm tên sản phẩm với giới hạn chiều rộng
+        String tenSP = sanPham.getTenSP();
+        // Giới hạn tên sản phẩm nếu quá dài
+        if (tenSP.length() > 25) {
+            tenSP = tenSP.substring(0, 22) + "...";
+        }
+        JLabel nameLabel = new JLabel(tenSP, SwingConstants.CENTER);
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         nameLabel.setForeground(new Color(50, 50, 50));
+        nameLabel.setToolTipText(sanPham.getTenSP()); // Hiển thị tên đầy đủ khi hover chuột
         cartItemPanel.add(nameLabel);
 
         // Thêm phần chọn số lượng
@@ -713,19 +938,26 @@ public class BanHangPanel extends JPanel {
         CartItem cartItem = new CartItem(sanPham, 1, cartItemPanel, qtyField, totalItemLabel);
         cartItems.add(cartItem);
 
+
         // Thêm sự kiện cho các nút
         minusButton.addActionListener(e -> {
             int qty = cartItem.getQuantity();
             if (qty > 1) {
                 cartItem.setQuantity(qty - 1);
+                // Cập nhật số lượng trong hóa đơn
                 updateTotalAmount(currentTab, totalLabel);
             }
         });
 
         plusButton.addActionListener(e -> {
             int qty = cartItem.getQuantity();
-            cartItem.setQuantity(qty + 1);
-            updateTotalAmount(currentTab, totalLabel);
+            // Kiểm tra tồn kho trước khi tăng số lượng
+            if (SanPhamBUS.kiemTraTonKho(sanPham.getMaSP(), qty + 1)) {
+                cartItem.setQuantity(qty + 1);
+                updateTotalAmount(currentTab, totalLabel);
+            } else {
+                JOptionPane.showMessageDialog(this, "Số lượng sản phẩm trong kho không đủ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
         });
 
         deleteButton.addActionListener(e -> {
@@ -756,95 +988,13 @@ public class BanHangPanel extends JPanel {
 
         totalAmountByTab[tabIndex] = total;
         totalLabel.setText("TỔNG TIỀN: " + currencyFormat.format(total));
-    }
 
-    // WrapLayout class để hiển thị sản phẩm tự động xuống dòng
-    private class WrapLayout extends FlowLayout {
-        private Dimension preferredLayoutSize;
-
-        public WrapLayout() {
-            super();
-        }
-
-        public WrapLayout(int align) {
-            super(align);
-        }
-
-        public WrapLayout(int align, int hgap, int vgap) {
-            super(align, hgap, vgap);
-        }
-
-        @Override
-        public Dimension preferredLayoutSize(Container target) {
-            return layoutSize(target, true);
-        }
-
-        @Override
-        public Dimension minimumLayoutSize(Container target) {
-            Dimension minimum = layoutSize(target, false);
-            minimum.width -= (getHgap() + 1);
-            return minimum;
-        }
-
-        private Dimension layoutSize(Container target, boolean preferred) {
-            synchronized (target.getTreeLock()) {
-                int targetWidth = target.getWidth();
-                
-                if (targetWidth == 0)
-                    targetWidth = Integer.MAX_VALUE;
-
-                int hgap = getHgap();
-                int vgap = getVgap();
-                Insets insets = target.getInsets();
-                int horizontalInsetsAndGap = insets.left + insets.right + (hgap * 2);
-                int maxWidth = targetWidth - horizontalInsetsAndGap;
-
-                Dimension dim = new Dimension(0, 0);
-                int rowWidth = 0;
-                int rowHeight = 0;
-
-                int nmembers = target.getComponentCount();
-
-                for (int i = 0; i < nmembers; i++) {
-                    Component m = target.getComponent(i);
-
-                    if (m.isVisible()) {
-                        Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
-
-                        if (rowWidth + d.width > maxWidth) {
-                            addRow(dim, rowWidth, rowHeight);
-                            rowWidth = 0;
-                            rowHeight = 0;
-                        }
-
-                        if (rowWidth != 0) {
-                            rowWidth += hgap;
-                        }
-
-                        rowWidth += d.width;
-                        rowHeight = Math.max(rowHeight, d.height);
-                    }
-                }
-
-                addRow(dim, rowWidth, rowHeight);
-
-                dim.width += horizontalInsetsAndGap;
-                dim.height += insets.top + insets.bottom + vgap * 2;
-
-                return dim;
-            }
-        }
-
-        private void addRow(Dimension dim, int rowWidth, int rowHeight) {
-            dim.width = Math.max(dim.width, rowWidth);
-
-            if (dim.height > 0) {
-                dim.height += getVgap();
-            }
-
-            dim.height += rowHeight;
+        // Cập nhật tổng tiền cho hóa đơn
+        if (tabIndex < hoaDonByTab.size()) {
+            hoaDonByTab.get(tabIndex).setTongTien(total);
         }
     }
+
 
     // Hàm main để test giao diện
     public static void main(String[] args) {

@@ -68,6 +68,12 @@ public class SanPhamBUS {
         return sanPhamDAO.selectById(maSP);
     }
 
+    // Kiểm tra số lượng sản phẩm tồn kho
+    public static boolean kiemTraTonKho(String maSP, int soLuong) {
+        SanPhamDTO sanPham = layDanhSachSanPhamTheoMa(maSP);
+        return sanPham.getTonKho() >= soLuong;
+    }
+
 
 
     // Sinh mã sản phẩm

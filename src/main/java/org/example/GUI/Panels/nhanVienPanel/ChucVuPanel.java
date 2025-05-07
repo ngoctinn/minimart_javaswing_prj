@@ -181,9 +181,10 @@ public class ChucVuPanel extends JPanel {
         resetForm();
         setFormEditable(true);
         isEditing = false;
+        String maCV = "CV001";
 
         // Generate mã chức vụ tự động
-        String maCV = ChucVuBUS.generateNextMaLSP();
+        maCV = ChucVuBUS.generateNextMaCV();
         maChucVuField.setText(maCV);
     }
 

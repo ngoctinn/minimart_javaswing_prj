@@ -102,6 +102,18 @@ public class KhachHangBUS {
         return khachHangDAO.selectById(khachHangDTO);
     }
 
+    // lấy khách hàng theo SĐT
+    public static KhachHangDTO layKhachHangTheoSDT(String SDT) {
+        KhachHangDAO khachHangDAO = new KhachHangDAO();
+        return khachHangDAO.layKhachHangTheoSDT(SDT);
+    }
+
+    // cập nhật điểm tích lũy của khách hàng
+    public int capNhatDiemTichLuy(String maKH, int diemTichLuy) {
+        KhachHangDAO khachHangDAO = new KhachHangDAO();
+        return khachHangDAO.capNhatDiemTichLuy(maKH, diemTichLuy);
+    }
+
 }
 
 

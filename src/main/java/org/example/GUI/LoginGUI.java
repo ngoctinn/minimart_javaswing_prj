@@ -1,5 +1,6 @@
 package org.example.GUI;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.LoginBUS;
 import org.example.BUS.PhanQuyenBUS;
@@ -23,6 +24,16 @@ public class LoginGUI extends JFrame {
     private JLabel errorLabel;
 
     public LoginGUI() {
+
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+            UIManager.put("ComboBox.buttonStyle", "icon-only");
+            UIManager.put("ComboBox.buttonBackground", Color.WHITE);
+            UIManager.put("ComboBox.buttonArrowColor", Color.BLACK);
+            UIManager.put("PasswordField.showRevealButton", true);
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
         // Tạo JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -107,30 +118,6 @@ public class LoginGUI extends JFrame {
         panel.add(errorLabel, gbc);
         gbc.insets = new Insets(12, 15, 12, 15);
 
-        // Quên mật khẩu?
-        JLabel forgotPassword = new JLabel("Quên mật khẩu?");
-        forgotPassword.setForeground(new Color(25, 118, 210));
-        forgotPassword.setFont(new Font("Roboto", Font.PLAIN, 16));
-        // Thêm css style để làm nổi bật liên kết
-        forgotPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        forgotPassword.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-
-        // hover color
-        forgotPassword.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                forgotPassword.setForeground(new Color(41, 128, 185));
-                setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                forgotPassword.setForeground(new Color(25, 118, 210));
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.EAST;
-        panel.add(forgotPassword, gbc);
 
         // Nút Đăng nhập
         FlatSVGIcon loginIcon = new FlatSVGIcon("Icons/login.svg", 20, 20);
@@ -187,12 +174,16 @@ public class LoginGUI extends JFrame {
 
         if (nhanVien != null) {
             // Đăng nhập thành công
-            CustomToastMessage.showSuccessToast(this, "Đăng nhập thành công!");
 
             // Lấy tên chức vụ của người dùng
             String tenChucVu = LoginBUS.getCurrentUserRole();
 
             MenuFrame menuFrame = new MenuFrame();
+
+            // Cập nhật menu người dùng với thông tin người dùng đã đăng nhập
+            menuFrame.updateUserMenu();
+
+            CustomToastMessage.showSuccessToast(this, "Đăng nhập thành công!");
 
             // Lấy danh sách chức năng của người dùng
             ArrayList<ChucNangDTO> dsChucNang = PhanQuyenBUS.layDanhSachChucNang();
@@ -205,6 +196,11 @@ public class LoginGUI extends JFrame {
                 if (LoginBUS.getPermissionLevel(chucNang.getMaChucNang()) == 1) {
                     menuFrame.hideActionPanel(chucNang.getTenChucNang());
                 }
+            }
+
+            // nếu là chức vụ thì ẩn thêm action
+            if (LoginBUS.getPermissionLevel("CN05") == 0) {
+                menuFrame.hideActionPanel("Quản lý phiếu nhập");
             }
 
             menuFrame.setVisible(true);

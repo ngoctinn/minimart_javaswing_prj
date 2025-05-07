@@ -2,21 +2,31 @@ package org.example.GUI.Panels.giaoDichPanel;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.LoHangBUS;
 import org.example.BUS.NhaCungCapBUS;
+import org.example.BUS.PhieuNhapBUS;
 import org.example.BUS.SanPhamBUS;
+import org.example.BUS.ChiTietPhieuNhapBUS;
+import org.example.BUS.NhanVienBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomCombobox;
 import org.example.Components.CustomTextField;
 import org.example.Components.RoundedPanel;
 import org.example.DTO.SanPhamDTO;
+import org.example.DTO.chiTietPhieuNhapDTO;
+import org.example.DTO.loHangDTO;
 import org.example.DTO.nhaCungCapDTO;
+import org.example.DTO.phieuNhapDTO;
 import org.example.GUI.Dialogs.TaoLoHangDialog;
 import org.example.GUI.Dialogs.ThemNCCDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 public class nhapHangPanel extends JPanel {
     // region Khai báo các thành phần giao diện
@@ -41,6 +51,9 @@ public class nhapHangPanel extends JPanel {
     // Các thành phần của bottomPanelRight
     private JPanel productListPanel;
     private JScrollPane productScrollPane;
+
+    //khai báo combobox lô hnafg
+    private CustomCombobox<String> batchComboBox;
 
     // Danh sách sản phẩm mẫu
     private List<SanPhamDTO> danhSachSanPham;
@@ -241,7 +254,7 @@ public class nhapHangPanel extends JPanel {
         qtyHeader.setForeground(headerColor);
 
         // Cột 4: Đơn giá
-        JLabel priceHeader = new JLabel("Đơn giá", JLabel.LEFT);
+        JLabel priceHeader = new JLabel("Giá bán", JLabel.LEFT);
         priceHeader.setFont(headerFont);
         priceHeader.setForeground(headerColor);
 
@@ -499,17 +512,50 @@ public class nhapHangPanel extends JPanel {
         pricePanel.add(priceField, BorderLayout.CENTER);
 
         // Cột 5: Thành tiền
-        JLabel totalItemLabel = new JLabel(String.valueOf(sanPham.getGiaBan()), JLabel.LEFT);
+        JLabel totalItemLabel = new JLabel(String.format("%,.0f", sanPham.getGiaBan()), JLabel.LEFT);
         totalItemLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         totalPanel.add(totalItemLabel, BorderLayout.CENTER);
+
+        // Hàm tính và cập nhật thành tiền
+        Runnable updateTotal = () -> {
+            try {
+                double quantity = Double.parseDouble(qtyField.getText().trim());
+                double price = Double.parseDouble(priceField.getText().trim());
+                double total = quantity * price;
+                totalItemLabel.setText(String.format("%,.0f", total));
+            } catch (NumberFormatException ex) {
+                totalItemLabel.setText("0");
+            }
+        };
+
+        // Thêm sự kiện khi thay đổi số lượng
+        qtyField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                updateTotal.run();
+            }
+        });
+
+        // Thêm sự kiện khi thay đổi đơn giá
+        priceField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                updateTotal.run();
+            }
+        });
 
         // Cột 6: Lô hàng
         JPanel batchContentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         batchContentPanel.setBackground(Color.WHITE);
 
+        // dữ liệu lô hàng
+        ArrayList<loHangDTO> danhSachLoHang = LoHangBUS.layDanhSachLoHangTheoMaSP(sanPham.getMaSP());
+        String[] batches = new String[danhSachLoHang.size()];
+        for (int i = 0; i < danhSachLoHang.size(); i++) {
+            batches[i] = danhSachLoHang.get(i).getMaLoHang() + " HSD: " + danhSachLoHang.get(i).getNgayHetHan();
+        }
 
-        String[] batches = {"Chọn lô hàng", "LH1001", "LH1002", "LH1003"};
-        CustomCombobox<String> batchComboBox = new CustomCombobox<>(batches);
+
+        batchComboBox = new CustomCombobox<>(batches);
+        batchComboBox.setPlaceholder("- Chọn lô hàng -");
         batchComboBox.setPreferredSize(new Dimension(100, 30));
         batchContentPanel.add(batchComboBox);
 
@@ -555,7 +601,6 @@ public class nhapHangPanel extends JPanel {
     }
 
 
-
     //====================== XỬ LÝ SỰ KIỆN=================================
     /**
      * Thiết lập các sự kiện cho các thành phần
@@ -564,6 +609,15 @@ public class nhapHangPanel extends JPanel {
         // Thiết lập tất cả các sự kiện ở đây
         searchButton.addActionListener(e -> handleSearchButton());
         refreshButton.addActionListener(e -> handleRefreshButton());
+
+        // Thêm sự kiện cho ô tìm kiếm để xử lý khi nhấn Enter
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    handleSearchButton();
+                }
+            }
+        });
 
         // Các sự kiện khác đã được thiết lập trực tiếp trong các phương thức setup
     }
@@ -574,11 +628,50 @@ public class nhapHangPanel extends JPanel {
      */
     private void handleSearchButton() {
         // Xử lý tìm kiếm sản phẩm
-        String searchText = searchField.getText().trim();
-        if (!searchText.isEmpty()) {
-            // TODO: Thực hiện tìm kiếm sản phẩm theo searchText
-            System.out.println("Tìm kiếm sản phẩm: " + searchText);
+        String searchText = searchField.getText().trim().toLowerCase();
+        if (searchText.isEmpty() || searchText.equals("tìm kiếm sản phẩm...".toLowerCase())) {
+            // Nếu không có từ khóa tìm kiếm, hiển thị tất cả sản phẩm
+            handleRefreshButton();
+            return;
         }
+
+        // Lọc danh sách sản phẩm theo từ khóa tìm kiếm
+        List<SanPhamDTO> ketQuaTimKiem = new ArrayList<>();
+
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            // Tìm kiếm theo mã sản phẩm hoặc tên sản phẩm
+            if (sanPham.getMaSP().toLowerCase().contains(searchText) ||
+                sanPham.getTenSP().toLowerCase().contains(searchText)) {
+                ketQuaTimKiem.add(sanPham);
+            }
+        }
+
+        // Xóa danh sách sản phẩm hiện tại
+        productListPanel.removeAll();
+
+        // Hiển thị kết quả tìm kiếm
+        if (ketQuaTimKiem.isEmpty()) {
+            // Nếu không có kết quả nào, hiển thị thông báo
+            JLabel noResultLabel = new JLabel("Không tìm thấy sản phẩm nào phù hợp");
+            noResultLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            noResultLabel.setForeground(new Color(100, 100, 100));
+            noResultLabel.setHorizontalAlignment(JLabel.CENTER);
+            noResultLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+            productListPanel.add(noResultLabel);
+        } else {
+            // Hiển thị các sản phẩm tìm thấy
+            for (SanPhamDTO sanPham : ketQuaTimKiem) {
+                JPanel productPanel = createProductPanel(sanPham);
+                productListPanel.add(productPanel);
+                productListPanel.add(Box.createVerticalStrut(5)); // Khoảng cách giữa các sản phẩm
+            }
+        }
+
+        // Cập nhật giao diện
+        productListPanel.revalidate();
+        productListPanel.repaint();
+
+        System.out.println("Tìm kiếm sản phẩm: " + searchText + " - Tìm thấy " + ketQuaTimKiem.size() + " kết quả");
     }
 
     /**
@@ -587,8 +680,25 @@ public class nhapHangPanel extends JPanel {
     private void handleRefreshButton() {
         // Xử lý làm mới danh sách sản phẩm
         searchField.setText("");
-        // TODO: Làm mới danh sách sản phẩm
-        System.out.println("Làm mới danh sách sản phẩm");
+
+        // Lấy lại danh sách sản phẩm mới nhất từ cơ sở dữ liệu
+        danhSachSanPham = new SanPhamBUS().layDanhSachSanPham();
+
+        // Xóa danh sách sản phẩm hiện tại
+        productListPanel.removeAll();
+
+        // Hiển thị lại danh sách sản phẩm
+        for (SanPhamDTO sanPham : danhSachSanPham) {
+            JPanel productPanel = createProductPanel(sanPham);
+            productListPanel.add(productPanel);
+            productListPanel.add(Box.createVerticalStrut(5)); // Khoảng cách giữa các sản phẩm
+        }
+
+        // Cập nhật giao diện
+        productListPanel.revalidate();
+        productListPanel.repaint();
+
+        System.out.println("Làm mới danh sách sản phẩm - Đã tải " + danhSachSanPham.size() + " sản phẩm");
     }
 
     /**
@@ -598,35 +708,206 @@ public class nhapHangPanel extends JPanel {
         // Mở dialog thêm nhà cung cấp mới
         new ThemNCCDialog();
         // TODO: Cập nhật lại danh sách nhà cung cấp sau khi thêm
-        System.out.println("Thêm nhà cung cấp mới");
+
     }
 
     /**
      * Xử lý sự kiện khi nhấn nút Hủy
+     * Xóa tất cả sản phẩm đã chọn và đặt lại form về trạng thái ban đầu
      */
     private void handleCancelButton() {
-        // Xử lý hủy phiếu nhập
-        // TODO: Xử lý hủy phiếu nhập
-        System.out.println("Hủy phiếu nhập");
+        // Hiển thị hộp thoại xác nhận
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc chắn muốn hủy phiếu nhập hàng này?",
+                "Xác nhận hủy",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+        
+        // Nếu người dùng chọn Yes
+        if (option == JOptionPane.YES_OPTION) {
+            // Xóa tất cả sản phẩm đã chọn trong giỏ hàng
+            subPanelCenter.removeAll();
+            
+            // Thêm lại header cho bảng chi tiết phiếu nhập
+            setupSubPanelCenter();
+            
+            // Đặt lại combobox nhà cung cấp về trạng thái ban đầu
+            supplierComboBox.setSelectedIndex(-1);
+            
+            // Làm mới giao diện
+            subPanelCenter.revalidate();
+            subPanelCenter.repaint();
+            
+            // Thông báo cho người dùng
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Đã hủy phiếu nhập hàng!",
+                    "Thông báo",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     /**
      * Xử lý sự kiện khi nhấn nút Lưu
      */
     private void handleSaveButton() {
-        // Xử lý lưu phiếu nhập
-        // TODO: Xử lý lưu phiếu nhập
-        System.out.println("Lưu phiếu nhập");
+        try {
+            // Kiểm tra xem đã chọn nhà cung cấp chưa
+            if (supplierComboBox.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn nhà cung cấp", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Kiểm tra xem đã có sản phẩm nào được thêm vào phiếu nhập chưa
+            if (subPanelCenter.getComponentCount() <= 1) { // Chỉ có header, không có sản phẩm
+                JOptionPane.showMessageDialog(this, "Vui lòng thêm ít nhất một sản phẩm vào phiếu nhập", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Lấy mã nhà cung cấp
+            String tenNCC = (String) supplierComboBox.getSelectedItem();
+            ArrayList<nhaCungCapDTO> danhSachNCC = NhaCungCapBUS.layDanhSachNhaCungCap();
+            String maNCC = "";
+            for (nhaCungCapDTO ncc : danhSachNCC) {
+                if (ncc.getTenNCC().equals(tenNCC)) {
+                    maNCC = ncc.getMaNCC();
+                    break;
+                }
+            }
+
+            // Tạo phiếu nhập mới
+            phieuNhapDTO phieuNhap = new phieuNhapDTO();
+            phieuNhap.setMaPN(PhieuNhapBUS.taoMaPhieuNhapMoi());
+            phieuNhap.setNgayLap(LocalDate.now());
+            phieuNhap.setGioLap(LocalTime.now());
+            phieuNhap.setMaNCC(maNCC);
+            phieuNhap.setMaNV("NV001"); // Giả sử mã nhân viên đã được xác định từ đăng nhập
+            phieuNhap.setTrangThai(true);
+            phieuNhap.setTongTien(0); // Sẽ tính tổng sau
+
+            // Danh sách chi tiết phiếu nhập
+            List<chiTietPhieuNhapDTO> dsChiTiet = new ArrayList<>();
+
+            // Duyệt qua các sản phẩm đã chọn (bỏ qua header)
+            for (int i = 1; i < subPanelCenter.getComponentCount(); i++) {
+                JPanel productPanel = (JPanel) subPanelCenter.getComponent(i);
+
+                // Lấy thông tin từ các thành phần trong panel
+                String maSP = ((JLabel) ((JPanel) productPanel.getComponent(0)).getComponent(0)).getText();
+                int soLuong = Integer.parseInt(((JTextField) ((JPanel) productPanel.getComponent(4)).getComponent(0)).getText());
+                double giaNhap = Double.parseDouble(((JTextField) ((JPanel) productPanel.getComponent(6)).getComponent(0)).getText());
+
+                // Lấy mã lô hàng từ combobox
+                JPanel batchContentPanel = (JPanel) ((JPanel) productPanel.getComponent(10)).getComponent(0);
+                CustomCombobox<?> batchComboBox = (CustomCombobox<?>) batchContentPanel.getComponent(0);
+                String batchInfo = (String) batchComboBox.getSelectedItem();
+
+                if (batchInfo == null || batchInfo.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng chọn lô hàng cho sản phẩm " + maSP, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Tách lấy mã lô hàng (phần trước dấu cách)
+                String maLoHang = batchInfo.split(" ")[0];
+
+                // Tạo chi tiết phiếu nhập
+                chiTietPhieuNhapDTO chiTiet = new chiTietPhieuNhapDTO();
+                chiTiet.setMaPN(phieuNhap.getMaPN());
+                chiTiet.setMaLoHang(maLoHang);
+                chiTiet.setSoLuong(soLuong);
+                chiTiet.setGiaNhap(giaNhap);
+
+                dsChiTiet.add(chiTiet);
+            }
+
+            // Gán danh sách chi tiết vào phiếu nhập
+            phieuNhap.setChiTietPhieuNhap(dsChiTiet);
+
+            // Thực hiện nhập hàng hoàn chỉnh
+            int result = PhieuNhapBUS.nhapHangHoanChinh(phieuNhap);
+
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Nhập hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                // Xóa dữ liệu trên form để nhập phiếu mới
+                resetForm();
+            } else {
+                JOptionPane.showMessageDialog(this, "Nhập hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Xóa dữ liệu trên form để nhập phiếu mới
+     */
+    private void resetForm() {
+        // Xóa các sản phẩm đã chọn
+        subPanelCenter.removeAll();
+
+        // Thêm lại header
+        setupSubPanelCenter();
+
+        // Đặt lại combobox nhà cung cấp
+        supplierComboBox.setSelectedIndex(-1);
+
+        // Cập nhật giao diện
+        subPanelCenter.revalidate();
+        subPanelCenter.repaint();
     }
 
     /**
      * Xử lý sự kiện khi nhấn nút thêm sản phẩm
      */
     private void handleAddProductButton(SanPhamDTO sanPham) {
-        // Tạo panel sản phẩm đã chọn và thêm vào bên trái
-        JPanel selectedProductPanel = createSelectedProductPanel(sanPham);
-        addSanPhamToLeftPanel(selectedProductPanel);
-        System.out.println("Thêm sản phẩm: " + sanPham.getTenSP());
+        // Kiểm tra xem sản phẩm đã có trong panel chưa
+        boolean sanPhamDaTonTai = false;
+        int viTriSanPham = -1;
+
+        // Duyệt qua các sản phẩm đã chọn (bỏ qua header)
+        for (int i = 1; i < subPanelCenter.getComponentCount(); i++) {
+            JPanel productPanel = (JPanel) subPanelCenter.getComponent(i);
+
+            // Lấy mã sản phẩm từ panel
+            String maSP = ((JLabel) ((JPanel) productPanel.getComponent(0)).getComponent(0)).getText();
+
+            // Nếu mã sản phẩm trùng với sản phẩm đang thêm
+            if (maSP.equals(sanPham.getMaSP())) {
+                sanPhamDaTonTai = true;
+                viTriSanPham = i;
+                break;
+            }
+        }
+
+        if (sanPhamDaTonTai) {
+            // Nếu sản phẩm đã tồn tại, tăng số lượng lên 1
+            JPanel productPanel = (JPanel) subPanelCenter.getComponent(viTriSanPham);
+
+            // Lấy trường số lượng
+            JTextField qtyField = (JTextField) ((JPanel) productPanel.getComponent(4)).getComponent(0);
+            int soLuongHienTai = Integer.parseInt(qtyField.getText());
+
+            // Tăng số lượng lên 1
+            qtyField.setText(String.valueOf(soLuongHienTai + 1));
+
+            // Cập nhật thành tiền
+            JTextField priceField = (JTextField) ((JPanel) productPanel.getComponent(6)).getComponent(0);
+            double giaNhap = Double.parseDouble(priceField.getText());
+            JLabel totalItemLabel = (JLabel) ((JPanel) productPanel.getComponent(8)).getComponent(0);
+            totalItemLabel.setText(String.format("%,.0f", (soLuongHienTai + 1) * giaNhap));
+
+            System.out.println("Tăng số lượng sản phẩm: " + sanPham.getTenSP() + " lên " + (soLuongHienTai + 1));
+        } else {
+            // Nếu sản phẩm chưa tồn tại, tạo mới và thêm vào
+            JPanel selectedProductPanel = createSelectedProductPanel(sanPham);
+            addSanPhamToLeftPanel(selectedProductPanel);
+            System.out.println("Thêm sản phẩm mới: " + sanPham.getTenSP());
+        }
     }
 
     /**
@@ -646,6 +927,13 @@ public class nhapHangPanel extends JPanel {
         // lấy thông tin sản phẩm
         new TaoLoHangDialog(null, sanPham);
 
+        ArrayList<loHangDTO> danhSachLoHang = LoHangBUS.layDanhSachLoHangTheoMaSP(sanPham.getMaSP());
+        String[] batches = new String[danhSachLoHang.size()];
+        for (int i = 0; i < danhSachLoHang.size(); i++) {
+            batches[i] = danhSachLoHang.get(i).getMaLoHang() + " HSD: " + danhSachLoHang.get(i).getNgayHetHan();
+        }
+
+        batchComboBox.setModel(new DefaultComboBoxModel<>(batches));
 
     }
 
