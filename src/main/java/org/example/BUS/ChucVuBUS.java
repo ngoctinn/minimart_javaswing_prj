@@ -56,7 +56,7 @@ public class ChucVuBUS {
      * Tạo mã chức vụ mới tự động
      * @return String mã chức vụ mới
      */
-    public static String generateNextMaLSP() {
+    public static String generateNextMaCV() {
         String maCV = chucVuDAO.layMaChucVuCuoiCung();
         
         // Tách phần số từ mã

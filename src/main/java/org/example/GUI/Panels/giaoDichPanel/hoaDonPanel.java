@@ -4,6 +4,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.example.BUS.ChiTietHoaDonBUS;
 import org.example.BUS.HoaDonBUS;
 import org.example.BUS.KhachHangBUS;
+import org.example.BUS.NhanVienBUS;
 import org.example.Components.CustomButton;
 import org.example.Components.CustomTable;
 import org.example.Components.PlaceholderTextField;
@@ -11,6 +12,7 @@ import org.example.Components.RoundedPanel;
 import org.example.DTO.KhachHangDTO;
 import org.example.DTO.chiTietHoaDonDTO;
 import org.example.DTO.hoaDonDTO;
+import org.example.DTO.nhanVienDTO;
 import org.example.GUI.MenuFrame;
 
 import javax.swing.*;
@@ -39,7 +41,6 @@ public class hoaDonPanel extends JPanel {
 
     // Bottom panel components
     private JSpinner startDateSpinner, endDateSpinner;
-    private JRadioButton processingRadioButton, completedRadioButton;
     private JList<String> userList;
     private CustomTable hoaDonTable;
     private CustomTable chiTietHoaDonTable;
@@ -247,7 +248,6 @@ public class hoaDonPanel extends JPanel {
     //======================CÀI ĐẶT PANEL DƯỚI TRÁI=================================
     private void setupBottomPanelLeft() {
         setupDateFilterPanel();
-        setupStatusFilterPanel();
         setupUserFilterPanel();
         setupCustomerFilterPanel();
     }
@@ -288,39 +288,22 @@ public class hoaDonPanel extends JPanel {
         datePanel.add(filterDateButton);
     }
 
-    private void setupStatusFilterPanel() {
-        JPanel statusPanel = createTitledPanel("Trạng Thái", 230, 100);
-        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
-        bottomPanelLeft.add(statusPanel);
 
-        processingRadioButton = createRadioButton("Đang Xử Lý");
-        completedRadioButton = createRadioButton("Hoàn Thành");
-
-        // Thêm sự kiện cho radio button
-        processingRadioButton.addActionListener(e -> locTheoTrangThai(false));
-        completedRadioButton.addActionListener(e -> locTheoTrangThai(true));
-
-        ButtonGroup statusGroup = new ButtonGroup();
-        statusGroup.add(processingRadioButton);
-        statusGroup.add(completedRadioButton);
-
-        JPanel radioPanel = new JPanel();
-        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
-        radioPanel.setBackground(Color.WHITE);
-        radioPanel.add(processingRadioButton);
-        radioPanel.add(completedRadioButton);
-
-        statusPanel.add(Box.createVerticalStrut(5));
-        statusPanel.add(radioPanel);
-        statusPanel.add(Box.createVerticalStrut(5));
-    }
 
     private void setupUserFilterPanel() {
-        JPanel userPanel = createTitledPanel("Người Tạo", 230, 150);
+        JPanel userPanel = createTitledPanel("Nhân Viên", 230, 150);
         userPanel.setLayout(new BorderLayout(5, 5));
         bottomPanelLeft.add(userPanel);
 
-        userList = new JList<>(new String[]{"Nguyễn Đức Tây", "Nguyễn Ngọc Tín", "Nguyễn Thị Tuyết Thư","Đinh Hữu An","Ngô Gia Khang","Nguyễn Văn A","Nguyễn Văn B","Nguyễn Văn C"});
+        // Tạo danh sách người dùng
+        ArrayList<nhanVienDTO> danhSachNhanVien = NhanVienBUS.layDanhSachNhanVien();
+        String[] users = new String[danhSachNhanVien.size() + 1];
+        users[0] = "- Tất cả -";
+        for (int i = 0; i < danhSachNhanVien.size(); i++) {
+            users[i + 1] = danhSachNhanVien.get(i).getHoTen();
+        }
+
+        userList = new JList<>(users);
         userList.setLayoutOrientation(JList.VERTICAL);
         userList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         userList.setVisibleRowCount(6);
@@ -682,60 +665,19 @@ public class hoaDonPanel extends JPanel {
         chiTietModel.setRowCount(0);
     }
 
-    /**
-     * Lọc hóa đơn theo trạng thái
-     * @param trangThai Trạng thái cần lọc (true: hoàn thành, false: đang xử lý)
-     */
-    private void locTheoTrangThai(boolean trangThai) {
-        // Tạo model mới cho bảng hóa đơn
-        DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
-        model.setRowCount(0); // Xóa dữ liệu cũ
 
-        // Lấy dữ liệu hóa đơn từ cơ sở dữ liệu
-        HoaDonBUS hoaDonBUS = new HoaDonBUS();
-        hoaDonBUS.docDanhSachHoaDon();
-        ArrayList<hoaDonDTO> dsHoaDon = hoaDonBUS.getDsHoaDon();
-
-        // Lọc theo trạng thái
-        ArrayList<hoaDonDTO> dsHoaDonLoc = new ArrayList<>();
-        for (hoaDonDTO hoaDon : dsHoaDon) {
-            if (hoaDon.isTrangThai() == trangThai) {
-                dsHoaDonLoc.add(hoaDon);
-            }
-        }
-
-        // Nếu không có dữ liệu, hiển thị thông báo
-        if (dsHoaDonLoc.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn nào có trạng thái này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        // Thêm dữ liệu từ danh sách hóa đơn vào model
-        for (hoaDonDTO hoaDon : dsHoaDonLoc) {
-            // TODO: Lấy tên khách hàng từ mã khách hàng
-            String tenKhachHang = "Khách hàng"; // Cần thay thế bằng tên khách hàng thực tế
-
-            Object[] row = {
-                hoaDon.getMaHoaDon(),
-                hoaDon.getThoiGianLap().toString(),
-                tenKhachHang,
-                hoaDon.getTongTien(),
-                0, // Giảm giá - cần tính toán dựa trên mã khuyến mãi
-                hoaDon.getTongTien() // Khách đã trả - giả sử bằng tổng tiền
-            };
-            model.addRow(row);
-        }
-
-        // Xóa dữ liệu trong bảng chi tiết
-        DefaultTableModel chiTietModel = (DefaultTableModel) chiTietHoaDonTable.getModel();
-        chiTietModel.setRowCount(0);
-    }
 
     /**
      * Lọc hóa đơn theo người dùng
      * @param tenNguoiDung Tên người dùng cần lọc
      */
     private void locTheoNguoiDung(String tenNguoiDung) {
+        // Nếu chọn "Tất cả", hiển thị tất cả hóa đơn
+        if (tenNguoiDung.equals("- Tất cả -")) {
+            refreshHoaDonTable();
+            return;
+        }
+
         // Tạo model mới cho bảng hóa đơn
         DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
         model.setRowCount(0); // Xóa dữ liệu cũ
@@ -745,20 +687,48 @@ public class hoaDonPanel extends JPanel {
         hoaDonBUS.docDanhSachHoaDon();
         ArrayList<hoaDonDTO> dsHoaDon = hoaDonBUS.getDsHoaDon();
 
-        // TODO: Lọc theo mã nhân viên tương ứng với tên người dùng
-        // Cần có phương thức để lấy mã nhân viên từ tên
-        // Tạm thời sử dụng dữ liệu mẫu
+        // Lấy danh sách nhân viên để tìm mã nhân viên từ tên
+        ArrayList<nhanVienDTO> danhSachNhanVien = NhanVienBUS.layDanhSachNhanVien();
+        String maNV = null;
+
+        // Tìm mã nhân viên từ tên
+        for (nhanVienDTO nv : danhSachNhanVien) {
+            if (nv.getHoTen().equals(tenNguoiDung)) {
+                maNV = nv.getMaNV();
+                break;
+            }
+        }
+
+        if (maNV == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Lọc hóa đơn theo mã nhân viên
+        ArrayList<hoaDonDTO> dsHoaDonLoc = new ArrayList<>();
+        for (hoaDonDTO hoaDon : dsHoaDon) {
+            if (hoaDon.getMaNV() != null && hoaDon.getMaNV().equals(maNV)) {
+                dsHoaDonLoc.add(hoaDon);
+            }
+        }
 
         // Nếu không có dữ liệu, hiển thị thông báo
-        if (dsHoaDon.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn nào của người dùng này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        if (dsHoaDonLoc.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn nào của nhân viên này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
         // Thêm dữ liệu từ danh sách hóa đơn vào model
-        for (hoaDonDTO hoaDon : dsHoaDon) {
-            // TODO: Lấy tên khách hàng từ mã khách hàng
-            String tenKhachHang = "Khách hàng"; // Cần thay thế bằng tên khách hàng thực tế
+        for (hoaDonDTO hoaDon : dsHoaDonLoc) {
+            // Lấy tên khách hàng từ mã khách hàng
+            String tenKhachHang = "Khách hàng";
+            if (hoaDon.getMaKH() != null && !hoaDon.getMaKH().isEmpty()) {
+                KhachHangBUS khachHangBUS = new KhachHangBUS();
+                KhachHangDTO khachHang = khachHangBUS.layKhachHangTheoMa(hoaDon.getMaKH());
+                if (khachHang != null) {
+                    tenKhachHang = khachHang.getHoTen();
+                }
+            }
 
             Object[] row = {
                 hoaDon.getMaHoaDon(),

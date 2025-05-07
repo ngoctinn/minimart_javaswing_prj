@@ -2,9 +2,13 @@ package org.example.GUI;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.example.BUS.LoginBUS;
+import org.example.Components.CustomToastMessage;
+import org.example.DTO.nhanVienDTO;
 import org.example.GUI.Panels.baoCaoPanel;
 import org.example.GUI.Panels.doiTacPanel.KhachHangPanel;
 import org.example.GUI.Panels.doiTacPanel.nhaCungCapPanel;
+import org.example.GUI.Panels.giaoDichPanel.KhuyenMaiPanel;
 import org.example.GUI.Panels.giaoDichPanel.hoaDonPanel;
 import org.example.GUI.Panels.giaoDichPanel.nhapHangPanel;
 import org.example.GUI.Panels.giaoDichPanel.PhieuNhapPanel;
@@ -21,6 +25,7 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +56,23 @@ public class MenuFrame extends JFrame implements ActionListener {
         initializeFrame();
         setupMenuBar();
         setupContentPanel();
+        updateUserMenu();
         setVisible(false);
+    }
+
+    /**
+     * Cập nhật menu người dùng với thông tin người dùng đã đăng nhập
+     */
+    public void updateUserMenu() {
+        if (LoginBUS.isLoggedIn()) {
+            nhanVienDTO currentUser = LoginBUS.getCurrentUser();
+            String tenChucVu = LoginBUS.getCurrentUserRole();
+
+            // Cập nhật tên menu người dùng với tên nhân viên
+            userMenu.setText(currentUser.getHoTen());
+        } else {
+            userMenu.setText("Người dùng");
+        }
     }
 
     // Thêm phương thức để ẩn menu item
@@ -96,6 +117,9 @@ public class MenuFrame extends JFrame implements ActionListener {
             case "Quản lý chấm công":
                 chamCongItem.setVisible(false);
                 break;
+            case "Xem báo cáo":
+                baoCaoMenu.setVisible(false);
+                break;
         }
     }
 
@@ -120,6 +144,9 @@ public class MenuFrame extends JFrame implements ActionListener {
                 break;
             case "Quản lý phiếu nhập":
                 ((PhieuNhapPanel) panelMap.get("phieuNhap")).hideActionPanel();
+                break;
+            case "Quản lý khuyến mãi":
+                ((KhuyenMaiPanel) panelMap.get("khuyenMai")).hideActionPanel();
                 break;
         }
     }
@@ -410,7 +437,36 @@ public class MenuFrame extends JFrame implements ActionListener {
 
     private void handleProfileAction() {
         // Xử lý khi người dùng chọn xem thông tin cá nhân
-        JOptionPane.showMessageDialog(this, "Chức năng xem thông tin cá nhân");
+        if (LoginBUS.isLoggedIn()) {
+            nhanVienDTO currentUser = LoginBUS.getCurrentUser();
+            String tenChucVu = LoginBUS.getCurrentUserRole();
+
+            // Định dạng ngày sinh
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String ngaySinh = currentUser.getNgaySinh().format(formatter);
+
+            // Tạo thông tin chi tiết người dùng
+            StringBuilder userInfo = new StringBuilder();
+            userInfo.append("<html><div style='text-align: center;'>")
+                   .append("<h2>Thông tin người dùng</h2>")
+                   .append("<hr>")
+                   .append("<table style='width: 100%;'>")
+                   .append("<tr><td><b>Mã nhân viên:</b></td><td>").append(currentUser.getMaNV()).append("</td></tr>")
+                   .append("<tr><td><b>Họ tên:</b></td><td>").append(currentUser.getHoTen()).append("</td></tr>")
+                   .append("<tr><td><b>Chức vụ:</b></td><td>").append(tenChucVu).append("</td></tr>")
+                   .append("<tr><td><b>Ngày sinh:</b></td><td>").append(ngaySinh).append("</td></tr>")
+                   .append("<tr><td><b>Giới tính:</b></td><td>").append(currentUser.getGioiTinh()).append("</td></tr>")
+                   .append("<tr><td><b>Địa ch   ỉ:</b></td><td>").append(currentUser.getDiaChi()).append("</td></tr>")
+                   .append("<tr><td><b>Email:</b></td><td>").append(currentUser.getEmail()).append("</td></tr>")
+                   .append("<tr><td><b>Số điện thoại:</b></td><td>").append(currentUser.getSDT()).append("</td></tr>")
+                   .append("</table>")
+                   .append("</div></html>");
+
+            // Hiển thị thông tin trong dialog
+            JOptionPane.showMessageDialog(this, userInfo.toString(), "Thông tin cá nhân", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Bạn chưa đăng nhập!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void handleLogoutAction() {
@@ -421,8 +477,14 @@ public class MenuFrame extends JFrame implements ActionListener {
 
         if (option == JOptionPane.YES_OPTION) {
             // Thực hiện đăng xuất
+            LoginBUS.logout();
             dispose();
-            // TODO: Thêm code để trở về màn hình đăng nhập
+
+            // Hiển thị màn hình đăng nhập
+            SwingUtilities.invokeLater(() -> {
+                new LoginGUI();
+            });
+
         }
     }
 

@@ -329,11 +329,8 @@ public class ThemNhanVienDialog extends JDialog {
                     // Lưu dữ liệu vào cơ sở dữ liệu
                     result = NhanVienBUS.themNhanVien(nhanVienDTO);
                     if (result > 0) {
-                        CustomToastMessage.showSuccessToast(this, "Thêm nhân viên thành công!");
                         isClosed = true;
                         this.dispose();
-                    } else {
-                        CustomToastMessage.showErrorToast(this, "Thêm nhân viên thất bại!");
                     }
                 }
             } catch (Exception ex) {
