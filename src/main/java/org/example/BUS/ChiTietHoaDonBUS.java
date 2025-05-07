@@ -233,13 +233,15 @@ public class ChiTietHoaDonBUS {
      * Phương thức main để test các chức năng của BUS
      */
     public static void main(String[] args) {
-        // Test lấy danh sách chi tiết hóa đơn
+        //test thêm nhiều chi tiết hoá đơn
+        ArrayList<chiTietHoaDonDTO> dsChiTiet = new ArrayList<>();
+        dsChiTiet.add(new chiTietHoaDonDTO("HD001", "SP001", 1, 100000));
+        dsChiTiet.add(new chiTietHoaDonDTO("HD001", "SP002", 2, 200000));
+        themNhieuChiTietHoaDon(dsChiTiet);
         System.out.println("=== Danh sách chi tiết hóa đơn ===");
-        ArrayList<chiTietHoaDonDTO> dsChiTiet = layDanhSachChiTietHoaDon();
-        for (chiTietHoaDonDTO ct : dsChiTiet) {
-            System.out.println(ct.getMaHoaDon() + " - " + ct.getMaSP() + " - " + ct.getTenSP() + " - " + 
-                              ct.getSoLuong() + " " + ct.getDonViTinh() + " - " + 
-                              ct.getGiaBanFormatted() + " - " + ct.getThanhTienFormatted());
+        ArrayList<chiTietHoaDonDTO> dsChiTietHoaDon = layChiTietHoaDonTheoMaHD("HD001");
+        for (chiTietHoaDonDTO ct : dsChiTietHoaDon) {
+            System.out.println(ct);
         }
     }
 }

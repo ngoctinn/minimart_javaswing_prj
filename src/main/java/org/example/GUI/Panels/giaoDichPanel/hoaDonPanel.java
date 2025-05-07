@@ -354,7 +354,7 @@ public class hoaDonPanel extends JPanel {
         tablePanel.setBackground(Color.WHITE);
 
         // Table data
-        String[] columnNames = {"Mã hóa đơn", "Thời gian", "Khách hàng", "Tổng tiền hàng", "Giảm giá", "Khách đã trả"};
+        String[] columnNames = {"Mã hóa đơn", "Thời gian", "Khách hàng", "Tổng tiền hàng", "Mã khuyến mãi", "Khách đã trả"};
 
         // Tạo model cho bảng hóa đơn
         DefaultTableModel model = new DefaultTableModel(null, columnNames);
@@ -393,7 +393,7 @@ public class hoaDonPanel extends JPanel {
                     hoaDon.getThoiGianLap().toString(),
                     tenKhachHang,
                     hoaDon.getTongTien(),
-                    0, // Giảm giá - cần tính toán dựa trên mã khuyến mãi
+                    hoaDon.getMaKM(),
                     hoaDon.getTongTien() // Khách đã trả - giả sử bằng tổng tiền
                 };
                 model.addRow(row);

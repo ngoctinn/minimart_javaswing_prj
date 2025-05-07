@@ -892,6 +892,7 @@ public class BanHangPanel extends JPanel {
         minusButton.setBackground(new Color(240, 240, 240));
 
         JTextField qtyField = new JTextField("1", 2);
+        qtyField.setEditable(false);
         qtyField.setHorizontalAlignment(JTextField.CENTER);
         qtyField.setFont(new Font("Segoe UI", Font.BOLD, 14));
         qtyField.setBorder(BorderFactory.createCompoundBorder(

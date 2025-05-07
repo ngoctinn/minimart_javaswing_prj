@@ -71,7 +71,7 @@ public class ThanhToanDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(owner);
         this.totalAmount = totalAmount;
-        this.amountPaid = totalAmount - discount;
+        this.amountPaid = 0;
         this.maKhachHang = maKhachHang;
         this.maNhanVien = maNhanVien;
         this.cartItems = cartItems;
@@ -537,8 +537,8 @@ public class ThanhToanDialog extends JDialog {
 
                 dsChiTiet.add(chiTiet);
 
-                // Cập nhật số lượng tồn kho (giảm đi)
-                SanPhamBUS.capNhatSoLuongTonKho(item.getSanPham().getMaSP(), -item.getQuantity());
+
+                // in ra
             }
 
             // Thêm tất cả chi tiết hóa đơn
