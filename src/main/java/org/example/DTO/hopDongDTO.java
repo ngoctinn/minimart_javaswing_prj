@@ -3,29 +3,29 @@ package org.example.DTO;
 import java.time.LocalDate;
 
 public class hopDongDTO {
-    private String maHopDong;    // varchar(20)
-    private LocalDate ngayBD;    // date
-    private LocalDate ngayKT;    // date
-    private double luongCB;      // decimal(15,2)
-    private String maNV;         // varchar(20)
-    private boolean trangThai;   // bit
-    private String loaiHopDong;  // nvarchar(20)
+    private String maHopDong;    // varchar(20) NOT NULL
+    private LocalDate ngayBD;    // date NULL
+    private LocalDate ngayKT;    // date NULL
+    private double luongCB;      // decimal(15,2) NULL
+    private String maNV;         // varchar(20) NOT NULL
+    private boolean trangThai;   // bit NULL
+    private String hinhThucLamViec;  // nvarchar(20) NULL
 
     public hopDongDTO() {
         // Constructor mặc định
     }
 
-    public hopDongDTO(String maHopDong, LocalDate ngayBD, LocalDate ngayKT, double luongCB, String maNV, boolean trangThai, String loaiHopDong) {
+    public hopDongDTO(String maHopDong, LocalDate ngayBD, LocalDate ngayKT, double luongCB, String maNV, boolean trangThai, String hinhThucLamViec) {
         this.maHopDong = maHopDong;
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.luongCB = luongCB;
         this.maNV = maNV;
         this.trangThai = trangThai;
-        this.loaiHopDong = loaiHopDong;
+        this.hinhThucLamViec = hinhThucLamViec;
     }
 
-    // Constructor không có trangThai và loaiHopDong (cho tương thích ngược)
+    // Constructor không có trangThai và hinhThucLamViec (cho tương thích ngược)
     public hopDongDTO(String maHopDong, String maNV, double luongCB, LocalDate ngayBD, LocalDate ngayKT) {
         this.maHopDong = maHopDong;
         this.maNV = maNV;
@@ -33,7 +33,7 @@ public class hopDongDTO {
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.trangThai = true; // Mặc định là hoạt động
-        this.loaiHopDong = "Chính thức"; // Mặc định là hợp đồng chính thức
+        this.hinhThucLamViec = "Toàn thời gian"; // Mặc định là toàn thời gian
     }
 
     // Getters và Setters
@@ -85,11 +85,11 @@ public class hopDongDTO {
         this.trangThai = trangThai;
     }
 
-    public String getLoaiHopDong() {
-        return loaiHopDong;
+    public String getHinhThucLamViec() {
+        return hinhThucLamViec;
     }
 
-    public void setLoaiHopDong(String loaiHopDong) {
-        this.loaiHopDong = loaiHopDong;
+    public void setHinhThucLamViec(String hinhThucLamViec) {
+        this.hinhThucLamViec = hinhThucLamViec;
     }
 }

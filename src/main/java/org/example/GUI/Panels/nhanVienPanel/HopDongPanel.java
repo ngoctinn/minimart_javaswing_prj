@@ -37,6 +37,10 @@ public class HopDongPanel extends JPanel {
     private CustomButton deleteButton;
     private CustomButton importButton;
     private CustomButton exportButton;
+    
+    // Panel hành động
+    private JPanel mainButtonsPanel;
+    private JPanel importExportPanel;
 
     // Bottom panel components
     private CustomCombobox<String> trangThaiComboBox;
@@ -88,6 +92,14 @@ public class HopDongPanel extends JPanel {
         // Thiết lập sự kiện cho combobox trạng thái
         trangThaiComboBox.addItemListener(e -> handleTrangThaiSelection());
     }
+    
+    /**
+     * Phương thức ẩn panel hành động
+     */
+    public void hideActionPanel() {
+        mainButtonsPanel.setVisible(false);
+        importExportPanel.setVisible(false);
+    }
 
     // CÁC PHƯƠNG THỨC XỬ LÝ SỰ KIỆN
     /**
@@ -119,11 +131,11 @@ public class HopDongPanel extends JPanel {
             LocalDate ngayBD = LocalDate.parse((String) hopDongTable.getValueAt(selectedRow, 3), formatter);
             LocalDate ngayKT = LocalDate.parse((String) hopDongTable.getValueAt(selectedRow, 4), formatter);
 
-            // Lấy loại hợp đồng
-            String loaiHopDong = (String) hopDongTable.getValueAt(selectedRow, 5);
+            // Lấy hình thức làm việc
+            String hinhThucLamViec = (String) hopDongTable.getValueAt(selectedRow, 5);
 
             // Tạo đối tượng hợp đồng với trạng thái mặc định là true (hoạt động)
-            hopDongDTO hopDong = new hopDongDTO(maHopDong, ngayBD, ngayKT, luongCB, maNV, true, loaiHopDong);
+            hopDongDTO hopDong = new hopDongDTO(maHopDong, ngayBD, ngayKT, luongCB, maNV, true, hinhThucLamViec);
 
             // Mở dialog sửa hợp đồng
             ThemHopDongDialog dialog = new ThemHopDongDialog(hopDong);
@@ -204,7 +216,15 @@ public class HopDongPanel extends JPanel {
      */
     private void handleImportButton() {
         // Xử lý nhập hợp đồng từ file
-        JOptionPane.showMessageDialog(this, "Chức năng nhập dữ liệu đang được phát triển", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn file Excel để nhập");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files", "xlsx", "xls"));
+
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // TODO: Xử lý nhập dữ liệu từ file Excel
+            JOptionPane.showMessageDialog(this, "Chức năng nhập dữ liệu đang được phát triển", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**
@@ -212,26 +232,34 @@ public class HopDongPanel extends JPanel {
      */
     private void handleExportButton() {
         // Xử lý xuất hợp đồng ra file
-        JOptionPane.showMessageDialog(this, "Chức năng xuất dữ liệu đang được phát triển", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Lưu danh sách hợp đồng");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel Files", "xlsx"));
+
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // TODO: Xử lý xuất dữ liệu ra file Excel
+            JOptionPane.showMessageDialog(this, "Chức năng xuất dữ liệu đang được phát triển", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**
      * Xử lý sự kiện khi chọn trạng thái
      */
     private void handleTrangThaiSelection() {
-        // Xử lý khi thay đổi loại hợp đồng
-        String selectedLoaiHopDong = (String) trangThaiComboBox.getSelectedItem();
+        // Xử lý khi thay đổi hình thức làm việc
+        String selectedHinhThucLamViec = (String) trangThaiComboBox.getSelectedItem();
 
-        // Lọc dữ liệu theo loại hợp đồng
+        // Lọc dữ liệu theo hình thức làm việc
         ArrayList<hopDongDTO> danhSachHopDong = createSampleData(); // Thay bằng loadData() khi có dữ liệu thật
         ArrayList<hopDongDTO> filteredList = new ArrayList<>();
 
-        if ("Tất cả".equals(selectedLoaiHopDong)) {
+        if ("Tất cả".equals(selectedHinhThucLamViec)) {
             filteredList = danhSachHopDong;
         } else {
-            // Lọc theo loại hợp đồng
+            // Lọc theo hình thức làm việc
             for (hopDongDTO hopDong : danhSachHopDong) {
-                if (selectedLoaiHopDong.equals(hopDong.getLoaiHopDong())) {
+                if (selectedHinhThucLamViec.equals(hopDong.getHinhThucLamViec())) {
                     filteredList.add(hopDong);
                 }
             }
@@ -345,12 +373,12 @@ public class HopDongPanel extends JPanel {
      */
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
-        JPanel mainButtonsPanel = new JPanel();
+        mainButtonsPanel = new JPanel();
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
 
         // Create a panel for the import/export buttons
-        JPanel importExportPanel = new JPanel();
+        importExportPanel = new JPanel();
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
 
@@ -417,7 +445,7 @@ public class HopDongPanel extends JPanel {
      */
     private void setupTrangThaiPanel() {
         // Loại hợp đồng panel
-        JPanel trangThaiPanel = createTitledPanel("Loại Hợp Đồng", 230, 70);
+        JPanel trangThaiPanel = createTitledPanel("Hình Thức Làm Việc", 230, 70);
         trangThaiPanel.setLayout(new BorderLayout());
         bottomPanelLeft.add(trangThaiPanel);
 
@@ -441,7 +469,7 @@ public class HopDongPanel extends JPanel {
      */
     private void setupBottomPanelRight() {
         // Table data
-        String[] columnNames = {"Mã Hợp Đồng", "Mã NV", "Lương Cơ Bản", "Ngày Bắt Đầu", "Ngày Kết Thúc", "Loại Hợp Đồng"};
+        String[] columnNames = {"Mã Hợp Đồng", "Mã NV", "Lương Cơ Bản", "Ngày Bắt Đầu", "Ngày Kết Thúc", "Hình Thức Làm Việc"};
         Object[][] data = {};
 
         // Create table
@@ -509,41 +537,41 @@ public class HopDongPanel extends JPanel {
     private void updateTableData(ArrayList<hopDongDTO> danhSachHopDong) {
         // Lấy model của bảng
         DefaultTableModel model = (DefaultTableModel) hopDongTable.getModel();
-
-        // Xóa dữ liệu cũ
-        model.setRowCount(0);
+        model.setRowCount(0); // Xóa dữ liệu cũ
 
         // Định dạng ngày tháng
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+        // Định dạng tiền tệ
+        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+
         // Thêm dữ liệu mới
         for (hopDongDTO hopDong : danhSachHopDong) {
-            // Thêm dòng mới vào bảng
             model.addRow(new Object[]{
-                hopDong.getMaHopDong(),
-                hopDong.getMaNV(),
-                String.format("%,.0f", hopDong.getLuongCB()),
-                hopDong.getNgayBD().format(formatter),
-                hopDong.getNgayKT().format(formatter),
-                hopDong.getLoaiHopDong()
+                    hopDong.getMaHopDong(),
+                    hopDong.getMaNV(),
+                    currencyFormat.format(hopDong.getLuongCB()).replace("₫", "").trim(),
+                    hopDong.getNgayBD().format(formatter),
+                    hopDong.getNgayKT().format(formatter),
+                    hopDong.getHinhThucLamViec()
             });
         }
     }
-
-    /**
-     * Phương thức main để chạy thử panel
-     */
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
-            JFrame frame = new JFrame("Quản Lý Hợp Đồng");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1200, 800);
-            frame.add(new HopDongPanel());
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
+/**
+ * Phương thức main để chạy thử panel
+ */
+public static void main(String[] args) {
+    try {
+        UIManager.setLookAndFeel(new com.formdev.flatlaf.themes.FlatMacLightLaf());
+        JFrame frame = new JFrame("Quản Lý Hợp Đồng");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1200, 800);
+        frame.add(new HopDongPanel());
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    } catch (UnsupportedLookAndFeelException e) {
+        e.printStackTrace();
     }
+
+}
 }

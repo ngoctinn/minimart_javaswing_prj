@@ -3,6 +3,7 @@ package org.example.GUI.Dialogs;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.github.lgooddatepicker.components.DatePicker;
 import org.example.BUS.HopDongBUS;
+import org.example.BUS.NhanVienBUS;
 import org.example.Components.*;
 import org.example.DTO.hopDongDTO;
 import org.example.DTO.nhanVienDTO;
@@ -25,12 +26,15 @@ public class ThemHopDongDialog extends JDialog {
     private CustomDatePicker ngayKetThucPicker;
     private CustomButton luuButton;
     private CustomButton huyButton;
-    private CustomCombobox<String> loaiHopDongComboBox;
+    private CustomCombobox<String> hinhThucLamViecComboBox;
+    private CustomCombobox<String> nhanVienComboBox;
+    private CustomButton themNhanVienButton;
 
     // Data
     private boolean isEditMode = false;
     private hopDongDTO hopDongEdit;
     private boolean isClosed = false;
+    private ArrayList<nhanVienDTO> dsNhanVien;
 
     /**
      * Constructor cho chế độ thêm mới
@@ -133,40 +137,66 @@ public class ThemHopDongDialog extends JDialog {
         gbc.weightx = 1.0;
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;
-
+    
         // Thêm các thành phần theo hàng dọc
         int row = 0;
-
+    
         // Mã hợp đồng
         maHopDongField = new CustomTextField("Mã tự động (vd: HD001)");
         if (isEditMode) {
             maHopDongField.setEnabled(false);
         }
         addFormRow(panel, "Mã hợp đồng", maHopDongField.getContainer(), row++);
-
-        // Mã nhân viên
-        maNhanVienField = new CustomTextField("Nhập mã nhân viên");
-        addFormRow(panel, "Mã nhân viên", maNhanVienField.getContainer(), row++);
-
+    
+        // Mã nhân viên - Thay thế bằng combobox chọn nhân viên
+        // Lấy danh sách nhân viên
+        dsNhanVien = NhanVienBUS.layDanhSachNhanVien();
+        String[] nhanVienNames = new String[dsNhanVien.size()];
+        for (int i = 0; i < dsNhanVien.size(); i++) {
+            nhanVienNames[i] = dsNhanVien.get(i).getHoTen() + " (" + dsNhanVien.get(i).getMaNV() + ")";
+        }
+        
+        // Tạo combobox nhân viên
+        nhanVienComboBox = new CustomCombobox<>(nhanVienNames);
+        nhanVienComboBox.setPlaceholder("- Chọn nhân viên -");
+        
+        // Tạo panel chứa combobox và nút thêm mới
+        JPanel nhanVienPanel = new JPanel(new BorderLayout(5, 0));
+        nhanVienPanel.setBackground(Color.WHITE);
+        nhanVienPanel.add(nhanVienComboBox, BorderLayout.CENTER);
+        
+        // Tạo nút thêm mới nhân viên
+        themNhanVienButton = new CustomButton("+");
+        themNhanVienButton.setButtonColors(CustomButton.ButtonColors.BLUE);
+        themNhanVienButton.setPreferredSize(new Dimension(40, 32));
+        themNhanVienButton.setToolTipText("Thêm mới nhân viên");
+        nhanVienPanel.add(themNhanVienButton, BorderLayout.EAST);
+        
+        addFormRow(panel, "Nhân viên", nhanVienPanel, row++);
+        
+        // Giữ lại trường mã nhân viên nhưng ẩn đi (để lưu giá trị)
+        maNhanVienField = new CustomTextField("");
+        maNhanVienField.setVisible(false);
+    
         // Lương cơ bản
         luongCoBanField = new CustomTextField("Nhập lương cơ bản");
         addFormRow(panel, "Lương cơ bản", luongCoBanField.getContainer(), row++);
-
+    
         // Ngày bắt đầu
         ngayBatDauPicker = new CustomDatePicker();
         ngayBatDauPicker.setDate(LocalDate.now());
         addFormRow(panel, "Ngày bắt đầu", ngayBatDauPicker, row++);
-
+    
         // Ngày kết thúc
         ngayKetThucPicker = new CustomDatePicker();
         ngayKetThucPicker.setDate(LocalDate.now().plusYears(1)); // Mặc định 1 năm
         addFormRow(panel, "Ngày kết thúc", ngayKetThucPicker, row++);
-
-        // Loại hợp đồng
-        String[] loaiHopDongOptions = {"Chính thức", "Thử việc", "Thời vụ", "Hợp tác"};
-        loaiHopDongComboBox = new CustomCombobox<>(loaiHopDongOptions);
-        addFormRow(panel, "Loại hợp đồng", loaiHopDongComboBox, row++);
-
+    
+        // Hình thức làm việc (thay thế loại hợp đồng)
+        String[] hinhThucLamViecOptions = {"Toàn thời gian", "Bán thời gian"};
+        hinhThucLamViecComboBox = new CustomCombobox<>(hinhThucLamViecOptions);
+        addFormRow(panel, "Hình thức làm việc", hinhThucLamViecComboBox, row++);
+    
         return panel;
     }
 
@@ -233,6 +263,47 @@ public class ThemHopDongDialog extends JDialog {
     private void addEventListeners() {
         luuButton.addActionListener(e -> handleSave());
         huyButton.addActionListener(e -> handleCancel());
+        themNhanVienButton.addActionListener(e -> handleThemNhanVien());
+        nhanVienComboBox.addActionListener(e -> handleNhanVienSelection());
+    }
+
+    /**
+     * Xử lý sự kiện khi chọn nhân viên từ combobox
+     */
+    private void handleNhanVienSelection() {
+        int selectedIndex = nhanVienComboBox.getSelectedIndex();
+        if (selectedIndex >= 0 && selectedIndex < dsNhanVien.size()) {
+            // Lấy mã nhân viên từ đối tượng nhân viên được chọn
+            String maNV = dsNhanVien.get(selectedIndex).getMaNV();
+            maNhanVienField.setText(maNV);
+        }
+    }
+
+    /**
+     * Xử lý sự kiện khi nhấn nút thêm nhân viên
+     */
+    private void handleThemNhanVien() {
+        // Mở dialog thêm mới nhân viên
+        JOptionPane.showMessageDialog(this, "Chức năng thêm nhân viên sẽ được triển khai sau", 
+                                     "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        // Sau khi thêm nhân viên mới, cập nhật lại danh sách nhân viên trong combobox
+        refreshNhanVienComboBox();
+    }
+
+    /**
+     * Phương thức để cập nhật lại danh sách nhân viên trong combobox
+     */
+    public void refreshNhanVienComboBox() {
+        dsNhanVien = NhanVienBUS.layDanhSachNhanVien();
+        String[] nhanVienNames = new String[dsNhanVien.size()];
+        for (int i = 0; i < dsNhanVien.size(); i++) {
+            nhanVienNames[i] = dsNhanVien.get(i).getHoTen() + " (" + dsNhanVien.get(i).getMaNV() + ")";
+        }
+        nhanVienComboBox.setModel(new DefaultComboBoxModel<>(nhanVienNames));
+        // Chọn nhân viên mới thêm (thường là phần tử cuối cùng)
+        if (nhanVienNames.length > 0) {
+            nhanVienComboBox.setSelectedIndex(nhanVienNames.length - 1);
+        }
     }
 
     /**
@@ -242,21 +313,33 @@ public class ThemHopDongDialog extends JDialog {
         if (hopDongEdit != null) {
             // Điền thông tin từ đối tượng hopDongEdit vào các trường nhập liệu
             maHopDongField.setText(hopDongEdit.getMaHopDong());
-            maNhanVienField.setText(hopDongEdit.getMaNV());
+            
+            // Thiết lập nhân viên trong combobox
+            String maNVCanChon = hopDongEdit.getMaNV();
+            maNhanVienField.setText(maNVCanChon);
+            
+            // Tìm và chọn đúng nhân viên trong combobox
+            for (int i = 0; i < dsNhanVien.size(); i++) {
+                if (dsNhanVien.get(i).getMaNV().equals(maNVCanChon)) {
+                    nhanVienComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
             luongCoBanField.setText(String.format("%,.0f", hopDongEdit.getLuongCB()));
-
+            
             // Thiết lập ngày bắt đầu và ngày kết thúc
             if (hopDongEdit.getNgayBD() != null) {
                 ngayBatDauPicker.setDate(hopDongEdit.getNgayBD());
             }
-
+            
             if (hopDongEdit.getNgayKT() != null) {
                 ngayKetThucPicker.setDate(hopDongEdit.getNgayKT());
             }
-
-            // Thiết lập loại hợp đồng
-            if (hopDongEdit.getLoaiHopDong() != null) {
-                loaiHopDongComboBox.setSelectedItem(hopDongEdit.getLoaiHopDong());
+            
+            // Thiết lập hình thức làm việc
+            if (hopDongEdit.getHinhThucLamViec() != null) {
+                hinhThucLamViecComboBox.setSelectedItem(hopDongEdit.getHinhThucLamViec());
             }
         }
     }
@@ -279,19 +362,25 @@ public class ThemHopDongDialog extends JDialog {
                 // Lấy thông tin từ form
                 String maHopDong = maHopDongField.getText().trim();
                 String maNhanVien = maNhanVienField.getText().trim();
+                
+                // Nếu mã nhân viên trống, lấy từ combobox
+                if (maNhanVien.isEmpty() && nhanVienComboBox.getSelectedIndex() >= 0) {
+                    maNhanVien = dsNhanVien.get(nhanVienComboBox.getSelectedIndex()).getMaNV();
+                }
+                
                 double luongCoBan = Double.parseDouble(luongCoBanField.getText().trim().replace(",", ""));
                 LocalDate ngayBatDau = ngayBatDauPicker.getDate();
                 LocalDate ngayKetThuc = ngayKetThucPicker.getDate();
-                String loaiHopDong = (String) loaiHopDongComboBox.getSelectedItem();
-
+                String hinhThucLamViec = (String) hinhThucLamViecComboBox.getSelectedItem();
+    
                 // Tạo đối tượng hợp đồng (trạng thái mặc định là true - hoạt động)
-                hopDongDTO hopDong = new hopDongDTO(maHopDong, ngayBatDau, ngayKetThuc, luongCoBan, maNhanVien, true, loaiHopDong);
-
+                hopDongDTO hopDong = new hopDongDTO(maHopDong, ngayBatDau, ngayKetThuc, luongCoBan, maNhanVien, true, hinhThucLamViec);
+    
                 int result = 0;
                 if (isEditMode) {
                     // Cập nhật hợp đồng vào cơ sở dữ liệu
                     result = HopDongBUS.capNhatHopDong(hopDong);
-
+    
                     if (result > 0) {
                         JOptionPane.showMessageDialog(this, "Cập nhật hợp đồng thành công", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                         isClosed = true;
@@ -302,7 +391,7 @@ public class ThemHopDongDialog extends JDialog {
                 } else {
                     // Thêm hợp đồng mới vào cơ sở dữ liệu
                     result = HopDongBUS.themHopDong(hopDong);
-
+    
                     if (result > 0) {
                         JOptionPane.showMessageDialog(this, "Thêm hợp đồng thành công", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                         isClosed = true;
@@ -335,9 +424,9 @@ public class ThemHopDongDialog extends JDialog {
             return false;
         }
 
-        // Kiểm tra mã nhân viên
-        if (maNhanVienField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã nhân viên", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        // Kiểm tra nhân viên đã được chọn chưa
+        if (nhanVienComboBox.getSelectedIndex() < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn nhân viên", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 

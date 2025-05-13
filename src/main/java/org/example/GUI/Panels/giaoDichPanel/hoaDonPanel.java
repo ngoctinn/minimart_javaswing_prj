@@ -179,11 +179,13 @@ public class hoaDonPanel extends JPanel {
     private void setupActionButtons(JPanel actionPanel) {
         // Create a panel for the main action buttons
         mainButtonsPanel = new JPanel();
+        mainButtonsPanel.setVisible(false);
         mainButtonsPanel.setLayout(new BoxLayout(mainButtonsPanel, BoxLayout.X_AXIS));
         mainButtonsPanel.setBackground(Color.WHITE);
 
         // Create a panel for the import/export buttons
         importExportPanel = new JPanel();
+        importExportPanel.setVisible(false);
         importExportPanel.setLayout(new BoxLayout(importExportPanel, BoxLayout.X_AXIS));
         importExportPanel.setBackground(Color.WHITE);
 
@@ -193,13 +195,6 @@ public class hoaDonPanel extends JPanel {
         addButton.setPreferredSize(new Dimension(100, 30));
         addButton.setMaximumSize(new Dimension(100, 30));
         addButton.setButtonColors(CustomButton.ButtonColors.BLUE);
-        addButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MenuFrame menuFrame = new MenuFrame();
-                menuFrame.showPanel("banHang");
-            }
-        });
         mainButtonsPanel.add(addButton);
         mainButtonsPanel.add(Box.createHorizontalStrut(5));
 

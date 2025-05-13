@@ -124,7 +124,7 @@ public class ThemKhachHangDialog extends JDialog {
         addFormRow(panel, "Điểm tích lũy", diemField.getContainer(), row++, gbc);
         
         // Họ và tên
-        hoTenField = new CustomTextField("Nguyễn Văn A");
+        hoTenField = new CustomTextField("");
         addFormRow(panel, "Họ và tên", hoTenField.getContainer(), row++, gbc);
         
         // Số điện thoại
