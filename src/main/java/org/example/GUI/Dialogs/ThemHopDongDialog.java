@@ -142,7 +142,12 @@ public class ThemHopDongDialog extends JDialog {
         int row = 0;
     
         // Mã hợp đồng
-        maHopDongField = new CustomTextField("Mã tự động (vd: HD001)");
+        maHopDongField = new CustomTextField("");
+        //lấy mã hợp đồng tự động
+        String maHopDong = HopDongBUS.generateNextMaHopDong();
+        maHopDongField.setText(maHopDong);
+        maHopDongField.setState(CustomTextField.State.DISABLED);
+        maHopDongField.setEnabled(false);
         if (isEditMode) {
             maHopDongField.setEnabled(false);
         }
