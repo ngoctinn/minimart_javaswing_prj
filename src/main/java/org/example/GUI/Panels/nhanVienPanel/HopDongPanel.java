@@ -452,10 +452,8 @@ public class HopDongPanel extends JPanel {
         // Loại hợp đồng combobox
         String[] trangThaiData = {
                 "Tất cả",
-                "Chính thức",
-                "Thử việc",
-                "Thời vụ",
-                "Hợp tác"
+                "Toàn thời gian",
+                "Bán thời gian"
         };
 
         trangThaiComboBox = new CustomCombobox<>(trangThaiData);
@@ -506,8 +504,8 @@ public class HopDongPanel extends JPanel {
      * Load dữ liệu mẫu vào bảng
      */
     private void loadSampleData() {
-        // Tạo dữ liệu mẫu
-        ArrayList<hopDongDTO> danhSachHopDong = createSampleData();
+        // Lấy dữ liệu thực tế từ cơ sở dữ liệu thông qua BUS
+        ArrayList<hopDongDTO> danhSachHopDong = HopDongBUS.layDanhSachHopDong();
 
         // Cập nhật bảng
         updateTableData(danhSachHopDong);
@@ -518,16 +516,8 @@ public class HopDongPanel extends JPanel {
      * @return Danh sách hợp đồng mẫu
      */
     private ArrayList<hopDongDTO> createSampleData() {
-        ArrayList<hopDongDTO> danhSachHopDong = new ArrayList<>();
-
-        // Tạo một số hợp đồng mẫu
-        danhSachHopDong.add(new hopDongDTO("HD001", LocalDate.of(2023, 1, 1), LocalDate.of(2024, 1, 1), 10000000, "NV001", true, "Chính thức"));
-        danhSachHopDong.add(new hopDongDTO("HD002", LocalDate.of(2023, 2, 1), LocalDate.of(2024, 2, 1), 12000000, "NV002", true, "Thử việc"));
-        danhSachHopDong.add(new hopDongDTO("HD003", LocalDate.of(2023, 3, 1), LocalDate.of(2024, 3, 1), 15000000, "NV003", true, "Chính thức"));
-        danhSachHopDong.add(new hopDongDTO("HD004", LocalDate.of(2023, 4, 1), LocalDate.of(2024, 4, 1), 9000000, "NV004", true, "Thời vụ"));
-        danhSachHopDong.add(new hopDongDTO("HD005", LocalDate.of(2023, 5, 1), LocalDate.of(2024, 5, 1), 11000000, "NV005", true, "Hợp tác"));
-
-        return danhSachHopDong;
+        // Thay vì tạo dữ liệu mẫu, lấy dữ liệu thực tế từ cơ sở dữ liệu
+        return HopDongBUS.layDanhSachHopDong();
     }
 
     /**
@@ -557,6 +547,7 @@ public class HopDongPanel extends JPanel {
             });
         }
     }
+
 /**
  * Phương thức main để chạy thử panel
  */
